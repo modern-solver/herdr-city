@@ -31,7 +31,7 @@ the backend against it. builder-gemini implements views against it.
 
 ## Purpose
 
-Mastopia P1 adds a read-only **console** next to the P0 3D city. The console shows
+Mastopia P1 adds a read-only console next to the P0 3D city. The console shows
 herdr sessions, pane text, filters, an event log, the MAS rulebook, and a City Hall
 ops-desk queue of "Needs you" prompts. The process never writes to herdr.
 
@@ -207,7 +207,8 @@ These stay. Console views do not depend on them.
 | POST | `/api/names` | 200/403 | local display names for the city; not herdr |
 | POST | `/api/answer` | 409 | read-only |
 
-P1 extends `/health` with mode `demo` and `host` (bind address string) so tests can assert demo bind. Mode `demo` is P1-only.
+P1 extends `/health` with mode `demo` and `host` (bind address string) so tests
+can assert demo bind. Mode `demo` is P1-only.
 
 ### GET /api/sessions
 
