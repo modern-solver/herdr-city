@@ -15,6 +15,18 @@
 This document is the API contract the console UI consumes. builder-grok implements
 the backend against it. builder-gemini implements views against it.
 
+## Acronyms
+
+| Acronym | Definition |
+|---|---|
+| ANSI | American National Standards Institute |
+| API | Application Programming Interface |
+| CLI | Command-Line Interface |
+| HTTP | Hypertext Transfer Protocol |
+| JSON | JavaScript Object Notation |
+| UI | User Interface |
+| UTF-8 | 8-bit Unicode Transformation Format |
+
 ## Purpose
 
 Mastopia P1 adds a read-only **console** next to the P0 3D city. The console shows
@@ -326,7 +338,12 @@ Invalid `limit`: 400.
 {
   "v": 1,
   "generatedAt": 1760700000000,
-  "bounded": { "maxEvents": 500, "maxChars": 262144 },
+  "bounded": {
+    "maxEvents": 500,
+    "maxChars": 262144,
+    "count": 1,
+    "chars": 18
+  },
   "events": [
     {
       "id": "log-12",
@@ -346,6 +363,11 @@ Invalid `limit`: 400.
 
 Ring buffer: keep at most 500 events. If the sum of `text` lengths exceeds 262144
 characters, drop oldest events until under the cap. Spec constants: 500 and 262144.
+Units are characters, never bytes.
+
+`bounded.count` is the number of events in the ring buffer.
+`bounded.chars` is the sum of `text` character lengths in that buffer.
+Both describe buffer occupancy. They are not the `limit` page size in `events`.
 
 The adapter appends events on tick:
 
@@ -366,9 +388,13 @@ Handbook rules plus per-district file presence.
 
 200 body:
 
+HTTP status is 200 when the handbook is present and when it is missing. Missing
+handbook is not 404. Body field `error` is `null` or `"handbook_missing"`.
+
 ```json
 {
   "v": 1,
+  "error": null,
   "handbook": {
     "version": "2.0",
     "date": "2026-10-17",
@@ -403,8 +429,9 @@ Handbook rules plus per-district file presence.
 Parser:
 
 1. Read `docs/MAS-House-Rules-Handbook.md` from the mastopia process cwd (this
-   repo). If the file is absent, `handbook` is null, `rules` is `[]`, and
-   `error` is `"handbook_missing"`.
+   repo). If the file is absent, HTTP status is still 200, `handbook` is null,
+   `rules` is `[]`, and `error` is `"handbook_missing"`. If the file is present,
+   HTTP status is 200 and `error` is `null`.
 2. Parse markdown tables whose header row is `ID`, `Rule`, `Check` (any column
    order). Each data row becomes one rule.
 3. Parse list items that match `^[A-Z]+-\\d+:` (example: `SDLC-01:`) as rules
@@ -525,6 +552,24 @@ agents (project brief section 6).
 
 `/health` in demo: `{ "ok": true, "mode": "demo", "host": "0.0.0.0" }`.
 
+Host and Origin (P0 code: `src/server.js` Host check at line 63, `originOk` at
+line 18):
+
+Live and fixture (unchanged from P0):
+- Host: if the Host hostname is set and is not `127.0.0.1` or `localhost`, the
+  server responds 403 with body `mastopia binds 127.0.0.1 only`.
+- Origin: `originOk` allows a missing Origin, or an Origin whose hostname is
+  `127.0.0.1` or `localhost`. Other Origins fail. Routes that call `originOk`
+  (`GET /api/session`, `POST /api/names`) respond 403 when the check fails.
+
+Demo (`--demo` or `MASTOPIA_DEMO=1` only):
+- Host check is skipped. Any Host is accepted.
+- Origin check is skipped. Any Origin is accepted.
+- `tokenOk` is unchanged.
+
+Live and fixture never relax Host or Origin. Demo never applies the P0 loopback
+Host or Origin checks.
+
 ## Tests
 
 P1 backend tests live in `test/` and run with `npm test`. Commands:
@@ -550,6 +595,15 @@ New tests MUST cover:
 10. `POST /api/answer` and `POST /api/send-keys` return 409.
 11. Demo flag binds `0.0.0.0`; default binds `127.0.0.1`.
 12. `assertReadOnly` still rejects `send-keys` / `server stop`.
+13. Without demo: `GET /health` with `Host: example.com` returns 403.
+14. With demo: `GET /health` with `Host: example.com` returns 200.
+15. Without demo: `GET /api/session` with `Origin: http://example.com` returns 403.
+16. With demo: `GET /api/session` with `Origin: http://example.com` does not fail
+    the Origin check.
+17. `GET /api/logs` `bounded` includes `count` and `chars` (characters, not bytes)
+    matching ring-buffer occupancy.
+18. `GET /api/rulebook` returns HTTP 200 with `error` null when the handbook is
+    present, and HTTP 200 with `error` `"handbook_missing"` when it is absent.
 
 Keep existing city snapshot tests green.
 
@@ -565,7 +619,7 @@ Strictly read-only: no view contains send-keys, send-text, prompt, or approve co
    - Route `/console` serves the console dashboard (P1).
    - Both routes share the origin `http://127.0.0.1:7740` (or demo host/port).
 2. Header navigation:
-   - Persistent top bar displays the mastopia wordmark, active mode badge (`live` or `fixture`),
+   - Persistent top bar displays the mastopia wordmark, active mode badge (`live`, `fixture`, or `demo`),
      a link to the 3D City (`/`), and tab navigation links:
      `Sessions` (`#sessions`), `Pane Screen` (`#screen`), `Event Logs` (`#logs`),
      `Rulebook` (`#rulebook`), and `Ops Desk` (`#ops-desk`).
@@ -612,13 +666,14 @@ Consumes `GET /api/screen?paneId={paneId}`.
 2. Viewport behaviour:
    - Output font: monospace, dark background, high contrast text.
    - Auto-scroll toggle: checkbox to automatically scroll to the bottom on refresh (enabled by default).
-   - ANSI handling: P1 renders text directly; escape sequences are displayed or stripped cleanly.
+   - ANSI handling: P1 passes ANSI escape sequences through unchanged; the viewport renders them as raw text.
    - Truncation notice: if `truncated` is true, displays warning banner:
      "Output truncated at 80,000 characters."
 3. States:
    - Loading: displays "Reading pane output for {paneId}..."
    - Empty: displays "No recent output recorded for this pane."
-   - Error: on 400, 404, or 500, displays "Unable to read pane {paneId}. Pane may have closed or herdr returned an error."
+   - Error: on 400, 404, or 500, displays:
+     "Unable to read pane {paneId}. Pane may have closed or herdr returned an error."
 4. Read-only constraint:
    - View contains zero text input fields, send buttons, or keyboard capture handlers.
 
@@ -642,7 +697,7 @@ Controls that construct query parameters for `GET /api/sessions`.
 Consumes `GET /api/logs?after={ts}&limit={limit}`.
 
 1. Layout:
-   - Header displays ring buffer capacity: "Buffer: {count}/500 events ({chars}/262,144 bytes)".
+   - Header displays ring buffer limits: max 500 events and max 262,144 characters.
    - Event filter toolbar: filter by event type dropdown (`All`, `status_change`, `needs_you`,
      `needs_you_cleared`, `error`, `adapter_error`) and text filter.
    - Main area displays reverse-chronological list of log events.
@@ -676,8 +731,8 @@ Consumes `GET /api/rulebook`.
    - Table columns: Rule ID (`id`), Area (`area`), Rule Text (`text`), Check Column (`check`).
 4. States:
    - Loading: skeleton loader.
-   - Error: displays error banner if request fails. If `error === "handbook_missing"`, displays
-     "Handbook file `docs/MAS-House-Rules-Handbook.md` not found in process working directory."
+   - Error: displays error banner if request fails. If `handbook` is null or `error === "handbook_missing"`,
+     displays "Handbook file `docs/MAS-House-Rules-Handbook.md` not found in process working directory."
 
 ### Ops-desk queue view (`#ops-desk`)
 
@@ -707,11 +762,14 @@ Consumes `GET /api/ops-desk`.
 | Q2 | Confirm log bounds 500 events and 262144 characters. | Shaunak | WAITING |
 | Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini | Decided: reuse 2000 ms during active use; back off to 10000 ms when browser tab is hidden. |
 | Q4 | ANSI in pane screen: strip, pass through, or later. P1 passes through. | builder-gemini | Decided: P1 passes through text cleanly in preformatted code block; no client-side script execution. |
+| Q5 | Confirm screen text cap 80000 characters. | Shaunak | WAITING |
+| Q6 | Confirm search debounce 300 ms. | Shaunak | WAITING |
+| Q7 | Confirm hidden-tab poll interval 10000 ms. | Shaunak | WAITING |
 
 ## Links
 
-- Brief: `briefs/BRIEF-mastopia-build.md`
-- Handbook: `docs/MAS-House-Rules-Handbook.md`
+- Brief: `briefs/BRIEF-mastopia-build.md` (local, not committed)
+- Handbook: `docs/MAS-House-Rules-Handbook.md` (local, not committed)
 - PRD: `docs/prd.md`
 - Roadmap: `docs/roadmap.md`
 - P0 README JSON API: `README.md`

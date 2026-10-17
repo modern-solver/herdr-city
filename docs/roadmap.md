@@ -14,6 +14,15 @@
 This file records backend sequencing and product roadmap in full. builder-grok owns
 backend sequencing; builder-gemini owns UI sequencing, navigation, and P2/P3 product roadmap.
 
+## Acronyms
+
+| Acronym | Definition |
+|---|---|
+| API | Application Programming Interface |
+| CLI | Command-Line Interface |
+| JSON | JavaScript Object Notation |
+| UI | User Interface |
+
 ## Gates
 
 PRE-01: Shaunak approves at least this spec sheet, this PRD, and this roadmap
@@ -71,8 +80,8 @@ Backend check (this lane):
 
 Owner: builder-gemini.
 
-Each UI view is implemented after its corresponding backend endpoint lands on
-the feature branch.
+The builder-gemini agent implements each UI view after Shaunak merges the
+corresponding backend PR from builder-grok into `main`.
 
 | Seq | ID | Work | Needs backend | Description |
 |---|---|---|---|---|
@@ -119,18 +128,18 @@ without that flag. P1 409 handlers are the compatibility floor.
 
 ## P3
 
-Phase P3 expands mastopia from local monitoring to comprehensive fleet analytics
-and autonomous governance.
+Phase P3 expands mastopia to display fleet metrics and rule compliance checks
+across districts.
 
 ### P3 capabilities
 
-1. Fleet analytics dashboard: agent token consumption, run durations, failure rates,
-   and model utilization trends over time.
-2. Rulebook compliance audit history: continuous background checks verifying MAS
-   handbook compliance across all local district repositories.
-3. Multi-district orchestration overview: visual pipeline showing cross-district
-   handoffs and PR status across the entire MAS agent fleet.
-4. Export and reporting: compliance report generation for lead escalations and audits.
+1. Fleet metrics view: agent token consumption, run durations, failure rates,
+   and model utilization counts over time.
+2. Rule compliance history: periodic checks verifying handbook rule compliance
+   across local district repositories.
+3. Cross-district status view: visual status of cross-district handoffs and PR
+   state.
+4. Compliance export: summary reports of rule compliance and lead escalations.
 
 ## Dependencies
 
@@ -146,4 +155,5 @@ and autonomous governance.
 
 - Spec sheet: `docs/spec-sheet.md`
 - PRD: `docs/prd.md`
-- Brief: `briefs/BRIEF-mastopia-build.md`
+- Brief: `briefs/BRIEF-mastopia-build.md` (local, not committed)
+- Handbook: `docs/MAS-House-Rules-Handbook.md` (local, not committed)

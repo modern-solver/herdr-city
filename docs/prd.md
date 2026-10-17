@@ -15,6 +15,15 @@
 This file records backend and UI product requirements in full. builder-grok owns
 the backend requirements; builder-gemini owns the UI requirements and view specifications.
 
+## Acronyms
+
+| Acronym | Definition |
+|---|---|
+| API | Application Programming Interface |
+| CLI | Command-Line Interface |
+| JSON | JavaScript Object Notation |
+| UI | User Interface |
+
 ## Problem
 
 Shaunak runs a multi-model agent fleet in herdr. P0 mastopia shows that fleet as
@@ -212,13 +221,27 @@ Each criterion is testable after implementation PRs (not this docs PR).
    paths).
 8. Process with `--demo` listens on `0.0.0.0`; default listens on `127.0.0.1`.
    Command: `npm test`.
-9. Operator can navigate between `/` (City) and `/console` (Console) using the top navigation switcher. Command: browser test / manual check.
-10. Operator can view all agent sessions in `/console#sessions` with correct status badges and metadata. Command: browser test / manual check.
-11. Operator can filter sessions by district, status, CLI, and search text, with the table updating via `GET /api/sessions`. Command: browser test / manual check.
-12. Operator can open the read-only screen viewer (`/console#screen?paneId=w8:p1`) and view masked pane output with zero write/input controls. Command: browser test / manual check.
-13. Operator can view the event log stream in `/console#logs` with bounded buffer indicators. Command: browser test / manual check.
-14. Operator can view handbook rules and district compliance in `/console#rulebook`, with missing required files highlighted in red. Command: browser test / manual check.
-15. Operator can view blocked items in `/console#ops-desk` sorted by wait time, with no approve, deny, or prompt inputs. Command: browser test / manual check.
+9. City and console navigation.
+   - Step: Operator loads `http://127.0.0.1:7740/`, clicks `[Console ->]`, then clicks `[<- 3D City]`.
+   - Expected: Browser transitions from 3D city to console dashboard, then returns to 3D city.
+10. Sessions list display.
+   - Step: Operator navigates to `http://127.0.0.1:7740/console#sessions`.
+   - Expected: Table renders all fixture agent rows with name, district, status badge, cwd, and last-seen time.
+11. Sessions filtering.
+   - Step: Operator selects status `blocked` in the filters toolbar.
+   - Expected: Table updates to show only blocked sessions (`w8:p1` grok row).
+12. Read-only pane screen view.
+   - Step: Operator clicks `[Inspect]` on the `w8:p1` session row.
+   - Expected: Browser displays `/console#screen?paneId=w8:p1` with masked terminal output and zero input fields.
+13. Event log stream display.
+   - Step: Operator navigates to `http://127.0.0.1:7740/console#logs`.
+   - Expected: Reverse-chronological event stream renders with event type tags and buffer capacity indicators.
+14. Rulebook and compliance display.
+   - Step: Operator navigates to `http://127.0.0.1:7740/console#rulebook`.
+   - Expected: Table displays parsed house rules and district file check matrix with missing files flagged red.
+15. Ops-desk queue display.
+   - Step: Operator navigates to `http://127.0.0.1:7740/console#ops-desk`.
+   - Expected: Queue renders blocked agent prompt cards sorted by wait duration with no action buttons.
 
 ## Open questions
 
@@ -233,5 +256,5 @@ Each criterion is testable after implementation PRs (not this docs PR).
 
 - Spec sheet: `docs/spec-sheet.md`
 - Roadmap: `docs/roadmap.md`
-- Brief: `briefs/BRIEF-mastopia-build.md`
-- Handbook: `docs/MAS-House-Rules-Handbook.md`
+- Brief: `briefs/BRIEF-mastopia-build.md` (local, not committed)
+- Handbook: `docs/MAS-House-Rules-Handbook.md` (local, not committed)
