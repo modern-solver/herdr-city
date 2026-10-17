@@ -1,0 +1,8 @@
+claude · broken
+Running make backfill
+
+error: make: *** [backfill] Error 1
+FAILED tests/test_backfill.py::test_month
+Traceback (most recent call last):
+  File "tests/test_backfill.py", line 12, in test_month
+    raise RuntimeError("no partition")

@@ -1,0 +1,20 @@
+{
+  "name": "mastopia",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Local 3D city GUI for herdr agents (read-only). City frontend based on Skyborne.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node page/build.js && node src/cli.js",
+    "fixture": "node page/build.js && node src/cli.js --fixture",
+    "build:page": "node page/build.js",
+    "test": "node --test test/*.test.js"
+  },
+  "bin": {
+    "mastopia": "src/cli.js"
+  }
+}

@@ -1,0 +1,40 @@
+name: Mastopia CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Mastopia tests (ubuntu, Node 22)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Unit tests (fixture mode, no herdr)
+        run: npm test
+      - name: Build city page
+        run: npm run build:page
+      - name: Fixture snapshot has districts and a blocked prompt
+        run: |
+          node --input-type=module -e "
+          import { createFixtureClient } from './src/fixtures.js';
+          import { createAdapter } from './src/adapter.js';
+          const a = createAdapter({ client: createFixtureClient() });
+          const snap = await a.tick();
+          if (snap.districts.length < 3) throw new Error('need several districts');
+          const ask = (snap.asks || []).find((x) => x.session === 'w8');
+          if (!ask?.input?.command?.includes('Allow this action')) throw new Error('missing blocked prompt');
+          console.log('ok', snap.districts.map((d) => d.title).join(', '));
+          await a.stop();
+          "

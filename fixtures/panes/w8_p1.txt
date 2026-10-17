@@ -1,0 +1,10 @@
+grok · grok-api
+
+Needs your approval
+Allow this action?
+Run: gh api repos/modern-solver/atlas-api/pulls --jq '.[].title'
+
+token=ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+API_KEY=sk-thisIsAFakeOpenAIKeyValueForTests12345
+
+[y/N]
