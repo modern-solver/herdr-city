@@ -9,7 +9,7 @@
 | Status | Draft — waiting for Shaunak approval (PRE-01) |
 | Author | builder-grok (`grok-4.6`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
-| Lane | Backend lead; UI view specs are `TODO(builder-gemini)` |
+| Lane | Backend lead (builder-grok); UI view specs (builder-gemini) |
 | Approval | WAITING |
 
 This document is the API contract the console UI consumes. builder-grok implements
@@ -555,21 +555,158 @@ Keep existing city snapshot tests green.
 
 ## View specs
 
-TODO(builder-gemini): specify sessions list, pane screen view, filters UI, logs
-view, rulebook view, and ops-desk queue layout and states. Consume the JSON
-shapes in this document. Do not add write controls in P1.
+Owner: builder-gemini. Consumes the API shapes defined in this specification.
+Strictly read-only: no view contains send-keys, send-text, prompt, or approve controls.
 
-Include empty, error, and loading states. Include how the city page and the
-console share the same origin.
+### Shell and navigation
+
+1. Same-origin routing:
+   - Root `/` serves the 3D City canvas (P0).
+   - Route `/console` serves the console dashboard (P1).
+   - Both routes share the origin `http://127.0.0.1:7740` (or demo host/port).
+2. Header navigation:
+   - Persistent top bar displays the mastopia wordmark, active mode badge (`live` or `fixture`),
+     a link to the 3D City (`/`), and tab navigation links:
+     `Sessions` (`#sessions`), `Pane Screen` (`#screen`), `Event Logs` (`#logs`),
+     `Rulebook` (`#rulebook`), and `Ops Desk` (`#ops-desk`).
+   - The 3D City page (`/`) displays a corresponding `[Console ->]` link in its top bar.
+3. Hash router:
+   - Client router parses `window.location.hash` to switch views without reloading the page.
+   - Default route is `#sessions`.
+4. Shared lifecycle:
+   - Active view polls its endpoint every 2000 ms.
+   - When `document.hidden` is true, poll interval extends to 10000 ms.
+   - A manual `[Refresh]` button triggers an immediate fetch.
+
+### Sessions list view (`#sessions`)
+
+Consumes `GET /api/sessions`.
+
+1. Layout:
+   - Top toolbar contains filter summary and search inputs (see Filters UI spec below).
+   - Main area displays the agent sessions table.
+2. Columns:
+   - District: displays `districtTitle` with `districtId` in a secondary caption.
+   - Agent: displays `name`.
+   - Tool & Model: displays `cli` icon/tag and `model` badge.
+   - Status: displays `statusLabel` badge.
+     - `working`: blue/green badge.
+     - `idle`: gray badge.
+     - `blocked`: amber/red alert badge showing "Needs you" and previewing `prompt`.
+   - Directory: displays `cwd` truncated with tooltip showing full path.
+   - Last Seen: displays relative duration computed from `lastSeenAt`.
+   - Action: displays `[Inspect]` link navigating to `#screen?paneId={paneId}`.
+3. States:
+   - Loading: displays table skeleton rows with animated pulse.
+   - Empty: displays "No agent sessions found matching current filters."
+   - Error: displays error banner "Failed to load sessions from server: {error}".
+
+### Pane screen view (`#screen`)
+
+Consumes `GET /api/screen?paneId={paneId}`.
+
+1. Layout:
+   - Top metadata ribbon displays `paneId`, `name`, `districtTitle`, `model`,
+     `statusLabel`, and `updatedAt`.
+   - Main viewport displays the pane text inside a styled `<pre><code>` container.
+2. Viewport behaviour:
+   - Output font: monospace, dark background, high contrast text.
+   - Auto-scroll toggle: checkbox to automatically scroll to the bottom on refresh (enabled by default).
+   - ANSI handling: P1 renders text directly; escape sequences are displayed or stripped cleanly.
+   - Truncation notice: if `truncated` is true, displays warning banner:
+     "Output truncated at 80,000 characters."
+3. States:
+   - Loading: displays "Reading pane output for {paneId}..."
+   - Empty: displays "No recent output recorded for this pane."
+   - Error: on 400, 404, or 500, displays "Unable to read pane {paneId}. Pane may have closed or herdr returned an error."
+4. Read-only constraint:
+   - View contains zero text input fields, send buttons, or keyboard capture handlers.
+
+### Filters UI
+
+Controls that construct query parameters for `GET /api/sessions`.
+
+1. Controls:
+   - Search (`q`): text input, 300 ms debounce before issuing query.
+   - District (`district`): text match on district ID or title.
+   - CLI (`cli`): dropdown with options: `All`, `claude`, `grok`, `gemini`, `cursor`.
+   - Status (`status`): segmented button group: `All`, `working`, `idle`, `blocked`.
+   - Model (`model`): text substring filter.
+   - Reset: button clearing all inputs to default empty values.
+2. Interaction:
+   - Changing any filter updates the URL query params and triggers a fetch to `GET /api/sessions`.
+   - Applied filters echo back in the response `filters` object and display as dismissible chips.
+
+### Event logs view (`#logs`)
+
+Consumes `GET /api/logs?after={ts}&limit={limit}`.
+
+1. Layout:
+   - Header displays ring buffer capacity: "Buffer: {count}/500 events ({chars}/262,144 bytes)".
+   - Event filter toolbar: filter by event type dropdown (`All`, `status_change`, `needs_you`,
+     `needs_you_cleared`, `error`, `adapter_error`) and text filter.
+   - Main area displays reverse-chronological list of log events.
+2. Event card / row fields:
+   - Timestamp: `ts` formatted in local operator time with millisecond precision (`HH:mm:ss.SSS`).
+   - Type badge: color-coded tag matching event `type` (`needs_you` in red, `status_change` in blue,
+     `needs_you_cleared` in green, `error` / `adapter_error` in amber).
+   - Scope: displays `paneId`, `name`, and `districtTitle` if present.
+   - Status transition: if `fromStatus` and `toStatus` exist, displays `{fromStatus} -> {toStatus}`.
+   - Message: displays masked `text`.
+3. States:
+   - Loading: skeleton log list.
+   - Empty: "No log events recorded in buffer."
+   - Error: error alert banner.
+
+### Rulebook view (`#rulebook`)
+
+Consumes `GET /api/rulebook`.
+
+1. Layout:
+   - Top section: District Compliance Overview.
+   - Bottom section: MAS House Rules Reference.
+2. District compliance section:
+   - Grid of cards for each entry in `districts`.
+   - Card displays district `title`, `id`, `cwd`, and readability badge (`readable` true/false).
+   - Expected files list: displays each file path with a status checkmark (`present: true`)
+     or cross (`present: false`).
+   - Missing required files: prominent red warning chips listing items from `missing`.
+3. House rules table:
+   - Filter input to search rules by ID (e.g. `GOV-`, `LANE-`, `SEC-`) or keyword.
+   - Table columns: Rule ID (`id`), Area (`area`), Rule Text (`text`), Check Column (`check`).
+4. States:
+   - Loading: skeleton loader.
+   - Error: displays error banner if request fails. If `error === "handbook_missing"`, displays
+     "Handbook file `docs/MAS-House-Rules-Handbook.md` not found in process working directory."
+
+### Ops-desk queue view (`#ops-desk`)
+
+Consumes `GET /api/ops-desk`.
+
+1. Layout:
+   - Header banner: "City Hall Ops Desk — Display Only (P1). Respond directly in herdr terminal."
+   - Queue of cards sorted by `since` ascending (longest waiting prompt at the top).
+2. Card fields:
+   - Header: Agent name, model badge, district title, and pane ID.
+   - Wait timer: badge calculating elapsed time from `waitMs` (e.g. "Waiting 3m 24s").
+   - Prompt text: high-contrast quoted text block displaying masked `prompt`.
+   - Recommendation slot: badge displaying "Recommendation: null (P1 placeholder)".
+   - Inspect link: `[Inspect Pane Screen]` pointing to `#screen?paneId={paneId}`.
+3. Constraints:
+   - Strictly no approve, deny, text, or keyboard input elements.
+4. States:
+   - Loading: skeleton card list.
+   - Empty: green check banner "All agent queues clear. No items require attention."
+   - Error: error notification banner.
 
 ## Open questions
 
-| ID | Question | Owner |
-|---|---|---|
-| Q1 | Confirm expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`. | Shaunak |
-| Q2 | Confirm log bounds 500 events and 262144 characters. | Shaunak |
-| Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini |
-| Q4 | ANSI in pane screen: strip, pass through, or later. P1 passes through. | builder-gemini |
+| ID | Question | Owner | Status |
+|---|---|---|---|
+| Q1 | Confirm expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`. | Shaunak | WAITING |
+| Q2 | Confirm log bounds 500 events and 262144 characters. | Shaunak | WAITING |
+| Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini | Decided: reuse 2000 ms during active use; back off to 10000 ms when browser tab is hidden. |
+| Q4 | ANSI in pane screen: strip, pass through, or later. P1 passes through. | builder-gemini | Decided: P1 passes through text cleanly in preformatted code block; no client-side script execution. |
 
 ## Links
 

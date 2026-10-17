@@ -8,13 +8,12 @@
 | Date | 2026-10-17 |
 | Status | Draft — waiting for Shaunak approval (PRE-01) |
 | Author (backend) | builder-grok (`grok-4.6`) |
-| Author (product/UI) | `TODO(builder-gemini)` lead draft |
+| Author (product/UI) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
 | Approval | WAITING |
 
-builder-gemini is not running yet. This file records backend requirements in full.
-UI product copy, view-level requirements, and interaction notes are marked
-`TODO(builder-gemini)`.
+This file records backend and UI product requirements in full. builder-grok owns
+the backend requirements; builder-gemini owns the UI requirements and view specifications.
 
 ## Problem
 
@@ -108,18 +107,79 @@ talks to local herdr. No telemetry and no cloud calls from this process.
 
 ## UI requirements
 
-TODO(builder-gemini): lead-draft the console views and interaction requirements
-for:
+Owner: builder-gemini. Contract: `docs/spec-sheet.md`.
 
-- Sessions list (columns, badges, "Needs you" treatment, last-seen display)
-- Pane screen view (read-only render, empty/error)
-- Filters UI (controls that call `GET /api/sessions` query params)
-- Logs view
-- Rulebook view (highlight missing district files)
-- Ops-desk queue (display only; no approve/deny)
-- How the console sits next to the P0 city page (route or toggle)
+UR-01. Route and navigation. The process serves the P0 3D city on `/` and the
+console dashboard on `/console`. Both pages display a persistent navigation bar
+with a one-click switcher between the 3D City view (`/`) and the Console (`/console`).
+The console uses client-side hash routes for tab views: `#sessions`, `#screen`,
+`#logs`, `#rulebook`, and `#ops-desk`.
 
-Do not specify write controls. Follow `docs/spec-sheet.md` JSON shapes.
+UR-02. Sessions list view (`#sessions`).
+- Renders the session rows returned by `GET /api/sessions`.
+- Columns display District (`districtTitle`), Agent Name (`name`), Tool/Model
+  (`cli` and `model` badges), Status (`statusLabel`), Working Directory (`cwd`),
+  Last Seen (`lastSeenAt` formatted as relative time), and Inspect Action.
+- Visual status badges: `working` renders green/blue; `idle` renders neutral gray;
+  `blocked` ("Needs you") renders amber/red with an alert indicator.
+- Clicking an Inspect link navigates to `#screen?paneId={paneId}`.
+- Displays an empty state message if no sessions match the applied filters.
+
+UR-03. Pane screen view (`#screen`).
+- Renders masked recent pane output from `GET /api/screen?paneId={paneId}`.
+- Header displays pane metadata: `paneId`, `name`, `districtTitle`, `model`,
+  `status`, and `updatedAt`.
+- The terminal screen displays `text` in a monospace block with fixed-width styling.
+- The view shows a truncation banner if `truncated` is true.
+- If `text` is empty, displays "No recent output recorded for this pane."
+- If the pane is not found (404) or unavailable (400/500), displays an error banner.
+- Contains no input boxes, send buttons, prompt fields, or interactive keystroke paths.
+
+UR-04. Filters UI.
+- Filter controls map directly to `GET /api/sessions` query parameters:
+  `district`, `cli`, `model`, `status`, and `q`.
+- District control provides text or select filtering for `district`.
+- CLI control filters exact CLI kind (`claude`, `grok`, `gemini`, `cursor`).
+- Model control filters model substring.
+- Status control toggles between `all`, `working`, `idle`, and `blocked`.
+- Search input `q` filters text with a 300 ms debounce before issuing requests.
+- A "Reset filters" button clears all inputs back to empty defaults.
+
+UR-05. Event logs view (`#logs`).
+- Displays event log entries from `GET /api/logs` in reverse chronological order.
+- Each row displays timestamp (`ts` formatted in local time with ms), event `type`
+  badge, agent and district identity (`name`, `districtTitle`, `paneId`),
+  status transition (`fromStatus` -> `toStatus` if present), and masked `text`.
+- Header displays buffer capacity metrics from `bounded.maxEvents` and `bounded.maxChars`.
+- Controls allow filtering the displayed log events by type and free-text search.
+
+UR-06. Rulebook view (`#rulebook`).
+- Displays parsed MAS House Rules from `GET /api/rulebook`, listing rule `id`,
+  `area`, `text`, and `check`.
+- Includes a search filter to look up rules by ID or keyword.
+- Displays the district compliance overview from `districts`.
+- For each district, displays `title`, `cwd`, and status of expected files:
+  `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`, and
+  `docs/MAS-House-Rules-Handbook.md`.
+- Required files that are missing (`missing` array) render with a red alert badge.
+- If `readable` is false, displays a warning that the district directory is inaccessible.
+
+UR-07. Ops-desk queue (`#ops-desk`).
+- Displays current blocked sessions from `GET /api/ops-desk` sorted by `since`
+  ascending (longest waiting prompt first).
+- Each card displays `paneId`, `districtTitle`, `name`, `cli`, `model`, the masked
+  prompt text, and elapsed wait duration computed from `waitMs`.
+- `recommendation` displays as null or "None (P1 placeholder)".
+- Prominently displays notice: "Ops Desk is read-only in P1. Respond directly inside herdr terminal."
+- Provides an Inspect button linking to the pane screen view.
+- Provides no approve, deny, input, or response submission controls.
+- Displays an empty state banner when `items` is empty: "All agent queues clear. No items require attention."
+
+UR-08. Polling and refresh lifecycle.
+- The console client polls the active view endpoint every 2000 ms during active use.
+- When the document becomes hidden (`document.hidden` is true), polling backs off
+  to 10000 ms to conserve system resources.
+- A manual "Refresh" button triggers an immediate reload of the active view data.
 
 ## Non-functional
 
@@ -152,17 +212,22 @@ Each criterion is testable after implementation PRs (not this docs PR).
    paths).
 8. Process with `--demo` listens on `0.0.0.0`; default listens on `127.0.0.1`.
    Command: `npm test`.
-9. TODO(builder-gemini): UI acceptance — operator can open each console view
-   and see fixture data without a write control.
+9. Operator can navigate between `/` (City) and `/console` (Console) using the top navigation switcher. Command: browser test / manual check.
+10. Operator can view all agent sessions in `/console#sessions` with correct status badges and metadata. Command: browser test / manual check.
+11. Operator can filter sessions by district, status, CLI, and search text, with the table updating via `GET /api/sessions`. Command: browser test / manual check.
+12. Operator can open the read-only screen viewer (`/console#screen?paneId=w8:p1`) and view masked pane output with zero write/input controls. Command: browser test / manual check.
+13. Operator can view the event log stream in `/console#logs` with bounded buffer indicators. Command: browser test / manual check.
+14. Operator can view handbook rules and district compliance in `/console#rulebook`, with missing required files highlighted in red. Command: browser test / manual check.
+15. Operator can view blocked items in `/console#ops-desk` sorted by wait time, with no approve, deny, or prompt inputs. Command: browser test / manual check.
 
 ## Open questions
 
-| ID | Question | Owner |
-|---|---|---|
-| Q1 | Expected files per district (see spec sheet Q1) | Shaunak |
-| Q2 | Log bounds (see spec sheet Q2) | Shaunak |
-| Q3 | Console route vs city page | TODO(builder-gemini) |
-| Q4 | Polling vs Server-Sent Events for console | TODO(builder-gemini) |
+| ID | Question | Owner | Status |
+|---|---|---|---|
+| Q1 | Expected files per district (see spec sheet Q1) | Shaunak | WAITING |
+| Q2 | Log bounds (see spec sheet Q2) | Shaunak | WAITING |
+| Q3 | Console route vs city page | builder-gemini | Decided: `/` serves 3D City canvas; `/console` serves Console dashboard; persistent top navigation bar switches between them. |
+| Q4 | Polling vs Server-Sent Events for console | builder-gemini | Decided: 2000 ms HTTP polling matching backend tick; backs off to 10000 ms when tab is hidden; P0 SSE remains on `/events` for city. |
 
 ## Links
 

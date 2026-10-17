@@ -7,13 +7,12 @@
 | Date | 2026-10-17 |
 | Status | Draft — waiting for Shaunak approval (PRE-01) |
 | Author (backend sequencing) | builder-grok (`grok-4.6`) |
-| Author (P1 → P2 → P3 product) | `TODO(builder-gemini)` |
+| Author (P1 → P2 → P3 product) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
 | Approval | WAITING |
 
-builder-gemini is not running yet. Backend sequencing below is the check
-builder-grok owns. Phase narrative for P2 and P3 UI/product is
-`TODO(builder-gemini)`.
+This file records backend sequencing and product roadmap in full. builder-grok owns
+backend sequencing; builder-gemini owns UI sequencing, navigation, and P2/P3 product roadmap.
 
 ## Gates
 
@@ -34,7 +33,7 @@ merges. Agents never merge.
 | P0 | Read-only adapter + 3D city. On `main` at `ce38de3`. | no |
 | P1 | Read-only console: sessions, screen, filters, logs, rulebook, ops desk | no |
 | P2 | Optional write path and gatekeeper recommend/approve | yes, later |
-| P3 | `TODO(builder-gemini)` | `TODO(builder-gemini)` |
+| P3 | Fleet analytics, multi-district orchestration overview, rulebook compliance history | no |
 
 ## P1
 
@@ -70,27 +69,49 @@ Backend check (this lane):
 
 ### UI sequencing
 
-TODO(builder-gemini): order the console views against B1–B8. Suggested coupling
-(backend view only; UI lead may change):
+Owner: builder-gemini.
 
-| View | Earliest backend |
-|---|---|
-| Sessions list | B1 |
-| Filters UI | B4 (can mock on B1) |
-| Pane screen | B2 |
-| Logs | B3 |
-| Rulebook | B5 |
-| Ops desk | B6 or B1 |
+Each UI view is implemented after its corresponding backend endpoint lands on
+the feature branch.
 
-TODO(builder-gemini): city page vs console navigation.
+| Seq | ID | Work | Needs backend | Description |
+|---|---|---|---|---|
+| 1 | U1 | Console shell, navigation header, route switcher (`/` <-> `/console`), and tab router | PRE-01 | Foundation for all console views |
+| 2 | U2 | Sessions list view (`#sessions`) | B1 | Renders agent table, status badges, and inspect links |
+| 3 | U3 | Filters UI on sessions view | B4 | Input controls for district, cli, model, status, and query `q` |
+| 4 | U4 | Pane screen viewer (`#screen?paneId=...`) | B2 | Read-only preformatted terminal screen with secret masking |
+| 5 | U5 | Event logs view (`#logs`) | B3 | Reverse-chronological event stream with buffer boundary indicator |
+| 6 | U6 | Ops-desk queue view (`#ops-desk`) | B6 | Blocked sessions sorted by wait time, read-only notice, inspect links |
+| 7 | U7 | Rulebook and district compliance view (`#rulebook`) | B5 | Rules table search and district missing file alerts |
+
+Navigation integration:
+- Root `/` serves the 3D City canvas (P0).
+- Route `/console` serves the full-screen Console dashboard (P1).
+- Persistent top navigation bar on both pages allows one-click switching.
+- City page agent detail cards include a "View Screen in Console" link pointing
+  directly to `/console#screen?paneId={paneId}`.
 
 ## P2
 
-From `briefs/BRIEF-mastopia-build.md`: write paths into panes, and district
-gatekeeper agents with approve rights. P1 may show a recommendation slot only
-(`recommendation: null`).
+Phase P2 introduces write paths and gatekeeper recommendation workflows.
+Work begins only after Shaunak approves a P2 brief and ADR.
 
-TODO(builder-gemini): draft P2 product sequencing, views, and acceptance.
+### P2 sequencing and views
+
+| Seq | Work | Description | Write to herdr? |
+|---|---|---|---|
+| P2-1 | Write path gating and permissions ADR | Architecture decision record specifying authentication, audit logging, and flags for write operations | no |
+| P2-2 | Gatekeeper recommendation engine | Backend service analyzing blocked prompts and suggesting safe answers (`recommendation` payload) | no |
+| P2-3 | Ops desk approval UI | Interactive action buttons (Approve / Reject / Answer) on ops-desk cards with confirmation modals | yes |
+| P2-4 | Pane interaction view | Optional terminal send-keys and send-text panel for authorized operators | yes |
+
+### P2 acceptance
+
+1. All write operations require an explicit configuration flag (`--enable-writes`)
+   and Shaunak's confirmation.
+2. Ops desk displays gatekeeper recommendations alongside blocked prompts.
+3. Operator can submit approved responses into herdr panes from the ops desk UI.
+4. Every write action is logged to the mastopia event log with operator identity.
 
 Backend note for P2 (not work now): any send path needs a new brief, an ADR if
 it changes the public API (SDLC-08), and tests that live mode still cannot send
@@ -98,7 +119,18 @@ without that flag. P1 409 handlers are the compatibility floor.
 
 ## P3
 
-TODO(builder-gemini): define P3. No backend commitment until that draft exists.
+Phase P3 expands mastopia from local monitoring to comprehensive fleet analytics
+and autonomous governance.
+
+### P3 capabilities
+
+1. Fleet analytics dashboard: agent token consumption, run durations, failure rates,
+   and model utilization trends over time.
+2. Rulebook compliance audit history: continuous background checks verifying MAS
+   handbook compliance across all local district repositories.
+3. Multi-district orchestration overview: visual pipeline showing cross-district
+   handoffs and PR status across the entire MAS agent fleet.
+4. Export and reporting: compliance report generation for lead escalations and audits.
 
 ## Dependencies
 
