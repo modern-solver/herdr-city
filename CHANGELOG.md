@@ -10,4 +10,4 @@ Each item links the PR, commit, or file it describes (CHG-04).
 - Docs: PRE-01 drafts on branch `docs/p1-prebuild` — `docs/spec-sheet.md`
   (API contract), `docs/prd.md` (backend requirements), `docs/roadmap.md`
   (backend sequencing). UI sections marked `TODO(builder-gemini)`.
-  PR link added when the docs PR opens.
+  PR: https://github.com/modern-solver/herdr-city/pull/2
