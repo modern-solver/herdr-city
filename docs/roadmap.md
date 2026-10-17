@@ -21,11 +21,12 @@ backend sequencing; builder-gemini owns UI sequencing, navigation, and P2/P3 pro
 | API | Application Programming Interface |
 | CLI | Command-Line Interface |
 | JSON | JavaScript Object Notation |
+| PRD | Product Requirements Document |
 | UI | User Interface |
 
 ## Gates
 
-PRE-01: Shaunak approves at least this spec sheet, this PRD, and this roadmap
+PRE-01: Shaunak approves at least this spec sheet, this Product Requirements Document (PRD), and this roadmap
 before any P1 implementation PR. Reviewer marks an implementation PR BLOCKED
 until that approval line exists (PRE-03).
 

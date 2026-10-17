@@ -21,7 +21,11 @@ the backend requirements; builder-gemini owns the UI requirements and view speci
 |---|---|
 | API | Application Programming Interface |
 | CLI | Command-Line Interface |
+| GUI | Graphical User Interface |
+| HTTP | Hypertext Transfer Protocol |
 | JSON | JavaScript Object Notation |
+| PC | Personal Computer |
+| SSE | Server-Sent Events |
 | UI | User Interface |
 
 ## Problem
@@ -37,14 +41,14 @@ A local, read-only console that answers: which agents are running, what they
 last showed, who is blocked, whether a district has the required MAS files, and
 what mastopia logged.
 
-Success is: an operator on Shaunak's PC can open the console, see live or
+Success is: an operator on Shaunak's Personal Computer (PC) can open the console, see live or
 fixture data, and never find a send/approve control.
 
 ## Users
 
 | User | Need |
 |---|---|
-| Shaunak | See the fleet and "Needs you" queue without touching herdr from the GUI |
+| Shaunak | See the fleet and "Needs you" queue without touching herdr from the Graphical User Interface (GUI) |
 | Reviewer / lead agents | Read pane output and rulebook presence; no write |
 
 ## Scope
@@ -151,7 +155,7 @@ UR-04. Filters UI.
 - CLI control filters exact CLI kind (`claude`, `grok`, `gemini`, `cursor`).
 - Model control filters model substring.
 - Status control toggles between `all`, `working`, `idle`, and `blocked`.
-- Search input `q` filters text with a 300 ms debounce before issuing requests.
+- Search input `q` filters text with a 300 ms debounce (pending spec Q6) before issuing requests.
 - A "Reset filters" button clears all inputs back to empty defaults.
 
 UR-05. Event logs view (`#logs`).
@@ -187,7 +191,7 @@ UR-07. Ops-desk queue (`#ops-desk`).
 UR-08. Polling and refresh lifecycle.
 - The console client polls the active view endpoint every 2000 ms during active use.
 - When the document becomes hidden (`document.hidden` is true), polling backs off
-  to 10000 ms to conserve system resources.
+  to 10000 ms (pending spec Q7) to conserve system resources.
 - A manual "Refresh" button triggers an immediate reload of the active view data.
 
 ## Non-functional
@@ -250,7 +254,7 @@ Each criterion is testable after implementation PRs (not this docs PR).
 | Q1 | Expected files per district (see spec sheet Q1) | Shaunak | WAITING |
 | Q2 | Log bounds (see spec sheet Q2) | Shaunak | WAITING |
 | Q3 | Console route vs city page | builder-gemini | Decided: `/` serves 3D City canvas; `/console` serves Console dashboard; persistent top navigation bar switches between them. |
-| Q4 | Polling vs Server-Sent Events for console | builder-gemini | Decided: 2000 ms HTTP polling matching backend tick; backs off to 10000 ms when tab is hidden; P0 SSE remains on `/events` for city. |
+| Q4 | Polling vs Server-Sent Events (SSE) for console | builder-gemini | 2000 ms decided; 10000 ms pending Q7. HTTP polling used; P0 SSE remains on `/events` for city. |
 
 ## Links
 
