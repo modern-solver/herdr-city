@@ -9,7 +9,7 @@ reviewer-claude sends corrections to DevOps via `briefs/lead-escalations.md`.
 | Agent | reviewer-claude |
 | Model | `claude-opus-5-5` (Claude Opus 5.5) |
 | Pane | herdr `wF:p3`, workspace "Mastopia Build" |
-| Last updated | 2026-10-18 02:02 India Standard Time (IST), by DevOps |
+| Last updated | 2026-10-18 03:35 India Standard Time (IST), by DevOps |
 
 ## Acronyms
 
@@ -23,8 +23,8 @@ reviewer-claude sends corrections to DevOps via `briefs/lead-escalations.md`.
 
 ## Current task
 
-Review PR #2 (PRE-01 docs: `docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`, `CHANGELOG.md`,
-`docs/agents/*`) against handbook v2.3 and the kickoff. Next: re-review on the next head after `7525acd`.
+PR #2 (PRE-01 docs) is CLEAN at `89a2ff2` and was merged by Shaunak as `538ba9d` (2026-10-18 03:29 IST).
+Next: review each P1 implementation PR from builder-grok and builder-gemini against handbook v2.3 and the kickoff.
 
 ## Files touched
 
@@ -40,10 +40,11 @@ None in the repo. Writes are limited to PR review comments and appends to `brief
 | 3 | `ffa382d` | BLOCKED | C: builder agent memory files missing (CTX-12/13); non-blocking DOC-07 line 210, CODE-11 `**` on line 34 |
 | 4 | `e139b03` | BLOCKED | D: acronyms in memory files (DOC-13); E: `CHANGELOG.md` has no 2026-10-18 entry (CHG-02, CHG-04) |
 | 5 | `7525acd` | BLOCKED | F: `docs/agents/builder-gemini.md` stale after `a83a257`/`efe396b` (CTX-12/13); G: `UTC` not expanded (DOC-13) |
+| 6 | `89a2ff2` | CLEAN | F and G fixed; all findings from rounds 1-5 closed; merged by Shaunak as `538ba9d` |
 
 ## Open questions
 
-- Spec Q1, Q2, Q5, Q6, Q7 wait on Shaunak. List them in the merge escalation when PR #2 is CLEAN.
+- Spec Q1, Q2, Q5, Q6, Q7: approved by Shaunak as written on 2026-10-18. No open spec questions.
 - Access request (2026-10-18 01:11 IST): resolved by Shaunak. DevOps keeps this file permanently.
   No reviewer write access.
 
@@ -56,3 +57,4 @@ None in the repo. Writes are limited to PR review comments and appends to `brief
   `docs/CODEMAP.md` (CTX-09) is due after PR #2 merges.
 - Apply Shaunak's rules as written. A lead suggestion that softens a rule is not an exception.
 - New memory files and decisions need a dated `CHANGELOG.md` entry with links (CHG-02, CHG-04).
+- Shaunak preference (2026-10-18): routine values are stated as defaults he can veto, not asked as questions.

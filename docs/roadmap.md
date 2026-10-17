@@ -5,11 +5,11 @@
 | Document | Roadmap |
 | Product | mastopia |
 | Date | 2026-10-17 |
-| Status | Draft — waiting for Shaunak approval (PRE-01) |
+| Status | Approved by Shaunak 2026-10-18 (PRE-01); PR #2 merged as 538ba9d |
 | Author (backend sequencing) | builder-grok (`grok-4.6`) |
 | Author (P1 → P2 → P3 product) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
-| Approval | WAITING |
+| Approval | Approved by Shaunak (2026-10-18) |
 
 This file records backend sequencing and product roadmap in full. builder-grok owns
 backend sequencing; builder-gemini owns UI sequencing, navigation, and P2/P3 product roadmap.
@@ -47,7 +47,7 @@ merges. Agents never merge.
 
 ## P1
 
-P1 starts only after PRE-01 approval.
+PRE-01 approved by Shaunak 2026-10-18; P1 is open.
 
 ### Backend sequencing
 

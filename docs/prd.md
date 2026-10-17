@@ -6,11 +6,11 @@
 | Product | mastopia |
 | Phase | P1 — read-only console |
 | Date | 2026-10-17 |
-| Status | Draft — waiting for Shaunak approval (PRE-01) |
+| Status | Approved by Shaunak 2026-10-18 (PRE-01); PR #2 merged as 538ba9d |
 | Author (backend) | builder-grok (`grok-4.6`) |
 | Author (product/UI) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
-| Approval | WAITING |
+| Approval | Approved by Shaunak (2026-10-18) |
 
 This file records backend and UI product requirements in full. builder-grok owns
 the backend requirements; builder-gemini owns the UI requirements and view specifications.
@@ -247,14 +247,16 @@ Each criterion is testable after implementation PRs (not this docs PR).
    - Step: Operator navigates to `http://127.0.0.1:7740/console#ops-desk`.
    - Expected: Queue renders blocked agent prompt cards sorted by wait duration with no action buttons.
 
-## Open questions
+## Decisions
 
 | ID | Question | Owner | Status |
 |---|---|---|---|
-| Q1 | Expected files per district (see spec sheet Q1) | Shaunak | WAITING |
-| Q2 | Log bounds (see spec sheet Q2) | Shaunak | WAITING |
+| Q1 | Expected files per district (see spec sheet Q1) | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
+| Q2 | Log bounds (see spec sheet Q2) | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
 | Q3 | Console route vs city page | builder-gemini | Decided: `/` serves 3D City canvas; `/console` serves Console dashboard; persistent top navigation bar switches between them. |
-| Q4 | Polling vs Server-Sent Events (SSE) for console | builder-gemini | 2000 ms decided; 10000 ms pending Q7. HTTP polling used; P0 SSE remains on `/events` for city. |
+| Q4 | Polling vs Server-Sent Events (SSE) for console | builder-gemini | Decided: 2000 ms; hidden tab 10000 ms (Q7 approved). HTTP polling used; P0 SSE remains on `/events` for city. |
+
+Routine values are stated as defaults Shaunak can veto, not asked as questions (Shaunak, 2026-10-18).
 
 ## Links
 
