@@ -5,8 +5,15 @@
 | Agent | builder-grok |
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
-| Lane | P1 backend (read-only adapter, JSON API, logs, filters, masking, tests) |
+| Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
 | Checkout | PR #2: `C:\Users\shaun\mastopia` branch `docs/p1-prebuild`. After merge: `C:\Users\shaun\mastopia-grok` branch `p1/grok-backend`. |
+
+## Acronyms
+
+| Acronym | Definition |
+|---|---|
+| JSON | JavaScript Object Notation |
+| API | Application Programming Interface |
 
 ## Current task
 
@@ -34,7 +41,9 @@ No P1 code until Shaunak approves PRE-01.
 
 ## Last-session learnings
 
-- PR #2 remaining docs fixes stay on `docs/p1-prebuild` in `C:\Users\shaun\mastopia`. Later work is `C:\Users\shaun\mastopia-grok` on `p1/grok-backend`.
+- PR #2 remaining docs fixes stay on `docs/p1-prebuild` in
+  `C:\Users\shaun\mastopia`. Later work is `C:\Users\shaun\mastopia-grok` on
+  `p1/grok-backend`.
 - Shared checkout once committed grok spec-sheet hunks under builder-gemini. Separate worktrees are now the rule.
 - Escalations and Coordination append to `C:\Users\shaun\mastopia\briefs\lead-escalations.md` and are not committed.
 - `gh pr edit` is allowed for titles and descriptions on `modern-solver/herdr-city` only.
