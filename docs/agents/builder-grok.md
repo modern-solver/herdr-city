@@ -18,10 +18,10 @@
 
 ## Current task
 
-PR G1: context-layer scaffolding on `p1/grok-backend`. After this PR opens, stop
-and wait. Prettier and ESLint need Shaunak APPROVED before that PR. Later PRs
-need a new branch after the branch-scope request is APPROVED. Then B1
-(`GET /api/sessions`).
+PR G1 review fixes on `p1/grok-backend` (https://github.com/modern-solver/herdr-city/pull/5).
+Staleness test uses `git ls-files` and CRLF normalize. CODEMAP lists exports
+and dependents. Changelog links PR #5. CODE-12 and SDLC-12 wait on Shaunak.
+Stop after this push. Then B1 after G1 merges and branch-scope is APPROVED.
 
 ## Files touched
 
@@ -38,6 +38,7 @@ need a new branch after the branch-scope request is APPROVED. Then B1
 - `docs/CODEMAP.md`
 - `CHANGELOG.md`
 - `docs/agents/builder-grok.md`
+- `.gitattributes`
 
 ## Open questions
 
