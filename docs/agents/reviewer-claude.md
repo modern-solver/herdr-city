@@ -9,7 +9,7 @@ reviewer-claude sends corrections to DevOps via `briefs/lead-escalations.md`.
 | Agent | reviewer-claude |
 | Model | `claude-opus-5-5` (Claude Opus 5.5) |
 | Pane | herdr `wF:p3`, workspace "Mastopia Build" |
-| Last updated | 2026-10-18 03:35 India Standard Time (IST), by DevOps |
+| Last updated | 2026-10-18 04:20 India Standard Time (IST), by DevOps |
 
 ## Acronyms
 
@@ -24,14 +24,14 @@ reviewer-claude sends corrections to DevOps via `briefs/lead-escalations.md`.
 ## Current task
 
 PR #2 (PRE-01 docs) is CLEAN at `89a2ff2` and was merged by Shaunak as `538ba9d` (2026-10-18 03:29 IST).
-Next: review each P1 implementation PR from builder-grok and builder-gemini against handbook v2.3 and the kickoff.
+Now: re-review PR #3 and PR #4 after builder fixes; review PR #5 (builder-grok, G1 context layer).
 
 ## Files touched
 
 None in the repo. Writes are limited to PR review comments and appends to `briefs/lead-escalations.md`
 (Tool manifest).
 
-## Review history (PR #2)
+## Review history
 
 | Round | Head | Verdict | Main findings |
 |---|---|---|---|
@@ -41,6 +41,8 @@ None in the repo. Writes are limited to PR review comments and appends to `brief
 | 4 | `e139b03` | BLOCKED | D: acronyms in memory files (DOC-13); E: `CHANGELOG.md` has no 2026-10-18 entry (CHG-02, CHG-04) |
 | 5 | `7525acd` | BLOCKED | F: `docs/agents/builder-gemini.md` stale after `a83a257`/`efe396b` (CTX-12/13); G: `UTC` not expanded (DOC-13) |
 | 6 | `89a2ff2` | CLEAN | F and G fixed; all findings from rounds 1-5 closed; merged by Shaunak as `538ba9d` |
+| PR #3 r1 | `cbc5975` | BLOCKED | SDLC-17 (PR description sections), DOC-04 (commit IDs in backticks) |
+| PR #4 r1 | `33d5a7a` | BLOCKED | Reduced-motion regression, CODE-05/14, CODE-04, CTX-10, SDLC-17, CODE-12, SDLC-12 |
 
 ## Open questions
 
@@ -54,7 +56,7 @@ None in the repo. Writes are limited to PR review comments and appends to `brief
   Check the Coordination section of `briefs/lead-escalations.md` before raising a LANE-02 question.
 - A missing agent memory file is a stale context-layer item and is BLOCKING (CTX-12/13).
 - Module READMEs (CTX-10) are due with the first code PR touching each folder.
-  `docs/CODEMAP.md` (CTX-09) is due after PR #2 merges.
+  `docs/CODEMAP.md` (CTX-09) is due after PR #2 merges; builder-grok adds it in PR #5.
 - Apply Shaunak's rules as written. A lead suggestion that softens a rule is not an exception.
 - New memory files and decisions need a dated `CHANGELOG.md` entry with links (CHG-02, CHG-04).
 - Shaunak preference (2026-10-18): routine values are stated as defaults he can veto, not asked as questions.

@@ -5,7 +5,7 @@
 | Document | Roadmap |
 | Product | mastopia |
 | Date | 2026-10-17 |
-| Status | Approved by Shaunak 2026-10-18 (PRE-01); PR #2 merged as 538ba9d |
+| Status | Approved by Shaunak 2026-10-18 (PRE-01); PR #2 merged as `538ba9d` |
 | Author (backend sequencing) | builder-grok (`grok-4.6`) |
 | Author (P1 → P2 → P3 product) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |

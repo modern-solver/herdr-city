@@ -29,7 +29,6 @@
 | PC | Personal Computer |
 | PR | Pull Request |
 | PRD | Product Requirements Document |
-| PRE | Pre-build Requirements Gate |
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
 | UI | User Interface |
@@ -50,15 +49,15 @@
 The builder-gemini agent touched and maintains the following files on `docs/p1-approvals`:
 
 1. `docs/spec-sheet.md`:
-   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as 538ba9d).
+   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
    - Renamed Open questions section to Decisions; set Q1, Q2, Q5, Q6, Q7 to approved as written.
    - Updated Q3 status to decided: 2000 ms; hidden tab 10000 ms (Q7 approved).
    - Added standing preference note: routine values are defaults Shaunak can veto.
 2. `docs/prd.md`:
-   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as 538ba9d).
+   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
    - Aligned Decisions section with spec sheet decisions and added defaults preference note.
 3. `docs/roadmap.md`:
-   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as 538ba9d).
+   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
    - Updated P1 section to note PRE-01 approved and P1 is open.
 4. `CHANGELOG.md`:
    - Added entries under 2026-10-18 for Shaunak's PRE-01 approval, Q1/Q2/Q5-Q7 approval,
