@@ -21,7 +21,7 @@ test('maps workspace to district and agent to robot with model badge', () => {
   const { docs, robots } = mapCity({
     now,
     lastActive: { 'w1:p1': now, 'w1:p2': now },
-    workspaces: [{ workspace_id: 'w1', label: 'herdr-city' }],
+    workspaces: [{ workspace_id: 'w1', label: 'mastopia' }],
     agents: [
       { name: 'reviewer', agent: 'claude', pane_id: 'w1:p1', workspace_id: 'w1', agent_status: 'working', tokens: { model: 'claude-opus' } },
       { name: 'tester', agent: 'claude', pane_id: 'w1:p2', workspace_id: 'w1', agent_status: 'idle', tokens: { model: 'claude-sonnet' } },
@@ -30,7 +30,7 @@ test('maps workspace to district and agent to robot with model badge', () => {
   });
   assert.equal(docs.length, 1);
   assert.equal(docs[0].id, 'w1');
-  assert.equal(docs[0].title, 'herdr-city');
+  assert.equal(docs[0].title, 'mastopia');
   assert.equal(docs[0].agents[0].id, 'main');
   assert.equal(docs[0].agents[0].name, 'reviewer');
   assert.equal(docs[0].agents[0].model, 'claude-opus');

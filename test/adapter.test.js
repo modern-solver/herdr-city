@@ -52,7 +52,7 @@ test('fixture tick maps blocked prompt and masks secrets', async () => {
   assert.ok(ask);
   assert.match(ask.input.command, /Allow this action/);
   const city = snap.districts.map((d) => d.title).sort();
-  assert.deepEqual(city, ['atlas-api', 'etl-jobs', 'handbook', 'herdr-city']);
+  assert.deepEqual(city, ['atlas-api', 'etl-jobs', 'handbook', 'mastopia']);
   await adapter.stop();
 });
 

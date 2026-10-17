@@ -1,4 +1,4 @@
-name: CI
+name: Mastopia CI
 
 on:
   push:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test:
-    name: Tests (ubuntu, Node 22)
+    name: Mastopia tests (ubuntu, Node 22)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

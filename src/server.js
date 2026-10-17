@@ -27,7 +27,7 @@ function originOk(req, hostHeader) {
 }
 
 function tokenOk(req, token) {
-  const got = req.headers['x-herdrcity-token'] || req.headers['x-skyborne-token'];
+  const got = req.headers['x-mastopia-token'] || req.headers['x-skyborne-token'];
   return got === token;
 }
 
@@ -62,7 +62,7 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     const hostname = hostHdr.split(':')[0];
     if (hostname && hostname !== '127.0.0.1' && hostname !== 'localhost') {
       res.writeHead(403, { 'Content-Type': 'text/plain' });
-      res.end('herdr-city binds 127.0.0.1 only');
+      res.end('mastopia binds 127.0.0.1 only');
       return;
     }
     const url = new URL(req.url || '/', `http://${hostHdr || '127.0.0.1'}`);
@@ -134,7 +134,7 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     }
     let buf = fs.readFileSync(filePath);
     if (filePath.endsWith('index.html')) {
-      buf = Buffer.from(buf.toString('utf8').replaceAll('__HERDRCITY_TOKEN__', token).replaceAll('__SKYBORNE_TOKEN__', token));
+      buf = Buffer.from(buf.toString('utf8').replaceAll('__MASTOPIA_TOKEN__', token).replaceAll('__SKYBORNE_TOKEN__', token));
     }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
     res.end(buf);

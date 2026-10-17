@@ -4,8 +4,8 @@
 <link rel="icon" href="./assets/icons/icon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
-<meta name="herdrcity-token" content="__HERDRCITY_TOKEN__">
-<title>herdr-city</title>
+<meta name="mastopia-token" content="__MASTOPIA_TOKEN__">
+<title>mastopia</title>
 <style>
 @font-face{font-family:'Inter';font-style:normal;font-display:swap;font-weight:100 900;src:url(./assets/fonts/inter-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:'Inter';font-style:normal;font-display:swap;font-weight:100 900;src:url(./assets/fonts/inter-latin-ext-wght-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
@@ -417,14 +417,14 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
   }
 </style>
 
-<!-- herdr-city mark (not the Skybot face): districts + a herd of agents -->
-<svg class="defs" aria-hidden="true"><symbol id="herdmark" viewBox="0 0 128 128"><path d="M36 84 L36 58 L52 50 L52 76 Z" fill="#2A3140"/><path d="M52 50 L68 58 L68 84 L52 76 Z" fill="#3D4658"/><path d="M36 58 L52 50 L68 58 L52 66 Z" fill="#5A6578"/><rect x="41" y="64" width="6" height="8" rx="1" fill="#8FF4FF"/><rect x="56" y="62" width="6" height="8" rx="1" fill="#E8A54B"/><path d="M74 80 L74 64 L88 57 L88 73 Z" fill="#2E3646"/><path d="M88 57 L100 64 L100 80 L88 73 Z" fill="#445064"/><circle cx="40" cy="40" r="5.5" fill="#F2F4F8"/><circle cx="58" cy="34" r="5.5" fill="#F2F4F8"/><circle cx="77" cy="39" r="5.5" fill="#F2F4F8"/><circle cx="40" cy="40" r="2" fill="#8FF4FF"/><circle cx="58" cy="34" r="2" fill="#8FF4FF"/><circle cx="77" cy="39" r="2" fill="#E8A54B"/></symbol></svg>
+<!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
+<svg class="defs" aria-hidden="true"><symbol id="mastmark" viewBox="0 0 128 128"><path d="M36 84 L36 58 L52 50 L52 76 Z" fill="#2A3140"/><path d="M52 50 L68 58 L68 84 L52 76 Z" fill="#3D4658"/><path d="M36 58 L52 50 L68 58 L52 66 Z" fill="#5A6578"/><rect x="41" y="64" width="6" height="8" rx="1" fill="#8FF4FF"/><rect x="56" y="62" width="6" height="8" rx="1" fill="#E8A54B"/><path d="M74 80 L74 64 L88 57 L88 73 Z" fill="#2E3646"/><path d="M88 57 L100 64 L100 80 L88 73 Z" fill="#445064"/><circle cx="40" cy="40" r="5.5" fill="#F2F4F8"/><circle cx="58" cy="34" r="5.5" fill="#F2F4F8"/><circle cx="77" cy="39" r="5.5" fill="#F2F4F8"/><circle cx="40" cy="40" r="2" fill="#8FF4FF"/><circle cx="58" cy="34" r="2" fill="#8FF4FF"/><circle cx="77" cy="39" r="2" fill="#E8A54B"/></symbol></svg>
 
-<div id="stage" aria-label="herdr-city, a live 3D sky city of herdr agents"></div>
+<div id="stage" aria-label="mastopia, a live 3D sky city of herdr agents"></div>
 
 <div class="hud">
   <div class="brand glass">
-    <h1 class="wordmark"><svg class="mark" aria-hidden="true"><use href="#herdmark"/></svg>herdr-city</h1>
+    <h1 class="wordmark"><svg class="mark" aria-hidden="true"><use href="#mastmark"/></svg>mastopia</h1>
   </div>
   <div class="toolbar glass" role="toolbar" aria-label="City controls">
     <button class="tb" id="btnConsole" aria-pressed="true" aria-label="Console"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="tip">Console (C)</span></button>
@@ -442,7 +442,7 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
   <button id="alertGo" type="button">Show me</button>
 </div>
 
-<footer class="foot"><span class="credit glass">herdr-city · city UI based on <a href="https://github.com/ishraq21/skyborne" target="_blank" rel="noopener">Skyborne</a></span><a class="gh" href="https://github.com/modern-solver/herdr-city" target="_blank" rel="noopener noreferrer" aria-label="herdr-city on GitHub" title="herdr-city on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></footer>
+<footer class="foot"><span class="credit glass">mastopia · city UI based on <a href="https://github.com/ishraq21/skyborne" target="_blank" rel="noopener">Skyborne</a></span><a class="gh" href="https://github.com/modern-solver/mastopia" target="_blank" rel="noopener noreferrer" aria-label="mastopia on GitHub" title="mastopia on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></footer>
 
 <aside class="console glass" id="console" data-open="true" aria-label="Console">
   <div class="c-head">
@@ -513,11 +513,11 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
 </aside>
 
 <div class="reelhud" id="reelHud" hidden>
-  <div class="r-top"><div class="r-brand"><svg class="r-mark" aria-hidden="true"><use href="#herdmark"/></svg><div class="wm">HERDR-CITY</div></div><span class="live on" id="reelLive"><i></i><span id="reelLiveText">LIVE</span></span><div class="r-stats" id="reelStats"></div></div>
-  <div class="r-bottom"><div class="r-foot"><span>herdr-city</span><span>local only</span></div></div>
+  <div class="r-top"><div class="r-brand"><svg class="r-mark" aria-hidden="true"><use href="#mastmark"/></svg><div class="wm">MASTOPIA</div></div><span class="live on" id="reelLive"><i></i><span id="reelLiveText">LIVE</span></span><div class="r-stats" id="reelStats"></div></div>
+  <div class="r-bottom"><div class="r-foot"><span>mastopia</span><span>local only</span></div></div>
 </div>
 
-<div class="boot" id="boot"><div class="in"><svg class="b-mark" aria-hidden="true"><use href="#herdmark"/></svg><div class="wm">HERDR-CITY</div><p id="bootMsg">Raising the districts…</p><div class="bar"><i></i></div></div></div>
+<div class="boot" id="boot"><div class="in"><svg class="b-mark" aria-hidden="true"><use href="#mastmark"/></svg><div class="wm">MASTOPIA</div><p id="bootMsg">Raising the districts…</p><div class="bar"><i></i></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -545,14 +545,14 @@ await Promise.race([
 ]).catch(() => {});
 
 /* =====================================================================
-   herdr-city — a live miniature sky city of herdr agents (any CLI).
-   The local herdr-city server polls herdr and the page reads /events;
+   mastopia — a live miniature sky city of herdr agents (any CLI).
+   The local mastopia server polls herdr and the page reads /events;
    each workspace becomes a floating district.
    City frontend adapted from Skyborne (Apache-2.0).
    ===================================================================== */
 
 // ---------------- constants ----------------
-const FRESH_MS = 45_000, ASLEEP_MS = 600_000; // idle 10 min+ is asleep/dim (herdr-city P0)
+const FRESH_MS = 45_000, ASLEEP_MS = 600_000; // idle 10 min+ is asleep/dim (mastopia P0)
 const TAU = Math.PI * 2;
 const STATUS_HEX = { working: 0x6ee7a8, done: 0x7db8ff, error: 0xff7a7a, idle: 0x8e97ad, wait: 0xffb547, asleep: 0x4b5163 };
 const STATUS_CSS = { working: '#2b7a40', done: '#3a6aa6', error: '#c0392f', idle: '#6e7179', wait: '#e8a54b', asleep: '#a3a5aa' }; // page chrome (matches the CSS tokens)
@@ -575,7 +575,7 @@ const SAFE_TEXT = {
 };
 // a 403 on an action or a detail: the server restarted and the page hasn't reconnected yet (its `ready`
 // brings the new token)
-const RESTARTED = 'herdr-city restarted. Try again in a moment';
+const RESTARTED = 'mastopia restarted. Try again in a moment';
 
 // ---------------- small utils ----------------
 const $ = (id) => document.getElementById(id);
@@ -594,8 +594,8 @@ function clockStr(ts) { const d = new Date(ts); return d.toLocaleTimeString([], 
 function agoCoarse(ts) { const s = Math.max(0, (Date.now() - ts) / 1000); return s < 60 ? 'just now' : ago(ts); }
 function hexCss(hex) { return '#' + hex.toString(16).padStart(6, '0'); }
 const store = {
-  get(k, d) { try { const v = localStorage.getItem('herdrcity.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('herdrcity.' + k, JSON.stringify(v)); } catch (e) {} },
+  get(k, d) { try { const v = localStorage.getItem('mastopia.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('mastopia.' + k, JSON.stringify(v)); } catch (e) {} },
 };
 
 // set only by the static site's build (page/demo): its recording, extra sample towns and wording; null everywhere else
@@ -624,7 +624,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
 } catch (e) {
-  $('bootMsg').textContent = 'herdr-city needs WebGL, and this browser has it turned off.';
+  $('bootMsg').textContent = 'mastopia needs WebGL, and this browser has it turned off.';
   throw e;
 }
 // Big or retina screens can ask for 15+ million pixels a frame, which is what
@@ -4908,8 +4908,8 @@ function renderCity() {
     setHTML($('sessList'), `<div class="empty-note">${live && city.hiddenPast
       ? `<b>Nothing live right now.</b><br>Sessions heard from in the last ${liveLabel()} show here; the past ones are a click away.`
       : live ? '<b>No districts yet.</b><br>Every Claude Code session you run becomes a district here. Send any session a prompt and it rises out of the clouds.'
-      : city.status === 'offline' ? '<b>Can\'t reach herdr-city.</b><br>Start it with <code>npm start -- --fixture</code> or <code>npm start</code>; this page reconnects by itself.'
-      : city.status === 'replay' ? '<b>Playing a recording…</b>' : '<b>Connecting to herdr-city…</b>'}</div>`);
+      : city.status === 'offline' ? '<b>Can\'t reach mastopia.</b><br>Start it with <code>npm start -- --fixture</code> or <code>npm start</code>; this page reconnects by itself.'
+      : city.status === 'replay' ? '<b>Playing a recording…</b>' : '<b>Connecting to mastopia…</b>'}</div>`);
     return;
   }
   if (city.renaming && renameDrawn) return; // keep the name box steady while you type
@@ -5080,7 +5080,7 @@ function renderHud(stats) {
   const hs = document.getElementById('hallSub'); if (hs) hs.textContent = prefs.mayor ? 'Mayor ' + prefs.mayor : 'Mayor';
   $('cUpdated').textContent = city.lastData ? 'Updated ' + (agoCoarse(city.lastData) === 'just now' ? 'just now' : agoCoarse(city.lastData) + ' ago') : 'Waiting for data';
   const rk = `${stats.districts}|${stats.work}|${fmtTokens(stats.tok)}`;
-  if (rk !== ringKey) { ringKey = rk; drawRing(`HERDR-CITY   ✦   ${stats.districts} DISTRICT${stats.districts === 1 ? '' : 'S'}   ✦   ${stats.work} AGENT${stats.work === 1 ? '' : 'S'} WORKING`); }
+  if (rk !== ringKey) { ringKey = rk; drawRing(`MASTOPIA   ✦   ${stats.districts} DISTRICT${stats.districts === 1 ? '' : 'S'}   ✦   ${stats.work} AGENT${stats.work === 1 ? '' : 'S'} WORKING`); }
   // the Mayor's alert
   const al = $('alert');
   const WAIT_WHAT = { AskUserQuestion: 'a question', ExitPlanMode: 'a plan to review' };  // not yes-or-no requests: say what they are
@@ -5488,7 +5488,7 @@ function step(now) {
 // The city's data comes from one source at a time: the local Skyborne server (live), a recording
 // (player), or, in the dev preview only, a fake city (window.__skyborneFake, from dev/fake-city.js).
 // Each source calls on.docs(Map id → doc), on.names({id: name}) and on.status(status).
-let TOKEN = document.querySelector('meta[name="herdrcity-token"]')?.content || '';  // this launch's; `ready` brings a restarted server's
+let TOKEN = document.querySelector('meta[name="mastopia-token"]')?.content || '';  // this launch's; `ready` brings a restarted server's
 const DETAIL_FETCH_MS = 30_000;  // generous: a detail is built on this machine; past this the request gives up
 const giveUp = () => (typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(DETAIL_FETCH_MS) : undefined);
 const SHOWN = 60;                 // districts in the city at most: the most recently active sessions
@@ -5592,22 +5592,22 @@ function liveSource() {
       es.addEventListener('error', () => { fresh = null; on.asks([]); if (city.status === 'live') on.status('connecting'); losing(on); });
     },
     async rename(id, name) {
-      const r = await fetch('/api/names', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Herdrcity-Token': TOKEN }, body: JSON.stringify({ id, name }) });
+      const r = await fetch('/api/names', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Mastopia-Token': TOKEN }, body: JSON.stringify({ id, name }) });
       if (!r.ok) throw Object.assign(new Error('rename'), { code: r.status });
     },
     async answer(id, decision) {
-      const r = await fetch('/api/answer', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Herdrcity-Token': TOKEN }, body: JSON.stringify({ id, decision }) });
+      const r = await fetch('/api/answer', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Mastopia-Token': TOKEN }, body: JSON.stringify({ id, decision }) });
       if (!r.ok) throw Object.assign(new Error('answer'), { code: r.status, reason: (await r.json().catch(() => ({}))).reason });
     },
     // a session's whole record, and one step in full (GET /api/session, /api/step: the token, like actions)
     // a stalled server must not leave the panel on "Loading…": the request gives up with an error, and opening it again tries again
     async detail(id) {
-      const r = await fetch('/api/session?id=' + encodeURIComponent(id), { headers: { 'X-Herdrcity-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
+      const r = await fetch('/api/session?id=' + encodeURIComponent(id), { headers: { 'X-Mastopia-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
       if (!r.ok) throw Object.assign(new Error('detail'), { code: r.status });
       return r.json();
     },
     async step(sid, id) {
-      const r = await fetch(`/api/step?session=${encodeURIComponent(sid)}&id=${encodeURIComponent(id)}`, { headers: { 'X-Herdrcity-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
+      const r = await fetch(`/api/step?session=${encodeURIComponent(sid)}&id=${encodeURIComponent(id)}`, { headers: { 'X-Mastopia-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
       if (r.status === 404) return null;
       if (!r.ok) throw Object.assign(new Error('step'), { code: r.status });
       return r.json();

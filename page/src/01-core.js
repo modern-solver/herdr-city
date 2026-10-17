@@ -18,14 +18,14 @@ await Promise.race([
 ]).catch(() => {});
 
 /* =====================================================================
-   herdr-city — a live miniature sky city of herdr agents (any CLI).
-   The local herdr-city server polls herdr and the page reads /events;
+   mastopia — a live miniature sky city of herdr agents (any CLI).
+   The local mastopia server polls herdr and the page reads /events;
    each workspace becomes a floating district.
    City frontend adapted from Skyborne (Apache-2.0).
    ===================================================================== */
 
 // ---------------- constants ----------------
-const FRESH_MS = 45_000, ASLEEP_MS = 600_000; // idle 10 min+ is asleep/dim (herdr-city P0)
+const FRESH_MS = 45_000, ASLEEP_MS = 600_000; // idle 10 min+ is asleep/dim (mastopia P0)
 const TAU = Math.PI * 2;
 const STATUS_HEX = { working: 0x6ee7a8, done: 0x7db8ff, error: 0xff7a7a, idle: 0x8e97ad, wait: 0xffb547, asleep: 0x4b5163 };
 const STATUS_CSS = { working: '#2b7a40', done: '#3a6aa6', error: '#c0392f', idle: '#6e7179', wait: '#e8a54b', asleep: '#a3a5aa' }; // page chrome (matches the CSS tokens)
@@ -48,7 +48,7 @@ const SAFE_TEXT = {
 };
 // a 403 on an action or a detail: the server restarted and the page hasn't reconnected yet (its `ready`
 // brings the new token)
-const RESTARTED = 'herdr-city restarted. Try again in a moment';
+const RESTARTED = 'mastopia restarted. Try again in a moment';
 
 // ---------------- small utils ----------------
 const $ = (id) => document.getElementById(id);
@@ -67,8 +67,8 @@ function clockStr(ts) { const d = new Date(ts); return d.toLocaleTimeString([], 
 function agoCoarse(ts) { const s = Math.max(0, (Date.now() - ts) / 1000); return s < 60 ? 'just now' : ago(ts); }
 function hexCss(hex) { return '#' + hex.toString(16).padStart(6, '0'); }
 const store = {
-  get(k, d) { try { const v = localStorage.getItem('herdrcity.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('herdrcity.' + k, JSON.stringify(v)); } catch (e) {} },
+  get(k, d) { try { const v = localStorage.getItem('mastopia.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('mastopia.' + k, JSON.stringify(v)); } catch (e) {} },
 };
 
 // set only by the static site's build (page/demo): its recording, extra sample towns and wording; null everywhere else
@@ -97,7 +97,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
 } catch (e) {
-  $('bootMsg').textContent = 'herdr-city needs WebGL, and this browser has it turned off.';
+  $('bootMsg').textContent = 'mastopia needs WebGL, and this browser has it turned off.';
   throw e;
 }
 // Big or retina screens can ask for 15+ million pixels a frame, which is what

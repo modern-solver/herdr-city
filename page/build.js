@@ -30,8 +30,8 @@ const html = `<!doctype html>
 <link rel="icon" href="./assets/icons/icon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
-<meta name="herdrcity-token" content="__HERDRCITY_TOKEN__">
-<title>herdr-city</title>
+<meta name="mastopia-token" content="__MASTOPIA_TOKEN__">
+<title>mastopia</title>
 <style>
 ${faces.join('\n')}
 body{margin:0;background:#9fc3dd}[hidden]{display:none!important}

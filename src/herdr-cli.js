@@ -20,7 +20,7 @@ export function assertReadOnly(args) {
   }
   const key = args.slice(0, 2).join(' ');
   if (!ALLOWED.has(key)) {
-    throw new Error(`herdr-city P0 only allows read commands; got: ${args.join(' ')}`);
+    throw new Error(`mastopia P0 only allows read commands; got: ${args.join(' ')}`);
   }
 }
 

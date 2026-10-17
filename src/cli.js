@@ -5,7 +5,7 @@ import { createAdapter } from './adapter.js';
 import { createServer } from './server.js';
 
 function parseArgs(argv) {
-  const out = { fixture: false, port: Number(process.env.HERDR_CITY_PORT || 7740), host: '127.0.0.1', herdr: process.env.HERDR_BIN || 'herdr' };
+  const out = { fixture: false, port: Number(process.env.MASTOPIA_PORT || 7740), host: '127.0.0.1', herdr: process.env.HERDR_BIN || 'herdr' };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--fixture' || a === '--fake') out.fixture = true;
@@ -13,21 +13,21 @@ function parseArgs(argv) {
     else if (a === '--host') {
       const h = argv[++i];
       if (h !== '127.0.0.1' && h !== 'localhost') {
-        console.error('herdr-city only binds 127.0.0.1');
+        console.error('mastopia only binds 127.0.0.1');
         process.exit(2);
       }
       out.host = '127.0.0.1';
     } else if (a === '--herdr') out.herdr = argv[++i];
     else if (a === '--help' || a === '-h') out.help = true;
   }
-  if (process.env.HERDR_CITY_MODE === 'fixture') out.fixture = true;
+  if (process.env.MASTOPIA_MODE === 'fixture') out.fixture = true;
   return out;
 }
 
 async function main() {
   const opts = parseArgs(process.argv);
   if (opts.help) {
-    console.log(`herdr-city — local city GUI for herdr agents (read-only)
+    console.log(`mastopia — local city GUI for herdr agents (read-only)
 
 Usage:
   node src/cli.js [--fixture] [--port 7740]
@@ -52,7 +52,7 @@ Fixture demo:
   await adapter.start();
   const server = createServer({ adapter, host: opts.host, port: opts.port });
   const info = await server.listen();
-  console.log(`herdr-city ${opts.fixture ? 'fixture' : 'live'} on ${info.url} (127.0.0.1 only, no telemetry)`);
+  console.log(`mastopia ${opts.fixture ? 'fixture' : 'live'} on ${info.url} (127.0.0.1 only, no telemetry)`);
   console.log('Read-only: never sends keys and never runs herdr server stop.');
 }
 

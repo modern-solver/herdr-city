@@ -1,5 +1,5 @@
 {
-  "name": "herdr-city",
+  "name": "mastopia",
   "version": "0.1.0",
   "private": true,
   "license": "Apache-2.0",
@@ -15,6 +15,6 @@
     "test": "node --test test/*.test.js"
   },
   "bin": {
-    "herdr-city": "src/cli.js"
+    "mastopia": "src/cli.js"
   }
 }

@@ -1,8 +1,8 @@
-# herdr-city
+# mastopia
 
 Local web GUI that shows every [herdr](https://herdr.dev) agent as a live 3D sky city. Model-agnostic: Claude, Grok, Gemini, Codex, or any CLI herdr can detect.
 
-The city and console frontend are derived from [Skyborne](https://github.com/ishraq21/skyborne) (Apache-2.0). Skyborne ingests Claude Code hooks; herdr-city replaces that with a **read-only herdr adapter**. New name and logo (Skyborne's TRADEMARK.md forbids reusing its marks). See `NOTICE` and `LICENSE`.
+The city and console frontend are derived from [Skyborne](https://github.com/ishraq21/skyborne) (Apache-2.0). Skyborne ingests Claude Code hooks; mastopia replaces that with a **read-only herdr adapter**. New name and logo (Skyborne's TRADEMARK.md forbids reusing its marks). See `NOTICE` and `LICENSE`.
 
 **P0 is read-only.** The process never runs `herdr pane send-keys`, never `herdr server stop`, and never writes to herdr. No telemetry, no cloud calls. The HTTP server binds **127.0.0.1 only**.
 
@@ -32,8 +32,8 @@ Approvals from the GUI are **not** in P0. Answer the prompt in the herdr pane. P
 CI and first-run demos use checked-in fixtures:
 
 ```powershell
-git clone https://github.com/modern-solver/herdr-city.git
-cd herdr-city
+git clone https://github.com/modern-solver/mastopia.git
+cd mastopia
 npm run fixture
 ```
 
@@ -58,7 +58,7 @@ npm run fixture
 3. From this repo:
 
    ```powershell
-   cd path\to\herdr-city
+   cd path\to\mastopia
    npm run build:page
    node .\src\cli.js
    ```
@@ -112,7 +112,7 @@ Adapter parsing is written against herdr's published CLI/socket docs and source 
 
 `herdr pane read` prints UTF-8 text (not JSON) by default; if JSON with `result.read.text` appears, that is used. Workspace labels come from optional `herdr workspace list` (`WorkspaceInfo.label`).
 
-**Open questions:** herdr does not expose “idle for N minutes” on `AgentInfo`, so asleep/dim is measured from when herdr-city last saw `working`/`blocked` (fixture agents may set `_idle_for_ms` for demos). `unknown` is treated as idle unless the pane looks like an error. Token usage is not in P0.
+**Open questions:** herdr does not expose “idle for N minutes” on `AgentInfo`, so asleep/dim is measured from when mastopia last saw `working`/`blocked` (fixture agents may set `_idle_for_ms` for demos). `unknown` is treated as idle unless the pane looks like an error. Token usage is not in P0.
 
 ## License
 

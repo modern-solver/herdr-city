@@ -176,8 +176,8 @@ function renderCity() {
     setHTML($('sessList'), `<div class="empty-note">${live && city.hiddenPast
       ? `<b>Nothing live right now.</b><br>Sessions heard from in the last ${liveLabel()} show here; the past ones are a click away.`
       : live ? '<b>No districts yet.</b><br>Every Claude Code session you run becomes a district here. Send any session a prompt and it rises out of the clouds.'
-      : city.status === 'offline' ? '<b>Can\'t reach herdr-city.</b><br>Start it with <code>npm start -- --fixture</code> or <code>npm start</code>; this page reconnects by itself.'
-      : city.status === 'replay' ? '<b>Playing a recording…</b>' : '<b>Connecting to herdr-city…</b>'}</div>`);
+      : city.status === 'offline' ? '<b>Can\'t reach mastopia.</b><br>Start it with <code>npm start -- --fixture</code> or <code>npm start</code>; this page reconnects by itself.'
+      : city.status === 'replay' ? '<b>Playing a recording…</b>' : '<b>Connecting to mastopia…</b>'}</div>`);
     return;
   }
   if (city.renaming && renameDrawn) return; // keep the name box steady while you type
@@ -348,7 +348,7 @@ function renderHud(stats) {
   const hs = document.getElementById('hallSub'); if (hs) hs.textContent = prefs.mayor ? 'Mayor ' + prefs.mayor : 'Mayor';
   $('cUpdated').textContent = city.lastData ? 'Updated ' + (agoCoarse(city.lastData) === 'just now' ? 'just now' : agoCoarse(city.lastData) + ' ago') : 'Waiting for data';
   const rk = `${stats.districts}|${stats.work}|${fmtTokens(stats.tok)}`;
-  if (rk !== ringKey) { ringKey = rk; drawRing(`HERDR-CITY   ✦   ${stats.districts} DISTRICT${stats.districts === 1 ? '' : 'S'}   ✦   ${stats.work} AGENT${stats.work === 1 ? '' : 'S'} WORKING`); }
+  if (rk !== ringKey) { ringKey = rk; drawRing(`MASTOPIA   ✦   ${stats.districts} DISTRICT${stats.districts === 1 ? '' : 'S'}   ✦   ${stats.work} AGENT${stats.work === 1 ? '' : 'S'} WORKING`); }
   // the Mayor's alert
   const al = $('alert');
   const WAIT_WHAT = { AskUserQuestion: 'a question', ExitPlanMode: 'a plan to review' };  // not yes-or-no requests: say what they are
@@ -756,7 +756,7 @@ function step(now) {
 // The city's data comes from one source at a time: the local Skyborne server (live), a recording
 // (player), or, in the dev preview only, a fake city (window.__skyborneFake, from dev/fake-city.js).
 // Each source calls on.docs(Map id → doc), on.names({id: name}) and on.status(status).
-let TOKEN = document.querySelector('meta[name="herdrcity-token"]')?.content || '';  // this launch's; `ready` brings a restarted server's
+let TOKEN = document.querySelector('meta[name="mastopia-token"]')?.content || '';  // this launch's; `ready` brings a restarted server's
 const DETAIL_FETCH_MS = 30_000;  // generous: a detail is built on this machine; past this the request gives up
 const giveUp = () => (typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(DETAIL_FETCH_MS) : undefined);
 const SHOWN = 60;                 // districts in the city at most: the most recently active sessions
@@ -860,22 +860,22 @@ function liveSource() {
       es.addEventListener('error', () => { fresh = null; on.asks([]); if (city.status === 'live') on.status('connecting'); losing(on); });
     },
     async rename(id, name) {
-      const r = await fetch('/api/names', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Herdrcity-Token': TOKEN }, body: JSON.stringify({ id, name }) });
+      const r = await fetch('/api/names', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Mastopia-Token': TOKEN }, body: JSON.stringify({ id, name }) });
       if (!r.ok) throw Object.assign(new Error('rename'), { code: r.status });
     },
     async answer(id, decision) {
-      const r = await fetch('/api/answer', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Herdrcity-Token': TOKEN }, body: JSON.stringify({ id, decision }) });
+      const r = await fetch('/api/answer', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Mastopia-Token': TOKEN }, body: JSON.stringify({ id, decision }) });
       if (!r.ok) throw Object.assign(new Error('answer'), { code: r.status, reason: (await r.json().catch(() => ({}))).reason });
     },
     // a session's whole record, and one step in full (GET /api/session, /api/step: the token, like actions)
     // a stalled server must not leave the panel on "Loading…": the request gives up with an error, and opening it again tries again
     async detail(id) {
-      const r = await fetch('/api/session?id=' + encodeURIComponent(id), { headers: { 'X-Herdrcity-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
+      const r = await fetch('/api/session?id=' + encodeURIComponent(id), { headers: { 'X-Mastopia-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
       if (!r.ok) throw Object.assign(new Error('detail'), { code: r.status });
       return r.json();
     },
     async step(sid, id) {
-      const r = await fetch(`/api/step?session=${encodeURIComponent(sid)}&id=${encodeURIComponent(id)}`, { headers: { 'X-Herdrcity-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
+      const r = await fetch(`/api/step?session=${encodeURIComponent(sid)}&id=${encodeURIComponent(id)}`, { headers: { 'X-Mastopia-Token': TOKEN }, cache: 'no-store', signal: giveUp() });
       if (r.status === 404) return null;
       if (!r.ok) throw Object.assign(new Error('step'), { code: r.status });
       return r.json();

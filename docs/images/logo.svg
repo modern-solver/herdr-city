@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="herdr-city">
-  <!-- Original herdr-city mark: isometric districts + a small herd of agents. Not the Skybot face. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="mastopia">
+  <!-- Original mastopia mark: isometric districts + a small herd of agents. Not the Skybot face. -->
   <rect width="128" height="128" rx="28" fill="#1B1D22"/>
   <g fill="none" stroke="#3A3F4A" stroke-width="1.5">
     <path d="M18 86 L64 62 L110 86 L64 110 Z"/>
