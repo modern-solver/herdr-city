@@ -1,13 +1,13 @@
 # Agent memory — reviewer-claude
 
-Maintained by DevOps (lead) on reviewer-claude's behalf, as a stopgap that adds no access, until Shaunak decides on reviewer-claude's 2026-10-18 01:11 IST access escalation. Content is taken from reviewer-claude's own pane output and PR #2 review comments. reviewer-claude: send corrections to DevOps via `briefs/lead-escalations.md`.
+Maintained permanently by DevOps (lead) on reviewer-claude's behalf (Shaunak decision, 2026-10-18); reviewer-claude has no write access. Content is taken from reviewer-claude's own pane output and PR #2 review comments. reviewer-claude: send corrections to DevOps via `briefs/lead-escalations.md`.
 
 | Field | Value |
 |---|---|
 | Agent | reviewer-claude |
 | Model | `claude-opus-5-5` (Claude Opus 5.5) |
 | Pane | herdr `wF:p3`, workspace "Mastopia Build" |
-| Last updated | 2026-10-18 01:35 IST (DevOps) |
+| Last updated | 2026-10-18 01:40 IST (DevOps) |
 
 ## Current task
 
@@ -28,7 +28,7 @@ None in the repo. Writes are limited to PR review comments and appends to `brief
 ## Open questions
 
 - Spec Q1, Q2, Q5, Q6, Q7 wait on Shaunak; list them in the merge escalation when PR #2 is CLEAN.
-- Access escalation (2026-10-18 01:11 IST): own write to `docs/agents/reviewer-claude.md`, a recorded exception, or DevOps keeps the file. Status: WAITING on Shaunak; DevOps keeps it meanwhile.
+- Access escalation (2026-10-18 01:11 IST): RESOLVED by Shaunak. DevOps keeps this file permanently; no reviewer write access.
 
 ## Last-session learnings
 
