@@ -5,6 +5,11 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Docs: Context-layer CODEMAP (`docs/CODEMAP.md`), regen script
+  (`scripts/codemap.js`, `npm run codemap`), staleness test
+  (`test/codemap.test.js`), and module READMEs under `src/`, `test/`, `page/`,
+  `fixtures/`, `config/`, `web/`, `scripts/` (CTX-09, CTX-10).
+  Branch: `p1/grok-backend`.
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.

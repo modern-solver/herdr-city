@@ -12,6 +12,7 @@
     "start": "node page/build.js && node src/cli.js",
     "fixture": "node page/build.js && node src/cli.js --fixture",
     "build:page": "node page/build.js",
+    "codemap": "node scripts/codemap.js",
     "test": "node --test test/*.test.js"
   },
   "bin": {
