@@ -1,0 +1,46 @@
+{
+  "clis": [
+    {
+      "id": "claude",
+      "matchKinds": ["claude", "claude-code", "anthropic"],
+      "matchTitles": ["claude"],
+      "patterns": [
+        { "type": "regex", "value": "Do you want to (?:proceed|make this edit)\\??([\\s\\S]{0,600})" },
+        { "type": "contains", "value": "Bash command" },
+        { "type": "contains", "value": "Allow this action" },
+        { "type": "regex", "value": "(?<prompt>Claude (?:needs|is requesting) permission[\\s\\S]{0,500})" },
+        { "type": "contains", "value": "Yes, and don't ask again" }
+      ]
+    },
+    {
+      "id": "grok",
+      "matchKinds": ["grok", "xai"],
+      "matchTitles": ["grok"],
+      "patterns": [
+        { "type": "regex", "value": "(?<prompt>Allow this (?:action|command|edit)\\??[\\s\\S]{0,500})" },
+        { "type": "contains", "value": "Needs your approval" },
+        { "type": "contains", "value": "Approve this tool" }
+      ]
+    },
+    {
+      "id": "gemini",
+      "matchKinds": ["gemini", "google"],
+      "matchTitles": ["gemini"],
+      "patterns": [
+        { "type": "regex", "value": "(?<prompt>Allow execution\\??[\\s\\S]{0,500})" },
+        { "type": "contains", "value": "Gemini CLI wants to run" },
+        { "type": "contains", "value": "Do you want to allow" }
+      ]
+    },
+    {
+      "id": "generic",
+      "matchKinds": ["*"],
+      "matchTitles": [],
+      "patterns": [
+        { "type": "contains", "value": "waiting for approval" },
+        { "type": "contains", "value": "(y/n)" },
+        { "type": "contains", "value": "[y/N]" }
+      ]
+    }
+  ]
+}

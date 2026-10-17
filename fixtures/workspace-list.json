@@ -1,0 +1,12 @@
+{
+  "id": "cli:workspace:list",
+  "result": {
+    "type": "workspace_list",
+    "workspaces": [
+      { "workspace_id": "w1", "number": 1, "label": "herdr-city", "focused": true, "pane_count": 2, "tab_count": 1, "active_tab_id": "w1:t1", "agent_status": "working" },
+      { "workspace_id": "w8", "number": 8, "label": "atlas-api", "focused": false, "pane_count": 1, "tab_count": 1, "active_tab_id": "w8:t1", "agent_status": "blocked" },
+      { "workspace_id": "wD", "number": 13, "label": "handbook", "focused": false, "pane_count": 1, "tab_count": 1, "active_tab_id": "wD:t1", "agent_status": "idle" },
+      { "workspace_id": "w2", "number": 2, "label": "etl-jobs", "focused": false, "pane_count": 1, "tab_count": 1, "active_tab_id": "w2:t1", "agent_status": "working" }
+    ]
+  }
+}

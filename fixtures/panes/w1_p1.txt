@@ -1,0 +1,7 @@
+claude · reviewer
+Working on src/adapter.js
+
+Read src/herdr-cli.js
+Thinking about JSON extraction
+
+No secrets here.

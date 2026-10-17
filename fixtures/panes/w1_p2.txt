@@ -1,0 +1,3 @@
+claude · tester
+Idle. Waiting for the next prompt.
+❯
