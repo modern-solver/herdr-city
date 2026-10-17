@@ -386,10 +386,10 @@ the same prompt text.
 
 Handbook rules plus per-district file presence.
 
-200 body:
-
 HTTP status is 200 when the handbook is present and when it is missing. Missing
 handbook is not 404. Body field `error` is `null` or `"handbook_missing"`.
+
+200 body:
 
 ```json
 {

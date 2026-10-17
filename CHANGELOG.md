@@ -6,7 +6,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
 ## 2026-10-17
 
 - Decision: P1 is a read-only console. No send-keys, send-text, or prompt path.
-  Source: `briefs/BRIEF-mastopia-build.md`.
+  PR: https://github.com/modern-solver/herdr-city/pull/2
 - Docs: PRE-01 drafts completed on branch `docs/p1-prebuild` — builder-grok drafted
   `docs/spec-sheet.md` (API contract), `docs/prd.md` (backend requirements), and
   `docs/roadmap.md` (backend sequencing); builder-gemini added UI requirements,
