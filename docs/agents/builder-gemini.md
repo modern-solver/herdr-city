@@ -16,8 +16,11 @@
 | ANSI | American National Standards Institute |
 | API | Application Programming Interface |
 | CLI | Command-Line Interface |
+| CTX | Context Layer Rule |
+| DOC | Documentation Rule |
 | GUI | Graphical User Interface |
 | HTTP | Hypertext Transfer Protocol |
+| IST | India Standard Time |
 | JSON | JavaScript Object Notation |
 | MAS | Modern Age Solutions |
 | PC | Personal Computer |
@@ -30,10 +33,11 @@
 ## Current task
 
 - Phase: PRE-01 documentation before implementation code.
-- Task: Complete and maintain User Interface (UI) sections for Pull Request (PR) #2
-  on branch `docs/p1-prebuild`.
+- Task: Complete and maintain User Interface (UI) sections and address review findings
+  for Pull Request (PR) #2 on branch `docs/p1-prebuild`.
 - Scope: UI view specifications, UI product requirements, UI milestones (P1 to P3),
-  and acceptance criteria steps for the read-only console.
+  acceptance criteria steps, agent memory file maintenance (CTX-12), and coordination.
+- Status: Resolving round 5 review findings (F and G) to unblock PR #2.
 
 ## Files touched
 
@@ -54,7 +58,12 @@ The builder-gemini agent touched and maintains the following files on `docs/p1-p
    - Specified ANSI pass-through behavior for pane screen view.
    - Added demo mode badge to the shell navigation header.
    - Formatted empty, loading, and error states across all views.
-4. `docs/agents/builder-gemini.md`:
+4. `CHANGELOG.md`:
+   - Added dated entry `## 2026-10-18` documenting the addition of agent memory files and
+     the decision that DevOps permanently maintains `docs/agents/reviewer-claude.md`.
+5. `docs/agents/reviewer-claude.md`:
+   - Committed on behalf of DevOps (who maintains reviewer memory per Shaunak decision).
+6. `docs/agents/builder-gemini.md`:
    - Agent memory file tracking active task, touched files, open questions, and learnings.
 
 ## Open questions
