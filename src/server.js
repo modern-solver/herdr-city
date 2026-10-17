@@ -127,7 +127,8 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       return;
     }
 
-    let filePath = path.join(webDir, url.pathname === '/' ? 'index.html' : url.pathname);
+    const isIndex = url.pathname === '/' || url.pathname === '/console';
+    let filePath = path.join(webDir, isIndex ? 'index.html' : url.pathname);
     if (!filePath.startsWith(webDir)) { res.writeHead(403); res.end(); return; }
     if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
       res.writeHead(404); res.end('not found'); return;
