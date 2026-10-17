@@ -26,6 +26,8 @@ the backend against it. builder-gemini implements views against it.
 | JSON | JavaScript Object Notation |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
+| JWT | JSON Web Token |
+| PRD | Product Requirements Document |
 
 ## Purpose
 
@@ -195,7 +197,7 @@ These stay. Console views do not depend on them.
 
 | Method | Path | Status | Body |
 |---|---|---|---|
-| GET | `/health` | 200 | `{ "ok": true, "mode": "live"\|"fixture"\|"demo" }` |
+| GET | `/health` | 200 | `{ "ok": true, "mode": "live"\|"fixture" }` |
 | GET | `/api/city` | 200 | P0 snapshot (`docs`, `districts`, `asks`, `robots`, `mode`, `error`) |
 | GET | `/api/snapshot` | 200 | alias of `/api/city` |
 | GET | `/api/agents` | 200 | `{ "robots": [...] }` P0 robot list |
@@ -205,7 +207,7 @@ These stay. Console views do not depend on them.
 | POST | `/api/names` | 200/403 | local display names for the city; not herdr |
 | POST | `/api/answer` | 409 | read-only |
 
-P1 extends `/health` with `host` (bind address string) so tests can assert demo bind.
+P1 extends `/health` with mode `demo` and `host` (bind address string) so tests can assert demo bind. Mode `demo` is P1-only.
 
 ### GET /api/sessions
 
@@ -434,8 +436,9 @@ Parser:
    HTTP status is 200 and `error` is `null`.
 2. Parse markdown tables whose header row is `ID`, `Rule`, `Check` (any column
    order). Each data row becomes one rule.
-3. Parse list items that match `^[A-Z]+-\\d+:` (example: `SDLC-01:`) as rules
-   with `check` null.
+3. Strip a leading markdown list prefix (`- ` or `* `) from each line, then
+   parse lines that match `^[A-Z]+-\d+:` (example: `SDLC-01:`) as rules with
+   `check` null. The `- ` prefix is stripped before matching.
 4. `handbook.version` and `handbook.date` come from the metadata table at the
    top of the handbook (`Version`, `Date`).
 
@@ -517,7 +520,7 @@ Replacement string: `[redacted]` (export `MASK`).
 
 P1 does not add new token shapes unless a test fixture needs one. Existing
 shapes stay: `sk-`, `xai-`, `AIza`, `ghp_`, `gho_`, `github_pat_`, Slack `xox*`,
-`AKIA`, JWT `eyJ…`, `Bearer …`, and `token|secret|password|api_key=value`.
+`AKIA`, JSON Web Token (JWT) `eyJ…`, `Bearer …`, and `token|secret|password|api_key=value`.
 
 A test MUST fail if `GET /api/screen` or `GET /api/logs` returns a string that
 contains `ghp_` from the fixture pane.
@@ -760,7 +763,7 @@ Consumes `GET /api/ops-desk`.
 |---|---|---|---|
 | Q1 | Confirm expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`. | Shaunak | WAITING |
 | Q2 | Confirm log bounds 500 events and 262144 characters. | Shaunak | WAITING |
-| Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini | Decided: reuse 2000 ms during active use; back off to 10000 ms when browser tab is hidden. |
+| Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini | 2000 ms decided; 10000 ms pending Q7. |
 | Q4 | ANSI in pane screen: strip, pass through, or later. P1 passes through. | builder-gemini | Decided: P1 passes through text cleanly in preformatted code block; no client-side script execution. |
 | Q5 | Confirm screen text cap 80000 characters. | Shaunak | WAITING |
 | Q6 | Confirm search debounce 300 ms. | Shaunak | WAITING |
@@ -770,6 +773,6 @@ Consumes `GET /api/ops-desk`.
 
 - Brief: `briefs/BRIEF-mastopia-build.md` (local, not committed)
 - Handbook: `docs/MAS-House-Rules-Handbook.md` (local, not committed)
-- PRD: `docs/prd.md`
+- Product Requirements Document (PRD): `docs/prd.md`
 - Roadmap: `docs/roadmap.md`
 - P0 README JSON API: `README.md`
