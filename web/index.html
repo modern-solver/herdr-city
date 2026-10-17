@@ -412,6 +412,9 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
     .srow{ grid-template-columns: 34px 7px minmax(0, 64px) minmax(0, 1fr) auto; }
   }
   @media (max-width: 380px){ .foot .follow{ padding: 0; width: 31px; justify-content: center; } .follow span{ display: none; } }  /* a small phone: the logo alone */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  }
   /* P1 Console UI styles */
   .console-shell{
     position: fixed; inset: 0; background: #0e1117; color: #c9d1d9;
@@ -480,7 +483,7 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
     <h1 class="wordmark"><svg class="mark" aria-hidden="true"><use href="#mastmark"/></svg>mastopia</h1>
   </div>
   <div class="toolbar glass" role="toolbar" aria-label="City controls">
-    <a href="/console" class="tb route-switcher" id="btnGoConsole" aria-label="Open Console dashboard" title="Open Console dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="tip">Console →</span></a>
+    <a href="/console" class="tb route-switcher" id="btnGoConsole" aria-label="Open Console dashboard" title="Open Console dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span class="tip">Console UI →</span></a>
     <button class="tb" id="btnConsole" aria-pressed="true" aria-label="Console"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="tip">Console (C)</span></button>
     <button class="tb" id="btnTime" aria-label="Time of day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="tip" id="tipTime">Time: auto (T)</span></button>
     <button class="tb" id="btnSafe" aria-pressed="false" aria-label="Safe to film"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tip">Safe to film (S)</span></button>
@@ -5834,34 +5837,150 @@ if (playUrl && !DEMO) {
   } catch (e) {}
 }
 
+// Module: page/src/console-router.js
+// Purpose: Route parsing, tab switching, view visibility, and polling helpers for mastopia console UI
+// Maintainer: builder-gemini
+
+const VALID_TABS = ['sessions', 'screen', 'logs', 'rulebook', 'ops-desk'];
+const DEFAULT_TAB = 'sessions';
+const POLL_INTERVAL_ACTIVE_MS = 2000;
+const POLL_INTERVAL_HIDDEN_MS = 10000;
+
+function parseHash(hash) {
+  const clean = String(hash || '').replace(/^#\/?/, '');
+  const [routePart, queryPart] = clean.split('?');
+  const tab = VALID_TABS.includes(routePart) ? routePart : DEFAULT_TAB;
+  const params = new URLSearchParams(queryPart || '');
+  return { tab, params };
+}
+
+function parseRoute(pathname, hash) {
+  const isConsole = String(pathname || '') === '/console';
+  const { tab, params } = parseHash(hash);
+  return {
+    view: isConsole ? 'console' : 'city',
+    tab,
+    params,
+  };
+}
+
+function getPollInterval(isHidden) {
+  return isHidden ? POLL_INTERVAL_HIDDEN_MS : POLL_INTERVAL_ACTIVE_MS;
+}
+
+function closeCityConsolePanel(doc = document) {
+  const p0Console = doc?.getElementById?.('console');
+  if (p0Console) {
+    p0Console.dataset.open = 'false';
+  }
+}
+
+function renderTabPanel(targetTab, doc = document) {
+  const safeTab = VALID_TABS.includes(targetTab) ? targetTab : DEFAULT_TAB;
+  for (const tab of VALID_TABS) {
+    const btn = doc?.getElementById?.(`tab-${tab}`);
+    const pane = doc?.getElementById?.(`view-${tab}`);
+    const isCurrent = tab === safeTab;
+
+    if (btn) {
+      btn.setAttribute('aria-selected', String(isCurrent));
+      if (btn.classList?.toggle) {
+        btn.classList.toggle('active', isCurrent);
+      }
+    }
+    if (pane) {
+      pane.hidden = !isCurrent;
+    }
+  }
+  return safeTab;
+}
+
+function setViewVisibility(isConsole, doc = document) {
+  const consoleShell = doc?.getElementById?.('consoleShell');
+  if (consoleShell) consoleShell.hidden = !isConsole;
+
+  const setDisplay = (id, visible) => {
+    const el = doc?.getElementById?.(id);
+    if (el) el.style.display = visible ? '' : 'none';
+  };
+  setDisplay('stage', !isConsole);
+  setDisplay('reelHud', !isConsole);
+
+  const hud = doc?.querySelector?.('.hud');
+  if (hud) hud.style.display = isConsole ? 'none' : '';
+
+  const foot = doc?.querySelector?.('.foot');
+  if (foot) foot.style.display = isConsole ? 'none' : '';
+
+  if (isConsole) {
+    closeCityConsolePanel(doc);
+  }
+}
+
+function updateConsoleTimestamp(doc = document, text = 'No data yet') {
+  const stamp = doc?.getElementById?.('consoleLastUpdated');
+  if (stamp) {
+    stamp.textContent = text;
+  }
+}
+
+function createPollingManager({
+  onTick,
+  isHiddenFn = () => (typeof document !== 'undefined' ? document.hidden : false),
+  activeMs = POLL_INTERVAL_ACTIVE_MS,
+  hiddenMs = POLL_INTERVAL_HIDDEN_MS,
+}) {
+  let timer = null;
+  let currentDelay = null;
+
+  function stop() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+      currentDelay = null;
+    }
+  }
+
+  function start() {
+    stop();
+    if (typeof onTick === 'function') onTick();
+    const delay = isHiddenFn() ? hiddenMs : activeMs;
+    currentDelay = delay;
+    timer = setInterval(() => {
+      if (typeof onTick === 'function') onTick();
+    }, delay);
+    return delay;
+  }
+
+  function onVisibilityChange() {
+    return start();
+  }
+
+  return {
+    start,
+    stop,
+    onVisibilityChange,
+    isRunning: () => timer !== null,
+    getInterval: () => currentDelay,
+  };
+}
+
 // Module: page/src/07-console.js
-// Purpose: P1 console shell, navigation header, route switcher, and tab router
+// Purpose: P1 console shell lifecycle, events, health polling, and navigation binding
 // Maintainer: builder-gemini
 
 (function initConsoleApp() {
-  const VALID_TABS = ['sessions', 'screen', 'logs', 'rulebook', 'ops-desk'];
-  const DEFAULT_TAB = 'sessions';
-  const POLL_ACTIVE_MS = 2000;
-  const POLL_HIDDEN_MS = 10000;
-
-  let pollTimer = null;
   let activeTab = DEFAULT_TAB;
 
-  function parseHashRoute(hash) {
-    const raw = String(hash || '').replace(/^#\/?/, '');
-    const [name, query] = raw.split('?');
-    const tab = VALID_TABS.includes(name) ? name : DEFAULT_TAB;
-    return { tab, query: new URLSearchParams(query || '') };
-  }
-
   function isConsolePath() {
-    return window.location.pathname.startsWith('/console');
+    return window.location.pathname === '/console';
   }
 
   function updateModeBadge(mode) {
     const badge = document.getElementById('consoleModeBadge');
     if (!badge) return;
     const safeMode = String(mode || 'live').toLowerCase();
+    if (!['live', 'fixture', 'demo'].includes(safeMode)) return;
     badge.textContent = safeMode;
     badge.className = `mode-badge mode-${safeMode}`;
   }
@@ -5873,92 +5992,38 @@ if (playUrl && !DEMO) {
       const data = await res.json();
       if (data?.mode) updateModeBadge(data.mode);
     } catch {
-      updateModeBadge('offline');
-    }
-  }
-
-  function renderTabPanel(targetTab) {
-    for (const tab of VALID_TABS) {
-      const btn = document.getElementById(`tab-${tab}`);
-      const pane = document.getElementById(`view-${tab}`);
-      const isCurrent = tab === targetTab;
-
-      if (btn) {
-        btn.setAttribute('aria-selected', String(isCurrent));
-        btn.classList.toggle('active', isCurrent);
-      }
-      if (pane) {
-        pane.hidden = !isCurrent;
-      }
+      // Retain current badge if server unreachable
     }
   }
 
   function handleTabSwitch() {
-    const { tab } = parseHashRoute(window.location.hash);
+    const { tab } = parseHash(window.location.hash);
     activeTab = tab;
-    renderTabPanel(activeTab);
+    renderTabPanel(activeTab, document);
   }
 
-  function setElementVisibility(id, visible) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.display = visible ? '' : 'none';
-  }
-
-  function setViewVisibility(isConsole) {
-    const consoleShell = document.getElementById('consoleShell');
-    if (consoleShell) consoleShell.hidden = !isConsole;
-
-    setElementVisibility('stage', !isConsole);
-    setElementVisibility('reelHud', !isConsole);
-
-    const hud = document.querySelector('.hud');
-    if (hud) hud.style.display = isConsole ? 'none' : '';
-
-    const foot = document.querySelector('.foot');
-    if (foot) foot.style.display = isConsole ? 'none' : '';
-
-    const p0Console = document.getElementById('console');
-    if (p0Console && isConsole) p0Console.dataset.open = 'false';
-  }
+  const poller = createPollingManager({
+    onTick: () => updateConsoleTimestamp(document, 'No data yet'),
+    isHiddenFn: () => document.hidden,
+    activeMs: POLL_INTERVAL_ACTIVE_MS,
+    hiddenMs: POLL_INTERVAL_HIDDEN_MS,
+  });
 
   function handleRouteSwitch() {
     const onConsole = isConsolePath();
-    setViewVisibility(onConsole);
+    setViewVisibility(onConsole, document);
 
     if (onConsole) {
       handleTabSwitch();
-      startPolling();
+      poller.start();
     } else {
-      stopPolling();
-    }
-  }
-
-  function pollTick() {
-    const stamp = document.getElementById('consoleLastUpdated');
-    if (stamp) {
-      const now = new Date();
-      stamp.textContent = `Updated ${now.toLocaleTimeString()}`;
-    }
-  }
-
-  function startPolling() {
-    stopPolling();
-    pollTick();
-    const delay = document.hidden ? POLL_HIDDEN_MS : POLL_ACTIVE_MS;
-    pollTimer = setInterval(pollTick, delay);
-  }
-
-  function stopPolling() {
-    if (pollTimer) {
-      clearInterval(pollTimer);
-      pollTimer = null;
+      poller.stop();
     }
   }
 
   function handleVisibilityChange() {
     if (!isConsolePath()) return;
-    startPolling();
+    poller.onVisibilityChange();
   }
 
   function navigateTo(path) {
@@ -5978,7 +6043,7 @@ if (playUrl && !DEMO) {
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        pollTick();
+        updateConsoleTimestamp(document, 'No data yet');
       });
     }
 

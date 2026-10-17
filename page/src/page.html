@@ -391,6 +391,9 @@
     .srow{ grid-template-columns: 34px 7px minmax(0, 64px) minmax(0, 1fr) auto; }
   }
   @media (max-width: 380px){ .foot .follow{ padding: 0; width: 31px; justify-content: center; } .follow span{ display: none; } }  /* a small phone: the logo alone */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  }
   /* P1 Console UI styles */
   .console-shell{
     position: fixed; inset: 0; background: #0e1117; color: #c9d1d9;
@@ -459,7 +462,7 @@
     <h1 class="wordmark"><svg class="mark" aria-hidden="true"><use href="#mastmark"/></svg>mastopia</h1>
   </div>
   <div class="toolbar glass" role="toolbar" aria-label="City controls">
-    <a href="/console" class="tb route-switcher" id="btnGoConsole" aria-label="Open Console dashboard" title="Open Console dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="tip">Console →</span></a>
+    <a href="/console" class="tb route-switcher" id="btnGoConsole" aria-label="Open Console dashboard" title="Open Console dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span class="tip">Console UI →</span></a>
     <button class="tb" id="btnConsole" aria-pressed="true" aria-label="Console"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="tip">Console (C)</span></button>
     <button class="tb" id="btnTime" aria-label="Time of day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="tip" id="tipTime">Time: auto (T)</span></button>
     <button class="tb" id="btnSafe" aria-pressed="false" aria-label="Safe to film"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tip">Safe to film (S)</span></button>

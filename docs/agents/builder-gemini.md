@@ -31,7 +31,6 @@
 | PC | Personal Computer |
 | PR | Pull Request |
 | PRD | Product Requirements Document |
-| PRE | Pre-build Requirements Gate |
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
 | UI | User Interface |
@@ -43,34 +42,35 @@
 - Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
   (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `p1/gemini-console-ui`.
-- Status: Implementing and testing U1 frontend foundation and opening PR #4.
+- Status: Addressed reviewer-claude round 1 findings for PR #4:
+  1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
+  2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
+  3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
+  4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
 
 ## Files touched
 
 The builder-gemini agent touched and maintains the following files on `p1/gemini-console-ui`:
 
 1. `page/src/console-router.js`:
-   - Pure client-side routing utilities: `parseHash`, `parseRoute`, and `getPollInterval`.
+   - Single source for routing, tab switching, panel visibility, and polling helpers.
 2. `page/src/07-console.js`:
-   - Console shell controller, navigation header, route switcher, tab router, mode badge,
-     and active/hidden polling lifecycle.
+   - Shipped console shell controller consuming `console-router.js` without duplicate definitions.
 3. `page/src/page.html`:
-   - Added `#consoleShell` container with header, mode badge, tab navigation, and placeholder cards.
-   - Added `[Console →]` route switcher link in 3D City HUD toolbar.
-   - Added responsive console styling.
+   - Restored `prefers-reduced-motion` CSS rule.
+   - Added `#consoleShell` container and distinct dashboard icon for `#btnGoConsole`.
 4. `page/build.js`:
-   - Added `07-console.js` to bundle order.
+   - Bundles `console-router.js` before `07-console.js` into `web/index.html`.
 5. `web/index.html`:
    - Generated client bundle containing 3D City and Console Shell.
 6. `src/server.js`:
-   - Routed `/console` to `index.html` to support direct browser navigation and refresh.
+   - Routes `/console` to `index.html` to support direct browser navigation and refresh.
 7. `test/console-ui.test.js`:
-   - Unit and integration tests covering route parsing, tab routing, lifecycle intervals,
-     and HTTP serving of `/` and `/console`.
+   - 35 unit/integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
 8. `page/README.md` and `web/README.md`:
    - Module documentation satisfying CTX-10.
 9. `CHANGELOG.md`:
-   - Added dated entry for U1 console shell, navigation, and tab router.
+   - Added dated entry for U1 console shell, navigation, tab router, and round-1 fixes.
 10. `docs/agents/builder-gemini.md`:
     - Updated agent memory tracking current task, touched files, and learnings.
 
@@ -87,7 +87,9 @@ can veto, not asked as open questions.
    - `page/build.js` concatenates scripts into `web/index.html`. Always rebuild after editing `page/src/`.
    - The route switcher toggles between `/` (3D City) and `/console` (Console dashboard) without page reload.
    - Tab switching uses client-side hash routing (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
-2. Polling lifecycle:
-   - Polling runs at 2,000 ms during active use and backs off to 10,000 ms when `document.hidden` is true.
-3. Code alignment:
-   - Follow CODE-01 to CODE-15: single responsibility, short functions, early returns, no new packages.
+2. Code alignment and testing (CODE-04, CODE-05, CODE-14):
+   - Keep a single source of truth for routing helpers; avoid duplicating constants in controller scripts.
+   - Test shipped functions with minimal stubs rather than testing isolated mock copies.
+   - Move cross-component mutations (like closing P0 console) into explicit named functions.
+3. Accessibility and regressions:
+   - Verify that media queries like `prefers-reduced-motion` remain intact when introducing new styles.
