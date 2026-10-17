@@ -41,8 +41,8 @@
 - Phase: P1 implementation.
 - Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
   (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `p1/gemini-console-ui`.
-- Status: Addressed reviewer-claude round 1 findings for PR #4:
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
+- Status: Opened PR #6 (replacing PR #4 for SDLC-12) with round 1 fixes:
   1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
   2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
   3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
@@ -50,7 +50,7 @@
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `p1/gemini-console-ui`:
+The builder-gemini agent touched and maintains the following files on `feat/gemini-u1-shell`:
 
 1. `page/src/console-router.js`:
    - Single source for routing, tab switching, panel visibility, and polling helpers.
