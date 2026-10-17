@@ -3,6 +3,18 @@
 District changelog for mastopia (CHG-01). Dated entries use `YYYY-MM-DD`.
 Each item links the PR, commit, or file it describes (CHG-04).
 
+## 2026-10-18
+
+- Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
+  builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
+  satisfying Context layer rule CTX-12 on Pull Request (PR) #2.
+  Commits: `e52eda3`, `3d9ed5c`, `0ba8a4b`.
+  PR: https://github.com/modern-solver/herdr-city/pull/2
+- Decision: Shaunak decided that DevOps permanently maintains `docs/agents/reviewer-claude.md` on the
+  reviewer agent's behalf; reviewer-claude retains no repository write access.
+  Commit: `e139b03`.
+  PR: https://github.com/modern-solver/herdr-city/pull/2
+
 ## 2026-10-17
 
 - Decision: P1 is a read-only console. No send-keys, send-text, or prompt path.
