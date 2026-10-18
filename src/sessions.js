@@ -2,9 +2,14 @@
  * Purpose: map herdr agents to console session objects and apply list filters.
  * Owner: builder-grok
  */
-import { detectError, detectPrompt, inferCliKind } from './prompt-detect.js';
-import { maskSecrets } from './mask.js';
-import { districtTitle } from './map.js';
+import { inferCliKind } from './prompt-detect.js';
+import {
+  agentDisplayName,
+  districtTitle,
+  inspectPane,
+  maskedClip,
+  modelBadge,
+} from './map.js';
 
 const ACTIVITY_MAX = 240;
 const STATUSES = new Set(['working', 'idle', 'blocked']);
@@ -20,17 +25,6 @@ export function statusLabel(status) {
   if (status === 'blocked') return 'Needs you';
   if (status === 'working') return 'Working';
   return 'Idle';
-}
-
-function modelField(agent, cli) {
-  const tokens = agent.tokens && typeof agent.tokens === 'object' ? agent.tokens : {};
-  return tokens.model || agent.display_agent || agent.agent || cli;
-}
-
-function clip(text, max) {
-  const s = String(text || '');
-  if (s.length <= max) return s;
-  return s.slice(0, max);
 }
 
 function emptyToNull(v) {
@@ -57,25 +51,21 @@ export function parseSessionFilters(searchParams) {
 }
 
 export function mapSession(agent, workspaces, paneText, lastSeenAt, clis) {
-  const masked = maskSecrets(paneText || '');
-  const prompt = detectPrompt(masked, agent, clis);
-  const errorText = detectError(masked);
+  const { prompt, errorText } = inspectPane(paneText, agent, clis);
   const status = consoleStatus(agent.agent_status);
   const cli = inferCliKind(agent);
   const cwd = agent.foreground_cwd || agent.cwd || null;
   const districtId = agent.workspace_id || 'unknown';
-  const activity = clip(
-    prompt?.text || errorText || agent.terminal_title_stripped || agent.terminal_title || '',
-    ACTIVITY_MAX,
-  );
+  const title = agent.terminal_title_stripped || agent.terminal_title || '';
+  const activity = maskedClip(prompt?.text || errorText || title, ACTIVITY_MAX);
   return {
     id: agent.pane_id,
     paneId: agent.pane_id,
     districtId,
     districtTitle: districtTitle(districtId, workspaces, agent),
-    name: agent.name || agent.display_agent || agent.agent || agent.pane_id,
+    name: agentDisplayName(agent),
     cli,
-    model: modelField(agent, cli),
+    model: modelBadge(agent),
     status,
     statusLabel: statusLabel(status),
     cwd,

@@ -17,11 +17,13 @@
 
 ## Current task
 
-B1: session model and `GET /api/sessions` on `feat/grok-b1-sessions`.
-Lint PR is #7. G1 is PR #5. Stop after this PR opens.
+PR #8 review r1: SEC-03 mask session activity (terminal title fallback);
+CODE-05 reuse `inspectPane`, `agentDisplayName`, `modelBadge`, `maskedClip`
+from `src/map.js`. Then stop.
 
 ## Files touched
 
+- `src/map.js`
 - `src/sessions.js`
 - `src/adapter.js`
 - `src/server.js`

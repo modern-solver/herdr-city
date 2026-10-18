@@ -7,7 +7,8 @@ import assert from 'node:assert/strict';
 import { createFixtureClient } from '../src/fixtures.js';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
-import { consoleStatus, filterSessions } from '../src/sessions.js';
+import { MASK } from '../src/mask.js';
+import { consoleStatus, filterSessions, mapSession } from '../src/sessions.js';
 
 test('consoleStatus maps herdr blocked and waiting to blocked', () => {
   assert.equal(consoleStatus('working'), 'working');
@@ -68,6 +69,20 @@ test('GET /api/sessions?q=atlas matches district title', async () => {
   assert.ok(body.sessions.some((s) => s.paneId === 'w8:p1'));
   await adapter.stop();
   await server.close();
+});
+
+test('mapSession masks secrets in terminal-title activity fallback', () => {
+  const agent = {
+    pane_id: 'w9:p1',
+    workspace_id: 'w9',
+    name: 'idle-bot',
+    agent_status: 'idle',
+    terminal_title: 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA sk-thisIsAFakeOpenAIKeyValueForTests12345',
+  };
+  const session = mapSession(agent, [], '', Date.now(), []);
+  assert.equal(session.activity.includes('ghp_'), false);
+  assert.equal(session.activity.includes('sk-thisIs'), false);
+  assert.equal(session.activity.includes(MASK), true);
 });
 
 test('filterSessions ANDs district, cli and status', () => {

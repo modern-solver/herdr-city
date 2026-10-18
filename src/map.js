@@ -26,9 +26,26 @@ export function districtTitle(workspaceId, workspaces, agent) {
   return workspaceId || 'workspace';
 }
 
-function modelBadge(agent) {
+export function agentDisplayName(agent) {
+  return agent.name || agent.display_agent || agent.agent || agent.pane_id;
+}
+
+export function modelBadge(agent) {
   const tokens = agent.tokens && typeof agent.tokens === 'object' ? agent.tokens : {};
   return tokens.model || agent.display_agent || agent.agent || inferCliKind(agent);
+}
+
+export function inspectPane(rawPane, agent, clis = []) {
+  const masked = maskSecrets(rawPane || '');
+  return {
+    masked,
+    prompt: detectPrompt(masked, agent, clis),
+    errorText: detectError(masked),
+  };
+}
+
+export function maskedClip(text, max = 240) {
+  return maskSecrets(String(text || '')).slice(0, max);
 }
 
 function cityStatus(agentStatus, errorText, idleMs) {
@@ -65,16 +82,18 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
     group.sort((a, b) => String(a.pane_id).localeCompare(String(b.pane_id)));
     const title = districtTitle(workspaceId, workspaces, group[0]);
     const mappedAgents = group.map((agent, i) => {
-      const paneText = maskSecrets(panes[agent.pane_id] || '');
-      const prompt = detectPrompt(paneText, agent, mapCity._clis || []);
-      const errorText = detectError(paneText);
+      const { prompt, errorText } = inspectPane(
+        panes[agent.pane_id] || '',
+        agent,
+        mapCity._clis || [],
+      );
       const statusRaw = String(agent.agent_status || 'unknown').toLowerCase();
       const waiting = statusRaw === 'blocked' || statusRaw === 'waiting';
       const activeAt = lastActive[agent.pane_id] || now;
       const idleMs = now - activeAt;
       const status = cityStatus(statusRaw, errorText, idleMs);
       const id = i === 0 ? 'main' : String(agent.pane_id);
-      const name = agent.name || agent.display_agent || agent.agent || agent.pane_id;
+      const name = agentDisplayName(agent);
       const model = modelBadge(agent);
       const activity = waiting
         ? (prompt?.text || 'Needs you')
@@ -116,7 +135,7 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
         status,
         kind: kindFor(status, waiting, errorText),
         tool: waiting ? 'Prompt' : '',
-        activity: maskSecrets(activity).slice(0, 240),
+        activity: maskedClip(activity, 240),
         activitySince: activeAt,
         parent: i === 0 ? null : 'main',
         waiting,
@@ -139,7 +158,7 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
       v: 2,
       id: workspaceId,
       title,
-      headline: maskSecrets(headline).slice(0, 240),
+      headline: maskedClip(headline, 240),
       startedAt,
       updatedAt: waitingAgent ? now : newest,
       turns: 0,
