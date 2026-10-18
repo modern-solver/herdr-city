@@ -91,7 +91,7 @@ export function createServer({
       json(
         res,
         200,
-        buildRulebook({
+        await buildRulebook({
           snap: adapter.getSnapshot(),
           cwdByDistrict: adapter.getCwdByDistrict ? adapter.getCwdByDistrict() : {},
           cwdMap,

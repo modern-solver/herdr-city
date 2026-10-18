@@ -17,10 +17,10 @@
 
 ## Current task
 
-B5 `GET /api/rulebook` on PR #13 (`feat/grok-b5-rulebook`): parse
-`docs/MAS-House-Rules-Handbook.md` from process cwd and report per-district
-presence of `CHANGELOG.md`, `briefs/`, and `briefs/lead-escalations.md` (Q1).
-Tests use a fixture handbook.
+B5 PR #13 r2: refuse UNC and mapped-network district cwds before any `fs`
+call; async district checks so `GET /api/rulebook` does not block on SMB;
+one table-walk in the handbook parser (CODE-03, CODE-05); handbook cache by
+mtime.
 
 ## Files touched
 
@@ -44,3 +44,5 @@ veto).
 - Tests MAY pass a `cwdMap` into `createServer`; the public JSON shape does not
   change.
 - B7 is PR #11. B8 is PR #12. This branch contains neither.
+- District cwd `\\host\share`, `//host`, and `\\?\UNC` are remote. Mapped
+  drive letters come from `net use` when detectable.

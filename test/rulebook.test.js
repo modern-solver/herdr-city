@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseHandbook, inspectDistrict } from '../src/rulebook.js';
+import { parseHandbook, inspectDistrict, isRemoteCwd, setMappedNetworkDrives } from '../src/rulebook.js';
 import { createFixtureClient } from '../src/fixtures.js';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
@@ -33,13 +33,39 @@ test('parseHandbook reads GOV-01 from ID/Rule/Check tables and list lines', () =
   assert.equal(list.check, null);
 });
 
-test('inspectDistrict lists CHANGELOG.md in missing when absent', () => {
+test('inspectDistrict lists CHANGELOG.md in missing when absent', async () => {
   const dir = makeDistrict(true);
-  const row = inspectDistrict({ id: 'w1', title: 'mastopia', cwd: dir });
+  const row = await inspectDistrict({ id: 'w1', title: 'mastopia', cwd: dir });
   assert.equal(row.readable, true);
   assert.ok(row.missing.includes('CHANGELOG.md'));
   const changelog = row.files.find((f) => f.path === 'CHANGELOG.md');
   assert.equal(changelog.present, false);
+});
+
+test('isRemoteCwd refuses UNC and mapped network drives before fs', () => {
+  assert.equal(isRemoteCwd('\\\\evil.example\\share\\repo'), true);
+  assert.equal(isRemoteCwd('//evil.example/share/repo'), true);
+  assert.equal(isRemoteCwd('\\\\?\\UNC\\evil.example\\share\\repo'), true);
+  assert.equal(isRemoteCwd('C:\\Users\\shaun\\mastopia'), false);
+  setMappedNetworkDrives(['Z']);
+  try {
+    assert.equal(isRemoteCwd('Z:\\mapped\\repo'), true);
+  } finally {
+    setMappedNetworkDrives([]);
+  }
+});
+
+test('inspectDistrict does not follow a UNC cwd', async () => {
+  const started = Date.now();
+  const row = await inspectDistrict({
+    id: 'wX',
+    title: 'remote',
+    cwd: '\\\\evil.example\\share\\repo',
+  });
+  assert.ok(Date.now() - started < 200);
+  assert.equal(row.readable, false);
+  assert.equal(row.missing.length, 0);
+  assert.ok(row.files.every((f) => f.present === null));
 });
 
 test('GET /api/rulebook includes GOV-01 when the handbook file is present', async () => {
