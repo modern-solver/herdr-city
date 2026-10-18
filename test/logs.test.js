@@ -90,6 +90,47 @@ test('bounded chars drop oldest events under 262144', () => {
   assert.equal(b.chars, b.count * LOG_TEXT_MAX);
 });
 
+test('adapter_error is one event per outage episode', async () => {
+  let down = true;
+  let n = 0;
+  const client = {
+    kind: 'test',
+    async agentList() {
+      n += 1;
+      if (down) throw new Error('herdr down');
+      return [{
+        pane_id: 'w1:p1',
+        workspace_id: 'w1',
+        name: 'bot',
+        agent_status: 'idle',
+        revision: n,
+        state_change_seq: n,
+      }];
+    },
+    async workspaceList() { return []; },
+    async paneRead() { return 'ok'; },
+  };
+  const adapter = createAdapter({ client, now: () => n });
+  try {
+    await adapter.tick();
+    await adapter.tick();
+    await adapter.tick();
+    let logs = adapter.getLogs({ limit: 200 });
+    const first = logs.events.filter((e) => e.type === 'adapter_error');
+    assert.equal(first.length, 1);
+    down = false;
+    await adapter.tick();
+    down = true;
+    await adapter.tick();
+    await adapter.tick();
+    logs = adapter.getLogs({ limit: 200 });
+    const errors = logs.events.filter((e) => e.type === 'adapter_error');
+    assert.equal(errors.length, 2);
+  } finally {
+    await adapter.stop();
+  }
+});
+
 test('token straddling the 800-char cap is masked before clip', () => {
   const ghp = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
   const jwt =

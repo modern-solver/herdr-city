@@ -45,9 +45,10 @@ function sessionFields(s) {
   };
 }
 
-export function collectTickEvents({ prevByPane, sessions, ts, adapterError }) {
+export function collectTickEvents({ prevByPane, sessions, ts, adapterError, outageOpen = false }) {
   const events = [];
   if (adapterError) {
+    if (outageOpen) return events;
     events.push({
       type: 'adapter_error',
       paneId: null,

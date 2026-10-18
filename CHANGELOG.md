@@ -7,6 +7,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 - Feature: `GET /api/logs` event ring (500 events / 262144 characters of `text`).
   Masks full text before the 800-character clip (SEC-03). Newest first.
+  `adapter_error` is one event per outage episode; a new event after recovery.
   PR: https://github.com/modern-solver/herdr-city/pull/18
 - Feature: `GET /api/sessions` console session list with district, cli, model,
   status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.

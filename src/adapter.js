@@ -17,6 +17,7 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   let lastTickAt = 0;
   const logBuffer = createLogBuffer();
   const prevByPane = new Map();
+  let outageOpen = false;
   let listeners = new Set();
   let timer = null;
   let started = false;
@@ -33,9 +34,16 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       const t = now();
       lastTickAt = t;
       lastSnapshot = { ...lastSnapshot, error, generatedAt: t };
-      for (const ev of collectTickEvents({ prevByPane, sessions: lastSessions, ts: t, adapterError: error })) {
+      for (const ev of collectTickEvents({
+        prevByPane,
+        sessions: lastSessions,
+        ts: t,
+        adapterError: error,
+        outageOpen,
+      })) {
         logBuffer.append(ev, t);
       }
+      outageOpen = true;
       emit();
       return lastSnapshot;
     }
@@ -80,9 +88,16 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       now: t,
       clis,
     });
-    for (const ev of collectTickEvents({ prevByPane, sessions: lastSessions, ts: t, adapterError: null })) {
+    for (const ev of collectTickEvents({
+      prevByPane,
+      sessions: lastSessions,
+      ts: t,
+      adapterError: null,
+      outageOpen,
+    })) {
       logBuffer.append(ev, t);
     }
+    outageOpen = false;
     prevByPane.clear();
     for (const s of lastSessions) {
       prevByPane.set(s.paneId, {
