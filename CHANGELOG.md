@@ -5,6 +5,13 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: Implemented Milestone U5 (User Interface Milestone 5) event logs view (`#logs`),
+  rendering bounded ring buffer telemetry and reverse-chronological event stream from `GET /api/logs`,
+  with type and keyword filtering, millisecond timestamps, type badges, transitions, adapter resilience,
+  and responsive card styling.
+  Files: `page/src/logs-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
+  `page/README.md`, `web/index.html`, `test/logs-ui.test.js`.
+  PR: https://github.com/modern-solver/herdr-city/pull/20 (stacked on PR #19)
 - Feature: Implemented Milestone U7 (User Interface Milestone 7) rulebook & compliance view (`#rulebook`),
   rendering district file compliance overview and MAS house rules table from `GET /api/rulebook`,
   interactive search filtering, missing file alert chips, handbook missing notices, adapter resilience,
