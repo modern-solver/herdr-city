@@ -77,11 +77,10 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
       const name = agent.name || agent.display_agent || agent.agent || agent.pane_id;
       const model = modelBadge(agent);
       const activity = waiting
-        ? (prompt?.text || 'Needs you')
+        ? prompt?.text || 'Needs you'
         : errorText
           ? errorText.split('\n')[0]
-          : (agent.terminal_title_stripped || agent.title || (status === 'working' ? 'Working' : 'Idle'));
-      const updatedAt = waiting || status === 'working' || errorText ? now : activeAt;
+          : agent.terminal_title_stripped || agent.title || (status === 'working' ? 'Working' : 'Idle');
       robots.push({
         id,
         workspaceId,
@@ -129,10 +128,11 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
 
     const newest = Math.max(...mappedAgents.map((a) => a.activitySince), 0);
     const waitingAgent = mappedAgents.find((a) => a.waiting);
-    const headline = waitingAgent?.activity
-      || mappedAgents.find((a) => a.status === 'error')?.activity
-      || mappedAgents.find((a) => a.status === 'working')?.activity
-      || 'On screen';
+    const headline =
+      waitingAgent?.activity ||
+      mappedAgents.find((a) => a.status === 'error')?.activity ||
+      mappedAgents.find((a) => a.status === 'working')?.activity ||
+      'On screen';
     const startedAt = Math.min(...group.map((a) => lastActive[a.pane_id] || now));
 
     docs.push({
@@ -146,13 +146,16 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
       tokens: { total: 0, in: 0, out: 0, cw: 0, cr: 0, helpers: [] },
       waiting: waitingAgent ? { agent: waitingAgent.id, tool: 'Prompt', since: waitingAgent.activitySince } : null,
       agents: mappedAgents,
-      feed: mappedAgents.map((a) => ({
-        ts: a.activitySince,
-        agent: a.name,
-        agentId: a.id,
-        kind: a.kind,
-        text: a.activity,
-      })).sort((x, y) => y.ts - x.ts).slice(0, 50),
+      feed: mappedAgents
+        .map((a) => ({
+          ts: a.activitySince,
+          agent: a.name,
+          agentId: a.id,
+          kind: a.kind,
+          text: a.activity,
+        }))
+        .sort((x, y) => y.ts - x.ts)
+        .slice(0, 50),
     });
   }
 

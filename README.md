@@ -88,10 +88,13 @@ Per-CLI patterns live in `config/prompt-patterns.json` (Claude, Grok, Gemini, pl
 ## Tests
 
 ```powershell
+npm ci
 npm test
+npm run lint
+npm run format:check
 ```
 
-GitHub Actions (ubuntu) runs the same tests; herdr is **not** installed in CI.
+`npm ci` installs locked devDependencies. `npm run lint` runs ESLint. `npm run format:check` runs Prettier check. GitHub Actions (ubuntu) runs the same four commands. herdr is not installed in CI.
 
 ## herdr JSON fields (verified)
 

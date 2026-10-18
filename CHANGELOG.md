@@ -5,6 +5,9 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
+  `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
+  `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.
