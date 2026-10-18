@@ -4,7 +4,7 @@
 |---|---|
 | Agent | builder-grok |
 | Model | grok-4.5 (high) |
-| Date | 2026-10-18 |
+| Date | 2026-10-19 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
 | Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b2-screen` |
 | Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
@@ -19,8 +19,8 @@
 
 ## Current task
 
-PR #15 r5 (task-2250): city title `maskedClip` path; middle tokens in
-sessions/city; screen truncated:true over-cap case. Keep draft.
+PR #15: test/README leak note; D3 merge origin/main after #6; ready for
+merge.
 
 ## Files touched
 
@@ -38,6 +38,7 @@ Net vs `origin/main`:
 - `src/screen.js`
 - `src/server.js`
 - `src/sessions.js`
+- `test/README.md`
 - `test/helpers/leak.js`
 - `test/leak.test.js`
 - `test/screen.test.js`
