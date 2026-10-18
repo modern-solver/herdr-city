@@ -10,11 +10,11 @@ Each item links the PR, commit, or file it describes (CHG-04).
   `#screen`, `#logs`, `#rulebook`, `#ops-desk`) with active and hidden-tab polling lifecycle.
   Files: `page/src/console-router.js`, `page/src/07-console.js`, `page/src/page.html`,
   `page/build.js`, `web/index.html`, `src/server.js`, `test/console-ui.test.js`.
-  PR: https://github.com/modern-solver/herdr-city/pull/4
+  PR: https://github.com/modern-solver/herdr-city/pull/6 (replaces PR #4)
 - Fix: Restored prefers-reduced-motion media query in `page/src/page.html` and rebuilt `web/index.html`.
   Unified router and UI lifecycle helpers in `page/src/console-router.js`, extracted `closeCityConsolePanel()`
   to prevent hidden side effects (CODE-04), and expanded unit tests in `test/console-ui.test.js` (CODE-14).
-  PR: https://github.com/modern-solver/herdr-city/pull/4
+  PR: https://github.com/modern-solver/herdr-city/pull/6 (replaces PR #4)
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.
