@@ -23,8 +23,22 @@ test('maps workspace to district and agent to robot with model badge', () => {
     lastActive: { 'w1:p1': now, 'w1:p2': now },
     workspaces: [{ workspace_id: 'w1', label: 'mastopia' }],
     agents: [
-      { name: 'reviewer', agent: 'claude', pane_id: 'w1:p1', workspace_id: 'w1', agent_status: 'working', tokens: { model: 'claude-opus' } },
-      { name: 'tester', agent: 'claude', pane_id: 'w1:p2', workspace_id: 'w1', agent_status: 'idle', tokens: { model: 'claude-sonnet' } },
+      {
+        name: 'reviewer',
+        agent: 'claude',
+        pane_id: 'w1:p1',
+        workspace_id: 'w1',
+        agent_status: 'working',
+        tokens: { model: 'claude-opus' },
+      },
+      {
+        name: 'tester',
+        agent: 'claude',
+        pane_id: 'w1:p2',
+        workspace_id: 'w1',
+        agent_status: 'idle',
+        tokens: { model: 'claude-sonnet' },
+      },
     ],
     panes: { 'w1:p1': 'thinking', 'w1:p2': 'idle' },
   });
@@ -44,7 +58,16 @@ test('blocked becomes amber wait with Needs you ask carrying prompt text', () =>
     now,
     lastActive: { 'w8:p1': now },
     workspaces: [{ workspace_id: 'w8', label: 'atlas-api' }],
-    agents: [{ name: 'grok-api', agent: 'grok', pane_id: 'w8:p1', workspace_id: 'w8', agent_status: 'blocked', tokens: { model: 'grok-4' } }],
+    agents: [
+      {
+        name: 'grok-api',
+        agent: 'grok',
+        pane_id: 'w8:p1',
+        workspace_id: 'w8',
+        agent_status: 'blocked',
+        tokens: { model: 'grok-4' },
+      },
+    ],
     panes: { 'w8:p1': pane },
   });
   assert.equal(docs[0].agents[0].waiting, true);

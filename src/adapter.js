@@ -2,6 +2,7 @@ import { fingerprint } from './map.js';
 import { mapCity, setMapPatterns, snapshotPayload } from './map.js';
 import { loadPromptPatterns } from './prompt-detect.js';
 import { DEFAULT_PATTERNS_PATH } from './paths.js';
+import { mapSessions } from './sessions.js';
 
 const POLL_MS = 2000;
 
@@ -11,13 +12,14 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   const paneCache = new Map(); // pane_id -> { fp, text }
   const lastActive = {};
   let lastSnapshot = snapshotPayload({ docs: [], asks: [], robots: [], mode: client.kind, error: null });
+  let lastSessions = [];
   let listeners = new Set();
   let timer = null;
   let started = false;
 
   async function tick() {
-    let agents = [];
-    let workspaces = [];
+    let agents;
+    let workspaces;
     let error = null;
     try {
       agents = await client.agentList();
@@ -60,6 +62,14 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
     const mapped = mapCity({ agents, workspaces, panes, now: t, lastActive });
     lastSnapshot = snapshotPayload({ ...mapped, mode: client.kind, error });
     lastSnapshot.docs = mapped.docs;
+    lastSessions = mapSessions({
+      agents,
+      workspaces,
+      panes,
+      lastActive,
+      now: t,
+      clis,
+    });
     emit();
     return lastSnapshot;
   }
@@ -69,13 +79,28 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   }
 
   return {
-    getSnapshot() { return lastSnapshot; },
-    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+    getSnapshot() {
+      return lastSnapshot;
+    },
+    getSessions() {
+      return {
+        generatedAt: lastSnapshot.generatedAt,
+        mode: lastSnapshot.mode,
+        error: lastSnapshot.error,
+        sessions: lastSessions,
+      };
+    },
+    onChange(fn) {
+      listeners.add(fn);
+      return () => listeners.delete(fn);
+    },
     async start() {
       if (started) return;
       started = true;
       await tick();
-      timer = setInterval(() => { tick().catch(() => {}); }, POLL_MS);
+      timer = setInterval(() => {
+        tick().catch(() => {});
+      }, POLL_MS);
       if (typeof timer.unref === 'function') timer.unref();
     },
     async stop() {

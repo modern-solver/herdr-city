@@ -24,7 +24,9 @@ test('adapter reads panes only when the agent fingerprint changes', async () => 
       if (listN === 1) return agents;
       return agents.map((a) => (a.pane_id === 'w1:p1' ? { ...a, revision: a.revision + 1, agent_status: 'idle' } : a));
     },
-    async workspaceList() { return fixture.workspaceList(); },
+    async workspaceList() {
+      return fixture.workspaceList();
+    },
     paneRead: (id) => fixture.paneRead(id),
   };
   const adapter = createAdapter({ client, now: () => 1_700_000_000_000 });
@@ -57,6 +59,19 @@ test('fixture tick maps blocked prompt and masks secrets', async () => {
 });
 
 test('fingerprint used by the adapter matches herdr AgentInfo fields', () => {
-  const a = extractAgents({ result: { agents: [{ pane_id: 'w1:p1', agent_status: 'working', revision: 3, state_change_seq: 9, terminal_title_stripped: 'claude', cwd: '/x' }] } })[0];
+  const a = extractAgents({
+    result: {
+      agents: [
+        {
+          pane_id: 'w1:p1',
+          agent_status: 'working',
+          revision: 3,
+          state_change_seq: 9,
+          terminal_title_stripped: 'claude',
+          cwd: '/x',
+        },
+      ],
+    },
+  })[0];
   assert.match(fingerprint(a), /w1:p1\|working\|3\|9/);
 });
