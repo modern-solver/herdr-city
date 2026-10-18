@@ -19,8 +19,8 @@
 
 ## Current task
 
-PR #17 leak-rule r3 (task-2145): merge `feat/grok-b2-screen`, codemap
-dedupe, ops-desk leak via shared helpers. Keep draft. Retarget after #15.
+PR #17 r4 (task-2250): merge fixed B2; ops-desk leak uses head-cut
+`boundaryText`; remask comment. Keep draft. Retarget after #15.
 
 ## Files touched
 
@@ -49,7 +49,6 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
   shell: `Set-Location C:\Users\shaun\mastopia-grok`, or `git -C` that path.
 - Never `reset --hard`, rebase, amend, or force-push. Mess? Escalate.
 - PR body files live in the worktree as `*.tmp`. Never git add them.
-- Merge `origin/main` into feature branches (D3). Never rebase-force.
-- `npm run lint` and `npm run format:check` must include `scripts/`.
-- Purpose lines in module READMEs stay on one line for CODEMAP.
+- Write commit msg file in its own step before commit.
+- No `>` redirection into tracked files.
 - PR Models line: grok-4.5 (high).

@@ -40,6 +40,7 @@ export function buildOpsDesk({ sessions, agents = [], blockedSince = {}, generat
         name: s.name,
         cli: s.cli,
         model: s.model,
+        // Re-mask already-masked session.prompt (defence in depth).
         prompt: maskThenTruncate(s.prompt).text,
         since,
         waitMs: generatedAt - since,
