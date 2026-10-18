@@ -34,45 +34,49 @@
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
+| U4 | User Interface Milestone 4 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U2 (User Interface Milestone 2) — Sessions list view (`#sessions`), table rendering
-  from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
-  empty/error/loading states, and responsive styling.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (stacked on `feat/gemini-u1-shell`).
-- Status: Fixed reviewer findings on PR #10 (adapter error resilience, CHANGELOG link, README).
-  48 passing tests. Preparing U4 stacked branch.
+- Milestone: U4 (User Interface Milestone 4) — Pane screen viewer (`#screen?paneId=...`),
+  reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
+  raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (stacked on `feat/gemini-u2-sessions`).
+- Status: Implemented U4 pane screen viewer with 54 passing unit/integration tests; prepared draft PR.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u2-sessions`:
+The builder-gemini agent touched and maintains the following files on `feat/gemini-u4-screen`:
 
-1. `page/src/sessions-view.js`:
+1. `page/src/screen-view.js`:
+   - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
+2. `page/src/sessions-view.js`:
    - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-2. `page/src/console-router.js`:
+3. `page/src/console-router.js`:
    - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-3. `page/src/07-console.js`:
-   - Shipped console shell controller consuming `console-router.js` and `sessions-view.js`.
-4. `page/src/page.html`:
-   - Added `#view-sessions` table card, table styles, status badges, and empty/error/notice states.
-5. `page/build.js`:
-   - Bundles `console-router.js` and `sessions-view.js` before `07-console.js` into `web/index.html`.
-6. `web/index.html`:
-   - Generated client bundle containing 3D City, Console Shell, and Sessions list view.
-7. `page/README.md`:
-   - Documented `sessions-view.js` in the frontend modules list (CTX-10).
-8. `test/sessions-ui.test.js`:
-   - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-9. `test/console-ui.test.js`:
-   - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-10. `CHANGELOG.md`:
-    - Added dated entry for U2 sessions list view implementation linking PR #10 (CHG-04).
-11. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U2 implementation and review fixes.
+4. `page/src/07-console.js`:
+   - Shipped console shell controller consuming `console-router.js`, `sessions-view.js`, and `screen-view.js`.
+5. `page/src/page.html`:
+   - Added `#view-screen` card layout, pre/code styles, autoscroll controls, and truncation alerts.
+6. `page/build.js`:
+   - Bundles modules before `07-console.js` into `web/index.html`.
+7. `web/index.html`:
+   - Generated client bundle containing 3D City, Console Shell, Sessions list view, and Screen viewer.
+8. `page/README.md`:
+   - Documented `screen-view.js` and `sessions-view.js` in frontend modules list (CTX-10).
+9. `test/screen-ui.test.js`:
+   - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
+10. `test/sessions-ui.test.js`:
+    - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
+11. `test/console-ui.test.js`:
+    - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
+12. `CHANGELOG.md`:
+    - Added dated entry for U4 pane screen viewer implementation.
+13. `docs/agents/builder-gemini.md`:
+    - Updated agent memory tracking U4 implementation.
 
 ## Open questions
 
