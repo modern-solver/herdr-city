@@ -6,7 +6,7 @@
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | PR #2: `C:\Users\shaun\mastopia` branch `docs/p1-prebuild`. After merge: `C:\Users\shaun\mastopia-grok` branch `p1/grok-backend`. |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b5-rulebook` (from `origin/main`) |
 
 ## Acronyms
 
@@ -17,36 +17,32 @@
 
 ## Current task
 
-PRE-01 docs, PR #2 (https://github.com/modern-solver/herdr-city/pull/2).
-Waiting on reviewer-claude after adding this memory file (CTX-12 / CTX-13).
-No P1 code until Shaunak approves PRE-01.
+B5 PR #13 r2: refuse UNC and mapped-network district cwds before any `fs`
+call; async district checks so `GET /api/rulebook` does not block on SMB;
+one table-walk in the handbook parser (CODE-03, CODE-05); handbook cache by
+mtime.
 
 ## Files touched
 
-- `docs/spec-sheet.md`
-- `docs/prd.md`
-- `docs/roadmap.md`
+- `src/rulebook.js`
+- `src/server.js`
+- `src/adapter.js`
+- `test/rulebook.test.js`
+- `test/fixtures/rulebook-handbook.md`
 - `CHANGELOG.md`
 - `docs/agents/builder-grok.md`
 
 ## Open questions
 
-| ID | Question | Owner |
-|---|---|---|
-| Q1 | Expected files per district (`CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`). | Shaunak |
-| Q2 | Log bounds 500 events and 262144 characters. | Shaunak |
-| Q5 | Screen text cap 80000 characters. | Shaunak |
-| Q6 | Search debounce 300 ms. | Shaunak |
-| Q7 | Hidden-tab poll interval 10000 ms. | Shaunak |
+None for B5. Spec Q1, Q2, Q5, Q6, Q7 approved as written (defaults Shaunak may
+veto).
 
 ## Last-session learnings
 
-- PR #2 remaining docs fixes stay on `docs/p1-prebuild` in
-  `C:\Users\shaun\mastopia`. Later work is `C:\Users\shaun\mastopia-grok` on
-  `p1/grok-backend`.
-- Shared checkout once committed grok spec-sheet hunks under builder-gemini. Separate worktrees are now the rule.
-- Escalations and Coordination append to `C:\Users\shaun\mastopia\briefs\lead-escalations.md` and are not committed.
-- `gh pr edit` is allowed for titles and descriptions on `modern-solver/herdr-city` only.
-- Temp deletes outside the repo are held for Shaunak. Leave scratch files.
-- More access goes to Shaunak via `briefs/lead-escalations.md`. Reviewer BLOCKED/CHANGES stays binding.
-- First code PR after PR #2: add Prettier and ESLint to CI. CODEMAP regen is after PR #2 merges.
+- Independent P1 items branch from `origin/main` as `feat/grok-*`.
+- PR bodies live as `*.tmp` in the worktree. Never git add them.
+- Tests MAY pass a `cwdMap` into `createServer`; the public JSON shape does not
+  change.
+- B7 is PR #11. B8 is PR #12. This branch contains neither.
+- District cwd `\\host\share`, `//host`, and `\\?\UNC` are remote. Mapped
+  drive letters come from `net use` when detectable.

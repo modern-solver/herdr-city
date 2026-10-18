@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { WEB_DIR } from './paths.js';
+import { buildRulebook } from './rulebook.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -31,7 +32,14 @@ function tokenOk(req, token) {
   return got === token;
 }
 
-export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir = WEB_DIR }) {
+export function createServer({
+  adapter,
+  host = '127.0.0.1',
+  port = 7740,
+  webDir = WEB_DIR,
+  handbookPath = path.join(process.cwd(), 'docs', 'MAS-House-Rules-Handbook.md'),
+  cwdMap = null,
+}) {
   const token = crypto.randomBytes(16).toString('hex');
   const sseClients = new Set();
   let askV = 1;
@@ -77,6 +85,19 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     }
     if (req.method === 'GET' && url.pathname === '/api/agents') {
       json(res, 200, { robots: adapter.getSnapshot().robots || [] });
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/rulebook') {
+      json(
+        res,
+        200,
+        await buildRulebook({
+          snap: adapter.getSnapshot(),
+          cwdByDistrict: adapter.getCwdByDistrict ? adapter.getCwdByDistrict() : {},
+          cwdMap,
+          handbookPath,
+        }),
+      );
       return;
     }
     if (req.method === 'GET' && url.pathname === '/events') {

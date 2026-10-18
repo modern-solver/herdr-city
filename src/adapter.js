@@ -11,6 +11,7 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   const paneCache = new Map(); // pane_id -> { fp, text }
   const lastActive = {};
   let lastSnapshot = snapshotPayload({ docs: [], asks: [], robots: [], mode: client.kind, error: null });
+  let lastCwds = {};
   let listeners = new Set();
   let timer = null;
   let started = false;
@@ -57,6 +58,12 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
 
     const panes = {};
     for (const [id, v] of paneCache) panes[id] = v.text;
+    lastCwds = {};
+    for (const agent of agents) {
+      const id = agent.workspace_id;
+      const cwd = agent.cwd || agent.foreground_cwd;
+      if (id && cwd && lastCwds[id] == null) lastCwds[id] = cwd;
+    }
     const mapped = mapCity({ agents, workspaces, panes, now: t, lastActive });
     lastSnapshot = snapshotPayload({ ...mapped, mode: client.kind, error });
     lastSnapshot.docs = mapped.docs;
@@ -70,6 +77,7 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
 
   return {
     getSnapshot() { return lastSnapshot; },
+    getCwdByDistrict() { return { ...lastCwds }; },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     async start() {
       if (started) return;

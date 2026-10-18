@@ -5,6 +5,12 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: `GET /api/rulebook` parses `docs/MAS-House-Rules-Handbook.md` from
+  process cwd and reports per-district presence of `CHANGELOG.md`, `briefs/`,
+  and `briefs/lead-escalations.md`. Missing handbook is HTTP 200 with
+  `error` `handbook_missing`. District cwds that look like UNC or mapped
+  network drives are unread (no `fs` call). District file checks are async.
+  PR: https://github.com/modern-solver/herdr-city/pull/13
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.
