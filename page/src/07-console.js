@@ -104,6 +104,23 @@
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
   }
 
+  async function refreshLogsData() {
+    const container = document.getElementById('logsContainer');
+    if (!container) return;
+    const res = await fetchLogs(window.fetch);
+    if (!res.ok) {
+      renderLogsView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error reading logs');
+      return;
+    }
+    renderLogsView(container, { data: res.data, adapterError: res.adapterError });
+    const now = new Date();
+    const count = res.events?.length || 0;
+    const countNote = `${count} event${count === 1 ? '' : 's'}`;
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
+  }
+
   function refreshActiveTab(params) {
     const effectiveParams = params || parseHash(window.location.hash).params;
     if (activeTab === 'sessions') {
@@ -115,6 +132,8 @@
       refreshOpsDeskData();
     } else if (activeTab === 'rulebook') {
       refreshRulebookData();
+    } else if (activeTab === 'logs') {
+      refreshLogsData();
     } else {
       updateConsoleTimestamp(document, 'No data yet');
     }

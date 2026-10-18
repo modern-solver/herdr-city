@@ -35,6 +35,7 @@
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
 | U4 | User Interface Milestone 4 |
+| U5 | User Interface Milestone 5 |
 | U6 | User Interface Milestone 6 |
 | U7 | User Interface Milestone 7 |
 | UI | User Interface |
@@ -43,50 +44,54 @@
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U7 (User Interface Milestone 7) — Rulebook & compliance view (`#rulebook`),
-  rendering district file compliance overview and MAS house rules table from `GET /api/rulebook`,
-  interactive search filtering, missing file alert chips, handbook missing notices, and adapter resilience.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u7-rulebook` (stacked on `feat/gemini-u6-ops-desk`).
-- Status: Implemented U7 rulebook & compliance view with 73 passing unit/integration tests; prepared draft PR.
+- Milestone: U5 (User Interface Milestone 5) — Event logs view (`#logs`),
+  rendering bounded ring buffer telemetry and reverse-chronological event stream from `GET /api/logs`,
+  with type and keyword filtering, millisecond timestamps, type badges, transitions, and adapter resilience.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u5-logs` (stacked on `feat/gemini-u7-rulebook`).
+- Status: Implemented U5 event logs view with 82 passing unit/integration tests; prepared draft PR.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u7-rulebook`:
+The builder-gemini agent touched and maintains the following files on `feat/gemini-u5-logs`:
 
-1. `page/src/rulebook-view.js`:
+1. `page/src/logs-view.js`:
+   - Standalone event logs rendering, ring buffer telemetry, filtering, and fetch helpers.
+2. `page/src/rulebook-view.js`:
    - Standalone rulebook and district compliance rendering, rules table, filtering, and fetch helpers.
-2. `page/src/ops-desk-view.js`:
+3. `page/src/ops-desk-view.js`:
    - Standalone ops desk queue view rendering, card layout, wait timers, and fetch helpers.
-2. `page/src/screen-view.js`:
+4. `page/src/screen-view.js`:
    - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
-3. `page/src/sessions-view.js`:
+5. `page/src/sessions-view.js`:
    - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-4. `page/src/console-router.js`:
+6. `page/src/console-router.js`:
    - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-5. `page/src/07-console.js`:
+7. `page/src/07-console.js`:
    - Shipped console shell controller consuming router and all view modules.
-6. `page/src/page.html`:
-   - Added `#view-ops-desk` card layout, queue styles, wait badges, and banner alerts.
-7. `page/build.js`:
+8. `page/src/page.html`:
+   - Added `#view-logs` and `#view-rulebook` card layouts, styles, and filter bars.
+9. `page/build.js`:
    - Bundles all modules before `07-console.js` into `web/index.html`.
-8. `web/index.html`:
-   - Generated client bundle containing 3D City, Console Shell, Sessions, Screen, and Ops Desk views.
-9. `page/README.md`:
-   - Documented `ops-desk-view.js`, `screen-view.js`, and `sessions-view.js` in modules list (CTX-10).
-10. `test/rulebook-ui.test.js`:
+10. `web/index.html`:
+    - Generated client bundle containing 3D City, Console Shell, and all dashboard views.
+11. `page/README.md`:
+    - Documented all view modules in frontend modules list (CTX-10).
+12. `test/logs-ui.test.js`:
+    - Unit tests for timestamp formatting, event badges, transitions, filtering, and fetch contract.
+13. `test/rulebook-ui.test.js`:
     - Unit tests for district cards, rules table, filtering, error cards, and contract fetcher.
-11. `test/ops-desk-ui.test.js`:
+14. `test/ops-desk-ui.test.js`:
     - Unit tests for wait duration, card rendering, queue sorting, error cards, and contract fetcher.
-12. `test/screen-ui.test.js`:
+15. `test/screen-ui.test.js`:
     - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
-13. `test/sessions-ui.test.js`:
+16. `test/sessions-ui.test.js`:
     - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-14. `test/console-ui.test.js`:
+17. `test/console-ui.test.js`:
     - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-15. `CHANGELOG.md`:
-    - Added dated entry for U7 rulebook & compliance view linking PR #19 (CHG-04).
-16. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U7 implementation.
+18. `CHANGELOG.md`:
+    - Added dated entry for U5 event logs view linking PR #20 (CHG-04).
+19. `docs/agents/builder-gemini.md`:
+    - Updated agent memory tracking U5 implementation.
 
 ## Open questions
 
