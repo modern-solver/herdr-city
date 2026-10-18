@@ -19,8 +19,8 @@
 
 ## Current task
 
-PR #11 (`feat/grok-b7-demo`): D3 merge of `origin/main` after #7/#9/#8.
-Demo bind stays `127.0.0.1` unless explicit LAN opt-in. Keep draft.
+PR #11 r4: src/README and web/README bind/demo Host-Origin policy lines.
+Keep draft.
 
 ## Files touched
 
@@ -33,9 +33,11 @@ Net vs `origin/main`:
 - `docs/prd.md`
 - `docs/roadmap.md`
 - `docs/spec-sheet.md`
+- `src/README.md`
 - `src/cli.js`
 - `src/server.js`
 - `test/demo.test.js`
+- `web/README.md`
 
 ## Open questions
 
