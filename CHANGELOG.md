@@ -10,6 +10,13 @@ Each item links the PR, commit, or file it describes (CHG-04).
   `updateBlockedSince` lives outside `tick`. Sort and episode-reset tests.
   Prompt text uses `maskThenTruncate`.
   PR: https://github.com/modern-solver/herdr-city/pull/17
+- Fix: `scripts/codemap.js` dedupes git file entries and Dependents lists so
+  CODEMAP rows stay unique.
+  PR: https://github.com/modern-solver/herdr-city/pull/17
+- Security: prompt and error caps in `src/prompt-detect.js` (800 / 400) go
+  through `maskThenTruncate` (SEC-03). Shared leak helpers in
+  `test/helpers/leak.js` (`boundaryText`, `assertClean`).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
 - Security: `src/output-filter.js` `maskThenTruncate` masks full text then
   truncates. Screen, sessions and city pane/activity fields use it (SEC-03).
   PR: https://github.com/modern-solver/herdr-city/pull/15

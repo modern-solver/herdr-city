@@ -3,10 +3,11 @@
 | Field | Value |
 |---|---|
 | Agent | builder-grok |
-| Model | grok-4.6 |
+| Model | grok-4.5 (high) |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
 | Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b6-ops-desk` |
+| Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
 
 ## Acronyms
 
@@ -18,8 +19,8 @@
 
 ## Current task
 
-PR #17 stacked on `feat/grok-b2-screen`. `GET /api/ops-desk` uses
-`maskThenTruncate`. Keep as draft. Retarget to main after #15 merges.
+PR #17 leak-rule r3 (task-2145): merge `feat/grok-b2-screen`, codemap
+dedupe, ops-desk leak via shared helpers. Keep draft. Retarget after #15.
 
 ## Files touched
 
@@ -29,6 +30,7 @@ Net vs `origin/feat/grok-b2-screen`:
 - `README.md`
 - `docs/CODEMAP.md`
 - `docs/agents/builder-grok.md`
+- `scripts/codemap.js`
 - `src/README.md`
 - `src/adapter.js`
 - `src/ops-desk.js`
@@ -42,11 +44,12 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 
 ## Last-session learnings
 
-- Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
-  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
-  `git -C C:\Users\shaun\mastopia-grok`.
+- Lead checkout `C:\Users\shaun\mastopia` is read-only except appending
+  `briefs/lead-escalations.md` and reading `briefs/`. First command of every
+  shell: `Set-Location C:\Users\shaun\mastopia-grok`, or `git -C` that path.
+- Never `reset --hard`, rebase, amend, or force-push. Mess? Escalate.
 - PR body files live in the worktree as `*.tmp`. Never git add them.
 - Merge `origin/main` into feature branches (D3). Never rebase-force.
-- Never `reset --hard`. Ask DevOps.
 - `npm run lint` and `npm run format:check` must include `scripts/`.
 - Purpose lines in module READMEs stay on one line for CODEMAP.
+- PR Models line: grok-4.5 (high).
