@@ -3,13 +3,7 @@
  * Owner: builder-grok
  */
 import { inferCliKind } from './prompt-detect.js';
-import {
-  agentDisplayName,
-  districtTitle,
-  inspectPane,
-  maskedClip,
-  modelBadge,
-} from './map.js';
+import { agentDisplayName, districtTitle, inspectPane, maskedClip, modelBadge } from './map.js';
 
 const ACTIVITY_MAX = 240;
 const STATUSES = new Set(['working', 'idle', 'blocked']);
@@ -90,13 +84,18 @@ export function mapSessions({ agents, workspaces = [], panes = {}, lastActive = 
 }
 
 function includesInsensitive(hay, needle) {
-  return String(hay || '').toLowerCase().includes(String(needle).toLowerCase());
+  return String(hay || '')
+    .toLowerCase()
+    .includes(String(needle).toLowerCase());
 }
 
 export function filterSessions(sessions, filters) {
   return sessions.filter((s) => {
-    if (filters.district && !includesInsensitive(s.districtId, filters.district)
-      && !includesInsensitive(s.districtTitle, filters.district)) {
+    if (
+      filters.district &&
+      !includesInsensitive(s.districtId, filters.district) &&
+      !includesInsensitive(s.districtTitle, filters.district)
+    ) {
       return false;
     }
     if (filters.cli && String(s.cli).toLowerCase() !== String(filters.cli).toLowerCase()) {
@@ -105,8 +104,9 @@ export function filterSessions(sessions, filters) {
     if (filters.model && !includesInsensitive(s.model, filters.model)) return false;
     if (filters.status && s.status !== filters.status) return false;
     if (filters.q) {
-      const hit = [s.name, s.districtTitle, s.districtId, s.cwd, s.activity, s.cli, s.model, s.error]
-        .some((field) => includesInsensitive(field, filters.q));
+      const hit = [s.name, s.districtTitle, s.districtId, s.cwd, s.activity, s.cli, s.model, s.error].some((field) =>
+        includesInsensitive(field, filters.q),
+      );
       if (!hit) return false;
     }
     return true;

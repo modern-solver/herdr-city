@@ -82,11 +82,7 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
     group.sort((a, b) => String(a.pane_id).localeCompare(String(b.pane_id)));
     const title = districtTitle(workspaceId, workspaces, group[0]);
     const mappedAgents = group.map((agent, i) => {
-      const { prompt, errorText } = inspectPane(
-        panes[agent.pane_id] || '',
-        agent,
-        mapCity._clis || [],
-      );
+      const { prompt, errorText } = inspectPane(panes[agent.pane_id] || '', agent, mapCity._clis || []);
       const statusRaw = String(agent.agent_status || 'unknown').toLowerCase();
       const waiting = statusRaw === 'blocked' || statusRaw === 'waiting';
       const activeAt = lastActive[agent.pane_id] || now;
@@ -96,11 +92,10 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
       const name = agentDisplayName(agent);
       const model = modelBadge(agent);
       const activity = waiting
-        ? (prompt?.text || 'Needs you')
+        ? prompt?.text || 'Needs you'
         : errorText
           ? errorText.split('\n')[0]
-          : (agent.terminal_title_stripped || agent.title || (status === 'working' ? 'Working' : 'Idle'));
-      const updatedAt = waiting || status === 'working' || errorText ? now : activeAt;
+          : agent.terminal_title_stripped || agent.title || (status === 'working' ? 'Working' : 'Idle');
       robots.push({
         id,
         workspaceId,
@@ -148,10 +143,11 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
 
     const newest = Math.max(...mappedAgents.map((a) => a.activitySince), 0);
     const waitingAgent = mappedAgents.find((a) => a.waiting);
-    const headline = waitingAgent?.activity
-      || mappedAgents.find((a) => a.status === 'error')?.activity
-      || mappedAgents.find((a) => a.status === 'working')?.activity
-      || 'On screen';
+    const headline =
+      waitingAgent?.activity ||
+      mappedAgents.find((a) => a.status === 'error')?.activity ||
+      mappedAgents.find((a) => a.status === 'working')?.activity ||
+      'On screen';
     const startedAt = Math.min(...group.map((a) => lastActive[a.pane_id] || now));
 
     docs.push({
@@ -165,13 +161,16 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
       tokens: { total: 0, in: 0, out: 0, cw: 0, cr: 0, helpers: [] },
       waiting: waitingAgent ? { agent: waitingAgent.id, tool: 'Prompt', since: waitingAgent.activitySince } : null,
       agents: mappedAgents,
-      feed: mappedAgents.map((a) => ({
-        ts: a.activitySince,
-        agent: a.name,
-        agentId: a.id,
-        kind: a.kind,
-        text: a.activity,
-      })).sort((x, y) => y.ts - x.ts).slice(0, 50),
+      feed: mappedAgents
+        .map((a) => ({
+          ts: a.activitySince,
+          agent: a.name,
+          agentId: a.id,
+          kind: a.kind,
+          text: a.activity,
+        }))
+        .sort((x, y) => y.ts - x.ts)
+        .slice(0, 50),
     });
   }
 

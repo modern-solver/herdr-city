@@ -14,23 +14,28 @@
 |---|---|
 | JSON | JavaScript Object Notation |
 | API | Application Programming Interface |
+| CI | Continuous Integration |
 
 ## Current task
 
-PR #8 (`feat/grok-b1-sessions`): GET /api/sessions with filters. Round-2
-SEC-03 and CODE-05 done: session activity is masked; `mapSession` reuses
-`inspectPane`, `agentDisplayName`, `modelBadge`, `maskedClip` from
-`src/map.js`. D3 merged `origin/main` as `10e5d57`.
+PR #8 (`feat/grok-b1-sessions`): merged `origin/main` after #9. `GET /api/sessions`
+with filters. Do not touch stacked B2/B6/B3 until #8 merges.
 
 ## Files touched
 
-- `src/map.js`
-- `src/sessions.js`
-- `src/adapter.js`
-- `src/server.js`
-- `test/sessions.test.js`
+Net vs `origin/main`:
+
 - `CHANGELOG.md`
+- `README.md`
+- `docs/CODEMAP.md`
 - `docs/agents/builder-grok.md`
+- `src/README.md`
+- `src/adapter.js`
+- `src/map.js`
+- `src/server.js`
+- `src/sessions.js`
+- `test/README.md`
+- `test/sessions.test.js`
 
 ## Open questions
 
@@ -38,6 +43,11 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 
 ## Last-session learnings
 
-- `feat/grok-*` branches from `origin/main`.
-- D3 merged `origin/main` into this branch as `10e5d57`.
-- PR body files are `*.tmp` in the worktree. Never git add them.
+- Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
+  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
+  `git -C C:\Users\shaun\mastopia-grok`.
+- PR body files live in the worktree as `*.tmp`. Never git add them.
+- Merge `origin/main` into feature branches (D3). Never rebase-force.
+- `npm run lint` and `npm run format:check` must include `scripts/`.
+- `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
+- Stacked B2/B6/B3 wait until #8 merges.
