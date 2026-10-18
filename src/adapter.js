@@ -2,8 +2,8 @@ import { fingerprint } from './map.js';
 import { mapCity, setMapPatterns, snapshotPayload } from './map.js';
 import { loadPromptPatterns } from './prompt-detect.js';
 import { DEFAULT_PATTERNS_PATH } from './paths.js';
-import { consoleStatus, mapSessions } from './sessions.js';
-import { buildOpsDesk } from './ops-desk.js';
+import { mapSessions } from './sessions.js';
+import { buildOpsDesk, updateBlockedSince } from './ops-desk.js';
 
 const POLL_MS = 2000;
 
@@ -76,17 +76,7 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       clis,
     });
     lastAgents = agents;
-    const live = new Set(agents.map((a) => a.pane_id));
-    for (const agent of agents) {
-      if (consoleStatus(agent.agent_status) === 'blocked') {
-        if (blockedSince[agent.pane_id] == null) blockedSince[agent.pane_id] = t;
-      } else {
-        delete blockedSince[agent.pane_id];
-      }
-    }
-    for (const id of Object.keys(blockedSince)) {
-      if (!live.has(id)) delete blockedSince[id];
-    }
+    updateBlockedSince(blockedSince, agents, t);
     emit();
     return lastSnapshot;
   }

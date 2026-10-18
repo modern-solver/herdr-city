@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import { createFixtureClient } from '../src/fixtures.js';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
+import { buildOpsDesk, updateBlockedSince } from '../src/ops-desk.js';
 
 test('GET /api/ops-desk lists the blocked grok prompt; recommendation is null', async () => {
   let t = 1_000;
@@ -43,4 +44,43 @@ test('GET /api/ops-desk lists the blocked grok prompt; recommendation is null', 
     await adapter.stop();
     await server.close();
   }
+});
+
+test('ops-desk sorts by since ascending (longest wait first)', () => {
+  const sessions = [
+    {
+      paneId: 'w2:p1', status: 'blocked', prompt: 'later', districtId: 'w2',
+      districtTitle: 'b', name: 'b', cli: 'claude', model: 'x', lastSeenAt: 5,
+    },
+    {
+      paneId: 'w1:p1', status: 'blocked', prompt: 'earlier', districtId: 'w1',
+      districtTitle: 'a', name: 'a', cli: 'grok', model: 'y', lastSeenAt: 1,
+    },
+  ];
+  const out = buildOpsDesk({
+    sessions,
+    agents: [
+      { pane_id: 'w2:p1', state_change_seq: 1 },
+      { pane_id: 'w1:p1', state_change_seq: 2 },
+    ],
+    blockedSince: { 'w2:p1': 5000, 'w1:p1': 1000 },
+    generatedAt: 9000,
+  });
+  assert.equal(out.items.map((i) => i.paneId).join(','), 'w1:p1,w2:p1');
+  assert.equal(out.items[0].waitMs, 8000);
+});
+
+test('blockedSince resets when the blocked episode ends', () => {
+  const since = {};
+  const pane = { pane_id: 'w1:p1', agent_status: 'blocked' };
+  updateBlockedSince(since, [pane], 1000);
+  assert.equal(since['w1:p1'], 1000);
+  updateBlockedSince(since, [{ ...pane, agent_status: 'blocked' }], 2000);
+  assert.equal(since['w1:p1'], 1000);
+  updateBlockedSince(since, [{ ...pane, agent_status: 'idle' }], 3000);
+  assert.equal(since['w1:p1'], undefined);
+  updateBlockedSince(since, [{ ...pane, agent_status: 'blocked' }], 4000);
+  assert.equal(since['w1:p1'], 4000);
+  updateBlockedSince(since, [], 5000);
+  assert.equal(since['w1:p1'], undefined);
 });
