@@ -7,7 +7,8 @@ const PROMPT_MAX = 800;
 const ERROR_MAX = 400;
 
 function capPrompt(text) {
-  return maskThenTruncate(text, PROMPT_MAX, { keep: 'tail' }).text;
+  // Keep the HEAD so the prompt question survives the 800-char cap.
+  return maskThenTruncate(text, PROMPT_MAX, { keep: 'head' }).text;
 }
 
 function capError(text) {

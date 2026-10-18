@@ -5,6 +5,13 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Security: prompt caps keep the HEAD via `maskThenTruncate` so the question
+  survives; error caps keep the TAIL. Leak helpers use tail-aware
+  `boundaryText` and suffix checks in `assertClean` (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Fix: city/session `maskedClip` keeps the TAIL after mask (was head cut),
+  matching `maskThenTruncate` default (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
 - Security: prompt and error caps in `src/prompt-detect.js` (800 / 400) go
   through `maskThenTruncate` (SEC-03). Shared leak helpers in
   `test/helpers/leak.js` (`boundaryText`, `assertClean`).
