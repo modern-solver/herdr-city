@@ -19,8 +19,8 @@
 
 ## Current task
 
-PR #15 r4 (task-2250): tail-aware `boundaryText`, suffix checks, `capPrompt`
-keep head. Then merge into #17. Keep draft.
+PR #15 r5 (task-2250): city title `maskedClip` path; middle tokens in
+sessions/city; screen truncated:true over-cap case. Keep draft.
 
 ## Files touched
 
