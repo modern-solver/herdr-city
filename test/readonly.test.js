@@ -1,3 +1,7 @@
+/**
+ * Purpose: write routes return 409 readonly. No write path.
+ * Owner: builder-grok
+ */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createFixtureClient } from '../src/fixtures.js';

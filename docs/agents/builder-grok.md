@@ -19,16 +19,18 @@
 
 ## Current task
 
-PR #12 (`feat/grok-b8-readonly`): D3 merge of `origin/main` after #7/#9/#8.
-Write routes return 409 `readonly`. Keep draft until re-review.
+PR #12 (`feat/grok-b8-readonly`): reviewer fix — gotchas, README API table,
+409 message, readonly test header. Keep draft until re-review.
 
 ## Files touched
 
 Net vs `origin/main`:
 
 - `CHANGELOG.md`
+- `README.md`
 - `docs/CODEMAP.md`
 - `docs/agents/builder-grok.md`
+- `src/README.md`
 - `src/server.js`
 - `test/readonly.test.js`
 
