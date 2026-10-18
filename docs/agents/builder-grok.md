@@ -19,9 +19,9 @@
 ## Current task
 
 Lint PR on `feat/grok-lint-ci`: Prettier, ESLint, CI `npm run lint` and
-`npm run format:check`. Then B1 on `feat/grok-b1-sessions`.
-`npm run codemap` lives on PR #5 (`p1/grok-backend`); this branch is from
-`origin/main` which does not have the generator yet.
+`npm run format:check`. Prettier `endOfLine` is `auto` so Windows CRLF
+checkouts pass `format:check`. D3 merged `origin/main` as `44cf6c3`.
+CODEMAP regen lives on PR #9 (`feat/grok-context-layer`). B1 is PR #8.
 
 ## Files touched
 
@@ -41,8 +41,7 @@ Lint PR on `feat/grok-lint-ci`: Prettier, ESLint, CI `npm run lint` and
 
 ## Open questions
 
-None for this PR. CODEMAP regen waits on PR #5 merge, then D3 merge of
-`origin/main`.
+None for this PR.
 
 ## Last-session learnings
 
@@ -50,4 +49,5 @@ None for this PR. CODEMAP regen waits on PR #5 merge, then D3 merge of
   worktree only. Merge `origin/main` into feature branches. Never rebase-force.
 - PR body files live in the worktree as `pr5-body.tmp`. Never git add them.
   Never write AppData or TEMP.
-- G1 CODEMAP script is not on `main` until PR #5 merges.
+- G1 CODEMAP script lives on PR #9 (`feat/grok-context-layer`).
+- D3 merged `origin/main` into this branch as `44cf6c3`.
