@@ -4,6 +4,7 @@ import { loadPromptPatterns } from './prompt-detect.js';
 import { DEFAULT_PATTERNS_PATH } from './paths.js';
 import { mapSessions } from './sessions.js';
 import { collectTickEvents, createLogBuffer } from './logs.js';
+import { buildScreen, capPaneText } from './screen.js';
 
 const POLL_MS = 2000;
 
@@ -23,8 +24,8 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   let started = false;
 
   async function tick() {
-    let agents = [];
-    let workspaces = [];
+    let agents;
+    let workspaces;
     let error = null;
     try {
       agents = await client.agentList();
@@ -62,10 +63,20 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       }
       if (!prev || prev.fp !== fp) {
         try {
-          const text = await client.paneRead(agent.pane_id);
-          paneCache.set(agent.pane_id, { fp, text: String(text || '') });
+          const capped = capPaneText(await client.paneRead(agent.pane_id));
+          paneCache.set(agent.pane_id, {
+            fp,
+            text: capped.text,
+            truncated: capped.truncated,
+            updatedAt: t,
+          });
         } catch (err) {
-          paneCache.set(agent.pane_id, { fp, text: prev?.text || '' });
+          paneCache.set(agent.pane_id, {
+            fp,
+            text: prev?.text || '',
+            truncated: prev?.truncated || false,
+            updatedAt: prev?.updatedAt || t,
+          });
           error = error || String(err.message || err);
         }
       }
@@ -118,7 +129,9 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   }
 
   return {
-    getSnapshot() { return lastSnapshot; },
+    getSnapshot() {
+      return lastSnapshot;
+    },
     getSessions() {
       return {
         generatedAt: lastSnapshot.generatedAt,
@@ -135,12 +148,29 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
         events: logBuffer.query({ after, limit }),
       };
     },
-    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+    getScreen(paneId) {
+      const session = lastSessions.find((s) => s.paneId === paneId);
+      if (!session) return null;
+      const cached = paneCache.get(paneId);
+      return buildScreen({
+        paneId,
+        rawText: cached?.text || '',
+        truncated: cached?.truncated,
+        updatedAt: cached?.updatedAt ?? session.lastSeenAt,
+        session,
+      });
+    },
+    onChange(fn) {
+      listeners.add(fn);
+      return () => listeners.delete(fn);
+    },
     async start() {
       if (started) return;
       started = true;
       await tick();
-      timer = setInterval(() => { tick().catch(() => {}); }, POLL_MS);
+      timer = setInterval(() => {
+        tick().catch(() => {});
+      }, POLL_MS);
       if (typeof timer.unref === 'function') timer.unref();
     },
     async stop() {

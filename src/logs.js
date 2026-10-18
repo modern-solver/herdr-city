@@ -2,17 +2,11 @@
  * Purpose: bounded in-memory event log. Mask full text before any cap (SEC-03).
  * Owner: builder-grok
  */
-import { maskSecrets } from './mask.js';
+import { maskThenTruncate } from './output-filter.js';
 
 export const MAX_EVENTS = 500;
 export const MAX_CHARS = 262144;
 export const LOG_TEXT_MAX = 800;
-
-export function maskThenClip(text) {
-  const masked = maskSecrets(String(text ?? ''));
-  if (masked.length <= LOG_TEXT_MAX) return masked;
-  return masked.slice(-LOG_TEXT_MAX);
-}
 
 export function parseLogQuery(searchParams) {
   const limitRaw = searchParams.get('limit');
@@ -157,7 +151,7 @@ export function createLogBuffer() {
       name: partial.name ?? null,
       fromStatus: partial.fromStatus ?? null,
       toStatus: partial.toStatus ?? null,
-      text: maskThenClip(partial.text),
+      text: maskThenTruncate(partial.text, LOG_TEXT_MAX, { keep: 'tail' }).text,
     };
     events.push(ev);
     trim();

@@ -6,12 +6,31 @@ Each item links the PR, commit, or file it describes (CHG-04).
 ## 2026-10-18
 
 - Feature: `GET /api/logs` event ring (500 events / 262144 characters of `text`).
-  Masks full text before the 800-character clip (SEC-03). Newest first.
+  Uses `maskThenTruncate` for event text. Newest first.
   `adapter_error` is one event per outage episode; a new event after recovery.
   PR: https://github.com/modern-solver/herdr-city/pull/18
+- Security: `src/output-filter.js` `maskThenTruncate` masks full text then
+  truncates. Screen, sessions and city pane/activity fields use it (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Fix: `GET /api/screen` runs `maskSecrets` on the full pane, then keeps the
+  newest 80000 characters (SEC-03). A token that straddled the old head cut
+  no longer leaks a `ghp_` prefix.
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Feature: `GET /api/screen` returns the last pane read after `maskSecrets`,
+  with `lineCount`, 80000-character `truncated` cap, and the session object.
+  Missing `paneId` is 400; unknown pane is 404.
+  PR: https://github.com/modern-solver/herdr-city/pull/15
 - Feature: `GET /api/sessions` console session list with district, cli, model,
   status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
   Session `activity` is masked (SEC-03). PR: https://github.com/modern-solver/herdr-city/pull/8
+- Docs: Context-layer CODEMAP (`docs/CODEMAP.md`), regen script
+  (`scripts/codemap.js`, `npm run codemap`), staleness test
+  (`test/codemap.test.js`), and module READMEs under `src/`, `test/`, `page/`,
+  `fixtures/`, `config/`, `web/`, `scripts/` (CTX-09, CTX-10).
+  PR: https://github.com/modern-solver/herdr-city/pull/9
+- Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
+  `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
+  `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.

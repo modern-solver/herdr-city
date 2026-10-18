@@ -8,13 +8,8 @@ import { createFixtureClient } from '../src/fixtures.js';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
 import { MASK } from '../src/mask.js';
-import {
-  LOG_TEXT_MAX,
-  MAX_CHARS,
-  MAX_EVENTS,
-  createLogBuffer,
-  maskThenClip,
-} from '../src/logs.js';
+import { LOG_TEXT_MAX, MAX_CHARS, MAX_EVENTS, createLogBuffer } from '../src/logs.js';
+import { maskThenTruncate } from '../src/output-filter.js';
 
 test('GET /api/logs includes a needs_you event after a fixture tick', async () => {
   const adapter = createAdapter({ client: createFixtureClient() });
@@ -34,7 +29,10 @@ test('GET /api/logs includes a needs_you event after a fixture tick', async () =
     assert.equal(body.bounded.maxEvents, MAX_EVENTS);
     assert.equal(body.bounded.maxChars, MAX_CHARS);
     assert.equal(body.bounded.count, body.events.length);
-    assert.equal(body.bounded.chars, body.events.reduce((n, e) => n + e.text.length, 0));
+    assert.equal(
+      body.bounded.chars,
+      body.events.reduce((n, e) => n + e.text.length, 0),
+    );
     const dumped = JSON.stringify(body);
     assert.equal(dumped.includes('ghp_'), false);
     assert.equal(dumped.includes('sk-thisIs'), false);
@@ -54,17 +52,23 @@ test('after 501 status changes the log length is 500', async () => {
     async agentList() {
       seq += 1;
       status = status === 'idle' ? 'working' : 'idle';
-      return [{
-        pane_id: 'w1:p1',
-        workspace_id: 'w1',
-        name: 'bot',
-        agent_status: status,
-        revision: seq,
-        state_change_seq: seq,
-      }];
+      return [
+        {
+          pane_id: 'w1:p1',
+          workspace_id: 'w1',
+          name: 'bot',
+          agent_status: status,
+          revision: seq,
+          state_change_seq: seq,
+        },
+      ];
     },
-    async workspaceList() { return []; },
-    async paneRead() { return 'ok'; },
+    async workspaceList() {
+      return [];
+    },
+    async paneRead() {
+      return 'ok';
+    },
   };
   const adapter = createAdapter({ client, now: () => seq });
   try {
@@ -98,17 +102,23 @@ test('adapter_error is one event per outage episode', async () => {
     async agentList() {
       n += 1;
       if (down) throw new Error('herdr down');
-      return [{
-        pane_id: 'w1:p1',
-        workspace_id: 'w1',
-        name: 'bot',
-        agent_status: 'idle',
-        revision: n,
-        state_change_seq: n,
-      }];
+      return [
+        {
+          pane_id: 'w1:p1',
+          workspace_id: 'w1',
+          name: 'bot',
+          agent_status: 'idle',
+          revision: n,
+          state_change_seq: n,
+        },
+      ];
     },
-    async workspaceList() { return []; },
-    async paneRead() { return 'ok'; },
+    async workspaceList() {
+      return [];
+    },
+    async paneRead() {
+      return 'ok';
+    },
   };
   const adapter = createAdapter({ client, now: () => n });
   try {
@@ -133,12 +143,11 @@ test('adapter_error is one event per outage episode', async () => {
 
 test('token straddling the 800-char cap is masked before clip', () => {
   const ghp = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  const jwt =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.signaturepartshere';
+  const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.signaturepartshere';
   const raw = `${'x'.repeat(LOG_TEXT_MAX - 5)} ${ghp} ${jwt}`;
   const headCut = raw.slice(0, LOG_TEXT_MAX);
   assert.equal(headCut.includes('ghp_'), true);
-  const out = maskThenClip(raw);
+  const out = maskThenTruncate(raw, LOG_TEXT_MAX, { keep: 'tail' }).text;
   assert.equal(out.length <= LOG_TEXT_MAX, true);
   assert.equal(out.includes('ghp_'), false);
   assert.equal(out.includes('eyJ'), false);
