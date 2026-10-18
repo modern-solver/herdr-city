@@ -4,5 +4,4 @@ docs
 fixtures
 node_modules
 package-lock.json
-pr5-body.tmp
 *.tmp
