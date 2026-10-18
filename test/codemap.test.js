@@ -16,6 +16,7 @@ import {
   shouldSkip,
   walk,
   entriesFromGit,
+  renderJsModules,
 } from '../scripts/codemap.js';
 
 function git(dir, args) {
@@ -71,4 +72,31 @@ test('CRLF CODEMAP text matches LF after normalizeEol', () => {
   const readBack = fs.readFileSync(tmp, 'utf8');
   assert.equal(normalizeEol(readBack), normalizeEol(lf));
   fs.rmSync(tmp, { force: true });
+});
+
+test('renderJsModules dedupes duplicate entries and duplicate imports', () => {
+  const dir = makeGitDir();
+  fs.mkdirSync(path.join(dir, 'src'));
+  fs.writeFileSync(
+    path.join(dir, 'src', 'a.js'),
+    "import { x } from './b.js';\nimport { x as y } from './b.js';\nexport const A = 1;\n",
+  );
+  fs.writeFileSync(path.join(dir, 'src', 'b.js'), 'export const x = 1;\n');
+  git(dir, ['add', 'src/a.js', 'src/b.js']);
+  git(dir, ['commit', '-m', 'pair']);
+  const dupEntries = [
+    { rel: 'src/a.js', isDir: false },
+    { rel: 'src/a.js', isDir: false },
+    { rel: 'src/b.js', isDir: false },
+    { rel: 'src/b.js', isDir: false },
+  ];
+  const text = renderJsModules(dir, dupEntries);
+  const aRows = text.split('\n').filter((l) => l.startsWith('| `src/a.js`'));
+  const bRows = text.split('\n').filter((l) => l.startsWith('| `src/b.js`'));
+  assert.equal(aRows.length, 1);
+  assert.equal(bRows.length, 1);
+  assert.equal((bRows[0].match(/src\/a\.js/g) || []).length, 1);
+  const fromGit = entriesFromGit(dir).map((e) => e.rel);
+  assert.equal(fromGit.filter((r) => r === 'src/a.js').length, 1);
+  fs.rmSync(dir, { recursive: true, force: true });
 });

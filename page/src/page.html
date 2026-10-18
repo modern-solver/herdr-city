@@ -394,6 +394,62 @@
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   }
+  /* P1 Console UI styles */
+  .console-shell{
+    position: fixed; inset: 0; background: #0e1117; color: #c9d1d9;
+    display: flex; flex-direction: column; z-index: 100;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .console-shell[hidden]{ display: none !important; }
+  .console-header{
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; padding: 0 20px; background: rgba(22, 27, 34, 0.85);
+    backdrop-filter: blur(12px); border-bottom: 1px solid #30363d;
+    gap: 16px;
+  }
+  .c-brand-area{ display: flex; align-items: center; gap: 12px; }
+  .c-brand-link{
+    display: flex; align-items: center; gap: 8px; text-decoration: none;
+    color: #f0f6fc; font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 700;
+  }
+  .c-brand-link .mark{ width: 22px; height: 22px; }
+  .mode-badge{
+    font-size: 11px; text-transform: uppercase; font-weight: 700;
+    letter-spacing: 0.5px; padding: 2px 8px; border-radius: 12px;
+    background: #21262d; color: #8b949e; border: 1px solid #30363d;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .mode-badge.mode-live{ background: #13231b; color: #3fb950; border-color: #238636; }
+  .mode-badge.mode-fixture{ background: #1c2128; color: #58a6ff; border-color: #388bfd; }
+  .mode-badge.mode-demo{ background: #271d13; color: #d29922; border-color: #9e6a03; }
+  .console-tabs{ display: flex; align-items: center; gap: 6px; }
+  .c-tab{
+    color: #8b949e; text-decoration: none; font-size: 13px; font-weight: 500;
+    padding: 6px 12px; border-radius: 6px; transition: all 0.15s ease;
+  }
+  .c-tab:hover{ color: #f0f6fc; background: #21262d; }
+  .c-tab.active, .c-tab[aria-selected="true"]{
+    color: #f0f6fc; background: #238636; font-weight: 600;
+  }
+  .c-actions{ display: flex; align-items: center; gap: 12px; }
+  .c-timestamp{ color: #8b949e; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .btn-refresh, .btn-city-link{
+    background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-refresh:hover, .btn-city-link:hover{ background: #30363d; color: #f0f6fc; border-color: #8b949e; }
+  .btn-city-link{ font-weight: 600; color: #58a6ff; border-color: rgba(56, 139, 253, 0.4); }
+  .console-main{ flex: 1; overflow-y: auto; padding: 24px; background: #0d1117; }
+  .console-tab-pane[hidden]{ display: none !important; }
+  .console-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 24px; max-width: 900px; margin: 0 auto;
+  }
+  .console-card h2{ margin: 0 0 8px 0; font-size: 20px; color: #f0f6fc; }
+  .console-card p.muted{ margin: 0; color: #8b949e; font-size: 14px; }
+  .route-switcher{ text-decoration: none; color: inherit; display: inline-flex; }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -406,6 +462,7 @@
     <h1 class="wordmark"><svg class="mark" aria-hidden="true"><use href="#mastmark"/></svg>mastopia</h1>
   </div>
   <div class="toolbar glass" role="toolbar" aria-label="City controls">
+    <a href="/console" class="tb route-switcher" id="btnGoConsole" aria-label="Open Console dashboard" title="Open Console dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span class="tip">Console UI →</span></a>
     <button class="tb" id="btnConsole" aria-pressed="true" aria-label="Console"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="tip">Console (C)</span></button>
     <button class="tb" id="btnTime" aria-label="Time of day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="tip" id="tipTime">Time: auto (T)</span></button>
     <button class="tb" id="btnSafe" aria-pressed="false" aria-label="Safe to film"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tip">Safe to film (S)</span></button>
@@ -498,6 +555,67 @@
 
 <div class="boot" id="boot"><div class="in"><svg class="b-mark" aria-hidden="true"><use href="#mastmark"/></svg><div class="wm">MASTOPIA</div><p id="bootMsg">Raising the districts…</p><div class="bar"><i></i></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="console-shell" id="consoleShell" hidden>
+  <header class="console-header" role="banner">
+    <div class="c-brand-area">
+      <a href="/" class="c-brand-link" id="consoleHomeLink" aria-label="mastopia home">
+        <svg class="mark" aria-hidden="true"><use href="#mastmark"/></svg>
+        <span>mastopia</span>
+      </a>
+      <span class="mode-badge mode-live" id="consoleModeBadge">live</span>
+    </div>
+    <nav class="console-tabs" role="tablist" aria-label="Console views">
+      <a href="#sessions" role="tab" class="c-tab active" id="tab-sessions" aria-selected="true" aria-controls="view-sessions">Sessions</a>
+      <a href="#screen" role="tab" class="c-tab" id="tab-screen" aria-selected="false" aria-controls="view-screen">Pane Screen</a>
+      <a href="#logs" role="tab" class="c-tab" id="tab-logs" aria-selected="false" aria-controls="view-logs">Event Logs</a>
+      <a href="#rulebook" role="tab" class="c-tab" id="tab-rulebook" aria-selected="false" aria-controls="view-rulebook">Rulebook</a>
+      <a href="#ops-desk" role="tab" class="c-tab" id="tab-ops-desk" aria-selected="false" aria-controls="view-ops-desk">Ops Desk</a>
+    </nav>
+    <div class="c-actions">
+      <small class="c-timestamp" id="consoleLastUpdated">Waiting for data</small>
+      <button type="button" class="btn-refresh" id="btnConsoleRefresh" aria-label="Refresh view data">
+        <span>Refresh</span>
+      </button>
+      <a href="/" class="btn-city-link" id="btnSwitchToCity" aria-label="Return to 3D City">
+        <span>3D City →</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="console-main" id="consoleMain">
+    <section class="console-tab-pane" id="view-sessions" role="tabpanel" aria-labelledby="tab-sessions">
+      <div class="console-card">
+        <h2>Sessions List</h2>
+        <p class="muted">Foundation ready for U2.</p>
+      </div>
+    </section>
+    <section class="console-tab-pane" id="view-screen" role="tabpanel" aria-labelledby="tab-screen" hidden>
+      <div class="console-card">
+        <h2>Pane Screen Viewer</h2>
+        <p class="muted">Foundation ready for U4.</p>
+      </div>
+    </section>
+    <section class="console-tab-pane" id="view-logs" role="tabpanel" aria-labelledby="tab-logs" hidden>
+      <div class="console-card">
+        <h2>Event Logs</h2>
+        <p class="muted">Foundation ready for U5.</p>
+      </div>
+    </section>
+    <section class="console-tab-pane" id="view-rulebook" role="tabpanel" aria-labelledby="tab-rulebook" hidden>
+      <div class="console-card">
+        <h2>Rulebook &amp; Compliance</h2>
+        <p class="muted">Foundation ready for U7.</p>
+      </div>
+    </section>
+    <section class="console-tab-pane" id="view-ops-desk" role="tabpanel" aria-labelledby="tab-ops-desk" hidden>
+      <div class="console-card">
+        <h2>Ops Desk Queue</h2>
+        <p class="muted">Foundation ready for U6.</p>
+      </div>
+    </section>
+  </main>
+</div>
 
 <script>
   // If the 3D engine never starts (no WebGL, a script that failed to load), say so on the boot screen.

@@ -4,7 +4,7 @@
 |---|---|
 | Agent | builder-grok |
 | Model | grok-4.5 (high) |
-| Date | 2026-10-18 |
+| Date | 2026-10-19 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
 | Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b6-ops-desk` |
 | Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
@@ -19,8 +19,8 @@
 
 ## Current task
 
-PR #17 r4 (task-2250): merge fixed B2; ops-desk leak uses head-cut
-`boundaryText`; remask comment. Keep draft. Retarget after #15.
+PR #17 r5: merge fixed B2; codemap dedupe unit test; ops-desk prompt-line
+and filler tokens. Keep draft. Retarget after #15.
 
 ## Files touched
 
@@ -35,6 +35,7 @@ Net vs `origin/feat/grok-b2-screen`:
 - `src/adapter.js`
 - `src/ops-desk.js`
 - `src/server.js`
+- `test/codemap.test.js`
 - `test/leak.test.js`
 - `test/ops-desk.test.js`
 

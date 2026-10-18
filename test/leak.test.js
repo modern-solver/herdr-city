@@ -1,5 +1,5 @@
 /**
- * Purpose: leak tests for screen, sessions and city JSON. Secrets at start, middle, end, boundary.
+ * Purpose: leak tests for screen, sessions, city and ops-desk JSON. Secrets at start, middle, end, boundary.
  * Owner: builder-grok
  */
 import { test } from 'node:test';
@@ -82,7 +82,7 @@ test('GET /api/screen JSON has no secrets at start, middle, end or tail boundary
 });
 
 test('GET /api/sessions JSON has no secrets at start, middle, end or activity boundary', async () => {
-  const title = `${TOKS}mid ${boundaryText(ACTIVITY_MAX, GHP, ` ${SK}`)}`;
+  const title = `${TOKS}mid ${boundaryText(ACTIVITY_MAX, GHP, ` ${AKIA} mid ${SK}`)}`;
   assertCutInsideToken(title, ACTIVITY_MAX, GHP);
   const pane = 'plain output';
   await withServer(leakClient({ pane, title, status: 'idle' }), async (port) => {
@@ -94,9 +94,10 @@ test('GET /api/sessions JSON has no secrets at start, middle, end or activity bo
 });
 
 test('GET /api/city JSON has no secrets at start, middle, end or activity boundary', async () => {
-  const pane = `${TOKS}plain ${boundaryText(ACTIVITY_MAX, GHP, ` ${AKIA}`)}`;
-  assertCutInsideToken(pane, ACTIVITY_MAX, GHP);
-  await withServer(leakClient({ pane, title: `${TOKS}title${TOKS}` }), async (port) => {
+  // idle + title hits maskedClip(title, 240) (not prompt/error paths).
+  const title = `${TOKS}mid ${boundaryText(ACTIVITY_MAX, GHP, ` ${AKIA} mid ${SK}`)}`;
+  assertCutInsideToken(title, ACTIVITY_MAX, GHP);
+  await withServer(leakClient({ pane: 'plain output', title, status: 'idle' }), async (port) => {
     const res = await fetch(`http://127.0.0.1:${port}/api/city`);
     assert.equal(res.status, 200);
     const body = await res.json();
@@ -104,12 +105,28 @@ test('GET /api/city JSON has no secrets at start, middle, end or activity bounda
   });
 });
 
+test('GET /api/screen truncated stays true when masked text exceeds cap', async () => {
+  const extra = '#'.repeat(1000);
+  const pane = `${TOKS}mid ${boundaryText(SCREEN_CAP, GHP, ` ${JWT}`)}${extra}`;
+  await withServer(leakClient({ pane }), async (port) => {
+    const res = await fetch(`http://127.0.0.1:${port}/api/screen?paneId=w9:p1`);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.truncated, true);
+    assert.equal(body.text.length, SCREEN_CAP);
+    assertClean(body, LEAK_TOKENS);
+  });
+});
+
 test('GET /api/ops-desk JSON has no secrets at start, middle, end or prompt boundary', async () => {
-  // contains path -> slicePrompt -> capPrompt keep head 800 (regex capture tops out at 500).
-  const prefix = 'Needs your approval\n';
-  const bodyMax = 800 - prefix.length;
-  const body = boundaryText(bodyMax, GHP, ` ${JWT} ${SK}${TOKS}`, { keep: 'head' });
-  const pane = `${prefix}${body}`;
+  // contains path -> slicePrompt -> capPrompt keep head 800.
+  // Token on the prompt line + filler token before boundary GHP.
+  const prefix = `Needs your approval ${AKIA}\n`;
+  const before = `${JWT} `;
+  const overlap = 16;
+  const padLen = 800 - overlap - prefix.length - before.length;
+  // Extra # after GHP so post-mask extract still exceeds 800 for capPrompt.
+  const pane = `${prefix}${before}${'#'.repeat(Math.max(0, padLen))}${GHP}${'#'.repeat(300)} ${SK}${TOKS}`;
   assertCutInsideToken(pane, 800, GHP, { keep: 'head' });
   await withServer(leakClient({ pane, title: `${TOKS}title${TOKS}` }), async (port) => {
     const res = await fetch(`http://127.0.0.1:${port}/api/ops-desk`);
