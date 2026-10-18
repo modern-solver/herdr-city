@@ -74,7 +74,7 @@ The builder-gemini agent touched and maintains the following files on `feat/gemi
 11. `test/console-ui.test.js`:
     - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
 12. `CHANGELOG.md`:
-    - Added dated entry for U4 pane screen viewer implementation.
+    - Added dated entry for U4 pane screen viewer implementation linking PR #14 (CHG-04).
 13. `docs/agents/builder-gemini.md`:
     - Updated agent memory tracking U4 implementation.
 

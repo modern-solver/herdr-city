@@ -10,7 +10,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
   raw ANSI sequence pass-through, truncation warning banner, unselected/loading/error states, and responsive styles.
   Files: `page/src/screen-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
   `page/README.md`, `web/index.html`, `test/screen-ui.test.js`.
-  Branch: `feat/gemini-u4-screen` (stacked on PR #10 https://github.com/modern-solver/herdr-city/pull/10).
+  PR: https://github.com/modern-solver/herdr-city/pull/14 (stacked on PR #10)
 - Feature: Implemented Milestone U2 (User Interface Milestone 2) sessions list view (`#sessions`),
   rendering agent sessions from `GET /api/sessions` with status badges, directory, activity preview,
   relative timestamps, inspect links to `#screen?paneId=...`, adapter error notice resilience,
