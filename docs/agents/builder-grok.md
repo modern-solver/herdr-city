@@ -17,9 +17,8 @@
 
 ## Current task
 
-B7 PR #11: bind stays `127.0.0.1` in every mode, including `--demo`. `0.0.0.0`
-only with `--host 0.0.0.0` / `MASTOPIA_HOST=0.0.0.0` (demo-only LAN exposure).
-Live plus that opt-in is refused. README documents the opt-in.
+PR #11 r2 docs: spec, PRD, and roadmap match Shaunak 17:53 (local-only bind
+default). CHANGELOG Decision item added. Then wait on reviewer.
 
 ## Files touched
 
@@ -28,6 +27,9 @@ Live plus that opt-in is refused. README documents the opt-in.
 - `test/demo.test.js`
 - `CHANGELOG.md`
 - `README.md`
+- `docs/spec-sheet.md`
+- `docs/prd.md`
+- `docs/roadmap.md`
 - `docs/agents/builder-grok.md`
 
 ## Open questions
@@ -37,8 +39,10 @@ veto).
 
 ## Last-session learnings
 
-- Independent P1 items branch from `origin/main` as `feat/grok-*`. Never merge
-  `#7` into this branch; lint lands after Shaunak merges `#7`.
+- Independent P1 items branch from `origin/main` as `feat/grok-*`. Every git
+  command uses `git -C C:\Users\shaun\mastopia-grok`. Never touch the lead
+  checkout.
+- PR #7 merged as `c1b0ccd`. PR #9 merged `origin/main` as `5ed8c28`.
 - PR bodies live as `*.tmp` in the worktree. Never git add them.
 - `parseArgs` takes an `env` object so tests can prove `PORT` is unread unless
   demo.

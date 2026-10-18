@@ -53,12 +53,18 @@ test('demo plus --host 0.0.0.0 or MASTOPIA_HOST binds 0.0.0.0', () => {
 });
 
 test('live plus 0.0.0.0 opt-in is refused', () => {
-  const liveFlag = resolveBindHost('0.0.0.0', false);
-  assert.ok(liveFlag.error);
-  const liveEnv = resolveBindHost('0.0.0.0', false);
-  assert.equal(resolveBindHost('127.0.0.1', false).host, '127.0.0.1');
-  assert.equal(resolveBindHost('0.0.0.0', true).host, '0.0.0.0');
-  assert.ok(liveEnv.error);
+  assert.ok(resolveBindHost('0.0.0.0', false).error);
+  const orig = process.exit;
+  let code;
+  try {
+    process.exit = (c) => {
+      code = c;
+    };
+    parseArgs(argv, { MASTOPIA_HOST: '0.0.0.0' });
+  } finally {
+    process.exit = orig;
+  }
+  assert.equal(code, 2);
 });
 
 test('demo without opt-in binds 127.0.0.1; demo plus opt-in binds 0.0.0.0', async () => {

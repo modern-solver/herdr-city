@@ -11,6 +11,7 @@
 | Author (product/UI) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
 | Approval | Approved by Shaunak (2026-10-18) |
+| Change | 2026-10-18, Shaunak: local-only bind default |
 
 This file records backend and UI product requirements in full. builder-grok owns
 the backend requirements; builder-gemini owns the UI requirements and view specifications.
@@ -103,10 +104,11 @@ BR-08. `POST /api/answer`, `POST /api/send-keys`, `POST /api/send-text`, and
 BR-09. Token-looking strings never leave the API unmasked (SEC-03). Tests cover
 fixture pane secrets on screen and logs.
 
-BR-10. Default bind is `127.0.0.1`. `--demo` or `MASTOPIA_DEMO=1` uses fixture
-data, binds `0.0.0.0`, and reads `PORT` then `MASTOPIA_PORT` then 7740.
-Without the demo flag the process does not read `PORT` and does not bind
-`0.0.0.0`.
+BR-10. Default bind is `127.0.0.1` in every mode. `--demo` or `MASTOPIA_DEMO=1`
+uses fixture data and reads `PORT` then `MASTOPIA_PORT` then 7740.
+`0.0.0.0` needs `--demo` plus `--host 0.0.0.0` or `MASTOPIA_HOST=0.0.0.0`
+(LAN exposure). Live mode refuses that opt-in. Without the demo flag the
+process does not read `PORT`.
 
 BR-11. Adapter poll stays 2000 ms. Pane read runs only when the fingerprint
 changes.
@@ -223,8 +225,8 @@ Each criterion is testable after implementation PRs (not this docs PR).
    `recommendation: null`. Command: `npm test`.
 7. `POST /api/answer` returns 409. Command: `npm test` (existing plus new send
    paths).
-8. Process with `--demo` listens on `0.0.0.0`; default listens on `127.0.0.1`.
-   Command: `npm test`.
+8. `--demo` still listens on `127.0.0.1`; `--demo --host 0.0.0.0` listens on
+   `0.0.0.0`; live plus that opt-in is refused. Command: `npm test`.
 9. City and console navigation.
    - Step: Operator loads `http://127.0.0.1:7740/`, clicks `[Console ->]`, then clicks `[<- 3D City]`.
    - Expected: Browser transitions from 3D city to console dashboard, then returns to 3D city.

@@ -12,6 +12,10 @@ Each item links the PR, commit, or file it describes (CHG-04).
   `host`. Host and Origin loopback checks are skipped in demo only. README
   documents `--demo`, `MASTOPIA_DEMO=1`, `PORT` (demo only), and the LAN opt-in.
   PR: https://github.com/modern-solver/herdr-city/pull/11
+- Decision: Shaunak (17:53 IST): bind stays `127.0.0.1` in every mode,
+  including `--demo`. `0.0.0.0` is demo-only LAN exposure via `--host 0.0.0.0`
+  or `MASTOPIA_HOST=0.0.0.0`. Live mode refuses that opt-in.
+  PR: https://github.com/modern-solver/herdr-city/pull/11
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.
