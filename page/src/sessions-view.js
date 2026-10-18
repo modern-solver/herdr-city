@@ -177,24 +177,37 @@ export async function fetchSessions(
   query = {},
 ) {
   if (typeof fetchFn !== 'function') {
-    return { ok: false, error: 'fetch is not available', sessions: [], adapterError: null };
+    return { ok: false, error: 'fetch is not available', sessions: [], adapterError: null, filters: null };
   }
   try {
     const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(query)) {
-      if (v != null && v !== '') params.set(k, String(v));
+    if (query instanceof URLSearchParams) {
+      for (const [k, v] of query.entries()) {
+        if (v != null && v !== '') params.set(k, String(v));
+      }
+    } else if (typeof query === 'string') {
+      const qPart = query.includes('?') ? query.split('?')[1] : query.replace(/^#\/?/, '');
+      const parsed = new URLSearchParams(qPart);
+      for (const [k, v] of parsed.entries()) {
+        if (v != null && v !== '') params.set(k, String(v));
+      }
+    } else if (query && typeof query === 'object') {
+      for (const [k, v] of Object.entries(query)) {
+        if (v != null && v !== '') params.set(k, String(v));
+      }
     }
     const qStr = params.toString();
     const url = `/api/sessions${qStr ? `?${qStr}` : ''}`;
     const res = await fetchFn(url, { cache: 'no-store' });
     if (!res.ok) {
-      return { ok: false, error: `HTTP ${res.status}`, sessions: [], adapterError: null };
+      return { ok: false, error: `HTTP ${res.status}`, sessions: [], adapterError: null, filters: null };
     }
     const data = await res.json();
     const sessions = Array.isArray(data?.sessions) ? data.sessions : [];
     const adapterError = data?.error || null;
-    return { ok: true, data, sessions, adapterError, error: adapterError };
+    const filters = data?.filters || null;
+    return { ok: true, data, sessions, filters, adapterError, error: adapterError };
   } catch (err) {
-    return { ok: false, error: err?.message || 'Network error', sessions: [], adapterError: null };
+    return { ok: false, error: err?.message || 'Network error', sessions: [], adapterError: null, filters: null };
   }
 }

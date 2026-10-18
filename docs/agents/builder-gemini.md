@@ -34,6 +34,7 @@
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
+| U3 | User Interface Milestone 3 |
 | U4 | User Interface Milestone 4 |
 | U5 | User Interface Milestone 5 |
 | U6 | User Interface Milestone 6 |
@@ -44,54 +45,59 @@
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U5 (User Interface Milestone 5) — Event logs view (`#logs`),
-  rendering bounded ring buffer telemetry and reverse-chronological event stream from `GET /api/logs`,
-  with type and keyword filtering, millisecond timestamps, type badges, transitions, and adapter resilience.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u5-logs` (stacked on `feat/gemini-u7-rulebook`).
-- Status: Implemented U5 event logs view with 82 passing unit/integration tests; prepared draft PR.
+- Milestone: U3 (User Interface Milestone 3) — Session filters UI (`#sessions`),
+  implementing toolbar controls for B4 parameters (`q` with 300 ms debounce, `district`, `cli`,
+  `status` segmented button group, `model`, `Reset` button), URL hash query reflection,
+  dismissible filter chips from server echo, focus-preserving input sync, and shared helpers.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u3-filters` (stacked on `feat/gemini-u5-logs`).
+- Status: Implemented U3 session filters view with 92 passing unit/integration tests; prepared draft PR.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u5-logs`:
+The builder-gemini agent touched and maintains the following files on `feat/gemini-u3-filters`:
 
-1. `page/src/logs-view.js`:
+1. `page/src/filters-view.js`:
+   - Standalone session list filters toolbar, segmented controls, debounced search, and active chips.
+2. `page/src/sessions-view.js`:
+   - Updated `fetchSessions` to support `URLSearchParams`, string, or object queries and return echoed filters.
+3. `page/src/07-console.js`:
+   - Updated `refreshSessionsData` and `refreshActiveTab` to mount filters toolbar and sync dismissible chips.
+4. `page/src/page.html`:
+   - Added `#sessionsFiltersContainer` and U3 filter toolbar, segmented button, and chip styles.
+5. `page/build.js`:
+   - Added `filters-view.js` to module bundle order before `07-console.js`.
+6. `test/filters-ui.test.js`:
+   - Unit tests covering filter parsing, query serialization, debounce, segmented controls, chips, and fetch contract.
+7. `page/src/logs-view.js`:
    - Standalone event logs rendering, ring buffer telemetry, filtering, and fetch helpers.
-2. `page/src/rulebook-view.js`:
+8. `page/src/rulebook-view.js`:
    - Standalone rulebook and district compliance rendering, rules table, filtering, and fetch helpers.
-3. `page/src/ops-desk-view.js`:
+9. `page/src/ops-desk-view.js`:
    - Standalone ops desk queue view rendering, card layout, wait timers, and fetch helpers.
-4. `page/src/screen-view.js`:
-   - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
-5. `page/src/sessions-view.js`:
-   - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-6. `page/src/console-router.js`:
-   - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-7. `page/src/07-console.js`:
-   - Shipped console shell controller consuming router and all view modules.
-8. `page/src/page.html`:
-   - Added `#view-logs` and `#view-rulebook` card layouts, styles, and filter bars.
-9. `page/build.js`:
-   - Bundles all modules before `07-console.js` into `web/index.html`.
-10. `web/index.html`:
+10. `page/src/screen-view.js`:
+    - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
+11. `page/src/console-router.js`:
+    - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
+12. `web/index.html`:
     - Generated client bundle containing 3D City, Console Shell, and all dashboard views.
-11. `page/README.md`:
+13. `page/README.md`:
     - Documented all view modules in frontend modules list (CTX-10).
-12. `test/logs-ui.test.js`:
+14. `test/logs-ui.test.js`:
     - Unit tests for timestamp formatting, event badges, transitions, filtering, and fetch contract.
-13. `test/rulebook-ui.test.js`:
+15. `test/rulebook-ui.test.js`:
     - Unit tests for district cards, rules table, filtering, error cards, and contract fetcher.
-14. `test/ops-desk-ui.test.js`:
+16. `test/ops-desk-ui.test.js`:
     - Unit tests for wait duration, card rendering, queue sorting, error cards, and contract fetcher.
-15. `test/screen-ui.test.js`:
+17. `test/screen-ui.test.js`:
     - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
-16. `test/sessions-ui.test.js`:
+18. `test/sessions-ui.test.js`:
     - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-17. `test/console-ui.test.js`:
+19. `test/console-ui.test.js`:
     - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-18. `CHANGELOG.md`:
-    - Added dated entry for U5 event logs view linking PR #20 (CHG-04).
-19. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U5 implementation.
+20. `CHANGELOG.md`:
+    - Added dated entry for U3 session filters view linking PR #21 (CHG-04).
+21. `docs/agents/builder-gemini.md`:
+    - Updated agent memory tracking U3 implementation.
 
 ## Open questions
 

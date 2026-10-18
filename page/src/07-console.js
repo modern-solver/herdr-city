@@ -29,11 +29,32 @@
     }
   }
 
-  async function refreshSessionsData() {
+  async function refreshSessionsData(params) {
     const container = document.getElementById('sessionsContent');
+    const filtersContainer = document.getElementById('sessionsFiltersContainer');
     const countEl = document.getElementById('sessionsCount');
     if (!container) return;
-    const res = await fetchSessions(window.fetch);
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    const activeFilters = parseFilterParams(effectiveParams);
+
+    if (filtersContainer) {
+      renderFiltersView(filtersContainer, {
+        activeFilters,
+        onFilterChange: (newFilters) => {
+          updateUrlFilterHash(newFilters);
+        },
+        onReset: (emptyFilters) => {
+          updateUrlFilterHash(emptyFilters);
+        },
+        onDismissChip: (dismissedKey) => {
+          const cur = parseFilterParams(parseHash(window.location.hash).params);
+          cur[dismissedKey] = null;
+          updateUrlFilterHash(cur);
+        },
+      });
+    }
+
+    const res = await fetchSessions(window.fetch, activeFilters);
     if (!res.ok) {
       renderSessionsView(container, { error: res.error });
       updateConsoleTimestamp(document, 'Error loading data');
@@ -43,6 +64,9 @@
     if (countEl) {
       const n = res.sessions.length;
       countEl.textContent = `${n} session${n === 1 ? '' : 's'}`;
+    }
+    if (filtersContainer) {
+      updateFilterChips(filtersContainer, res.filters || activeFilters);
     }
     const now = new Date();
     const statusNote = res.adapterError ? ' (adapter notice)' : '';
@@ -124,7 +148,7 @@
   function refreshActiveTab(params) {
     const effectiveParams = params || parseHash(window.location.hash).params;
     if (activeTab === 'sessions') {
-      refreshSessionsData();
+      refreshSessionsData(effectiveParams);
     } else if (activeTab === 'screen') {
       const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
       refreshScreenData(paneId);
