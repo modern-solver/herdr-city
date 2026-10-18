@@ -153,7 +153,7 @@ export function renderRulesTableHtml(rules, filterQuery = '') {
   );
 }
 
-export function renderRulebookOverviewHtml(data, { filterQuery = '', adapterError = null } = {}) {
+export function renderRulebookNoticesHtml(data, adapterError = null) {
   const isHandbookMissing = data?.error === 'handbook_missing' || !data?.handbook;
 
   const handbookNotice = isHandbookMissing
@@ -163,12 +163,19 @@ export function renderRulebookOverviewHtml(data, { filterQuery = '', adapterErro
       `</div>`
     : '';
 
-  const effectiveAdapterError = adapterError || (data?.error && data.error !== 'handbook_missing' ? data.error : null);
+  const effectiveAdapterError = adapterError
+    || (data?.error && data.error !== 'handbook_missing' ? data.error : null);
   const adapterNotice = effectiveAdapterError
     ? `<div class="rulebook-notice rulebook-notice-error" id="rulebookAdapterNotice" role="status">` +
       `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(effectiveAdapterError)}` +
       `</div>`
     : '';
+
+  return `${handbookNotice}${adapterNotice}`;
+}
+
+export function renderRulebookOverviewHtml(data, { filterQuery = '', adapterError = null } = {}) {
+  const noticesHtml = renderRulebookNoticesHtml(data, adapterError);
 
   const districts = Array.isArray(data?.districts) ? data.districts : [];
   const districtCards = districts.map((d) => renderDistrictCardHtml(d)).join('\n');
@@ -193,21 +200,20 @@ export function renderRulebookOverviewHtml(data, { filterQuery = '', adapterErro
 
   return (
     `<div class="rulebook-overview" id="rulebookOverview">` +
-    handbookNotice +
-    adapterNotice +
+    `<div class="rulebook-notices" id="rulebookNotices">${noticesHtml}</div>` +
     `<section class="rulebook-section" id="sectionDistricts">` +
     `<div class="section-header">` +
     `<h3>District Compliance Overview</h3>` +
     `<span class="section-count" id="districtsCount">${dLabel}</span>` +
     `</div>` +
-    districtsGridHtml +
+    `<div id="districtsContainer">${districtsGridHtml}</div>` +
     `</section>` +
     `<section class="rulebook-section" id="sectionRules">` +
     `<div class="section-header">` +
-    `<h3>${handbookTitle} ${handbookMeta}</h3>` +
+    `<h3 id="rulesTitle">${handbookTitle} ${handbookMeta}</h3>` +
     `<span class="section-count" id="rulesCount">${rLabel}</span>` +
     `</div>` +
-    `<div class="rulebook-filter-bar">` +
+    `<div class="rulebook-filter-bar" id="rulebookFilterBar">` +
     `<label for="rulebookFilter" class="filter-label">Filter rules:</label>` +
     `<input type="search" id="rulebookFilter" class="filter-input" ` +
     `placeholder="Search by ID (e.g. GOV-) or keyword…" value="${escapeHtml(filterQuery)}" />` +
@@ -237,23 +243,77 @@ export function renderRulebookView(
     return;
   }
 
-  const existingInput = container.querySelector ? container.querySelector('#rulebookFilter') : null;
-  const activeQuery = filterQuery !== undefined ? filterQuery : (existingInput ? existingInput.value : '');
+  const isMounted = Boolean(
+    (container.querySelector && container.querySelector('#rulebookOverview')) ||
+    (container.innerHTML && container.innerHTML.includes('id="rulebookOverview"'))
+  );
 
-  container.innerHTML = renderRulebookOverviewHtml(data, {
-    filterQuery: activeQuery,
-    adapterError,
-  });
-
-  // Attach search filter listener to update table in place
   const filterInput = container.querySelector ? container.querySelector('#rulebookFilter') : null;
-  const tableContainer = container.querySelector ? container.querySelector('#rulebookTableContainer') : null;
-  if (filterInput && tableContainer) {
-    filterInput.addEventListener('input', (e) => {
-      const q = e.target.value;
-      const rules = Array.isArray(data?.rules) ? data.rules : [];
-      tableContainer.innerHTML = renderRulesTableHtml(rules, q);
+  const activeQuery = filterQuery !== undefined ? filterQuery : (filterInput ? filterInput.value : '');
+
+  // Mount filter controls and shell once
+  if (!isMounted) {
+    container.innerHTML = renderRulebookOverviewHtml(data, {
+      filterQuery: activeQuery,
+      adapterError,
     });
+    container._lastRulebookJson = JSON.stringify({ data, adapterError });
+    container._currentRulebookData = data;
+
+    const mountedInput = container.querySelector ? container.querySelector('#rulebookFilter') : null;
+    const tableContainer = container.querySelector ? container.querySelector('#rulebookTableContainer') : null;
+    if (typeof mountedInput?.addEventListener === 'function' && tableContainer) {
+      mountedInput.addEventListener('input', (e) => {
+        const q = e.target.value;
+        const currentData = container._currentRulebookData;
+        const rules = Array.isArray(currentData?.rules) ? currentData.rules : [];
+        tableContainer.innerHTML = renderRulesTableHtml(rules, q);
+      });
+    }
+    return;
+  }
+
+  // Already mounted: update stored data reference
+  container._currentRulebookData = data;
+  const rawJson = JSON.stringify({ data, adapterError });
+  if (container._lastRulebookJson === rawJson) {
+    return;
+  }
+  container._lastRulebookJson = rawJson;
+
+  // Data changed: update only grid/table and notices; keep filter controls intact
+  const noticesEl = container.querySelector ? container.querySelector('#rulebookNotices') : null;
+  if (noticesEl) {
+    noticesEl.innerHTML = renderRulebookNoticesHtml(data, adapterError);
+  }
+
+  const districts = Array.isArray(data?.districts) ? data.districts : [];
+  const districtsCountEl = container.querySelector ? container.querySelector('#districtsCount') : null;
+  if (districtsCountEl) {
+    const dCount = districts.length;
+    districtsCountEl.textContent = `${dCount} district${dCount === 1 ? '' : 's'}`;
+  }
+
+  const districtsContainer = container.querySelector
+    ? (container.querySelector('#districtsContainer') || container.querySelector('#districtsGrid'))
+    : null;
+  if (districtsContainer) {
+    const districtCards = districts.map((d) => renderDistrictCardHtml(d)).join('\n');
+    districtsContainer.innerHTML = districts.length > 0
+      ? `<div class="districts-grid" id="districtsGrid">${districtCards}</div>`
+      : `<div class="districts-empty" id="districtsEmpty">No districts active in this environment.</div>`;
+  }
+
+  const rules = Array.isArray(data?.rules) ? data.rules : [];
+  const rulesCountEl = container.querySelector ? container.querySelector('#rulesCount') : null;
+  if (rulesCountEl) {
+    const rCount = rules.length;
+    rulesCountEl.textContent = `${rCount} rule${rCount === 1 ? '' : 's'}`;
+  }
+
+  const tableContainer = container.querySelector ? container.querySelector('#rulebookTableContainer') : null;
+  if (tableContainer) {
+    tableContainer.innerHTML = renderRulesTableHtml(rules, activeQuery);
   }
 }
 
