@@ -586,6 +586,62 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
     padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
     border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
   }
+  /* U6 Ops Desk styles */
+  .ops-desk-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto; display: flex;
+    flex-direction: column; gap: 16px;
+  }
+  .ops-header-banner{
+    padding: 12px 16px; background: rgba(56, 139, 253, 0.1); border: 1px solid rgba(56, 139, 253, 0.4);
+    border-radius: 6px; color: #79c0ff; font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ops-empty-banner{
+    padding: 32px 16px; background: rgba(46, 160, 67, 0.1); border: 1px solid rgba(46, 160, 67, 0.4);
+    border-radius: 6px; color: #3fb950; font-size: 14px; font-weight: 500;
+    text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .ops-adapter-notice{
+    padding: 10px 14px; background: rgba(210, 153, 34, 0.12); border: 1px solid rgba(210, 153, 34, 0.4);
+    border-radius: 6px; color: #e3b341; font-size: 13px; display: flex; align-items: center; gap: 8px;
+  }
+  .ops-queue{ display: flex; flex-direction: column; gap: 14px; }
+  .ops-card{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .ops-card-header{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .ops-card-meta-left{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ops-prompt-quote{
+    margin: 0; padding: 12px 16px; background: #161b22; border-left: 3px solid #da3633;
+    border-radius: 0 4px 4px 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    color: #f0f6fc; line-height: 1.5; white-space: pre-wrap; word-break: break-all;
+  }
+  .ops-card-footer{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; font-size: 12px;
+  }
+  .badge-wait{ background: #341a1a; color: #f85149; border: 1px solid #da3633; font-weight: 600; }
+  .badge-recommendation{
+    background: #21262d; color: #8b949e; border: 1px dashed #30363d;
+  }
+  .ops-card-error{
+    border-color: rgba(218, 54, 51, 0.4); background: rgba(218, 54, 51, 0.05);
+  }
+  .ops-card-error-body{
+    color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+  .ops-loading{
+    padding: 36px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .ops-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -753,9 +809,10 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
       </div>
     </section>
     <section class="console-tab-pane" id="view-ops-desk" role="tabpanel" aria-labelledby="tab-ops-desk" hidden>
-      <div class="console-card">
-        <h2>Ops Desk Queue</h2>
-        <p class="muted">Foundation ready for U6.</p>
+      <div class="ops-desk-card">
+        <div id="opsDeskContainer">
+          <div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>
+        </div>
       </div>
     </section>
   </main>
@@ -6457,6 +6514,166 @@ async function fetchScreen(
   }
 }
 
+// Module: page/src/ops-desk-view.js
+// Purpose: Ops desk queue view rendering, card layout, wait timers, and API contract consumption (U6)
+// Maintainer: builder-gemini
+
+const _esc = (s) => {
+  if (typeof escapeHtml === 'function') return escapeHtml(s);
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+function formatWaitDuration(waitMs) {
+  const ms = Number(waitMs);
+  if (!Number.isFinite(ms) || ms < 1000) return 'Waiting <1s';
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return `Waiting ${sec}s`;
+  const min = Math.floor(sec / 60);
+  const remSec = sec % 60;
+  if (min < 60) return `Waiting ${min}m ${remSec}s`;
+  const hr = Math.floor(min / 60);
+  const remMin = min % 60;
+  return `Waiting ${hr}h ${remMin}m`;
+}
+
+function renderOpsDeskCardHtml(item) {
+  if (!item) return '';
+
+  // Failed source or adapter error record for a specific source/district
+  if (item.error && !item.cli && !item.prompt) {
+    const src = _esc(item.districtId || item.id || 'Unknown source');
+    const districtTitle = item.districtTitle || item.districtId || '-';
+    return (
+      `<div class="ops-card ops-card-error" data-source="${src}">` +
+      `<div class="ops-card-header">` +
+      `<div class="ops-card-meta-left">` +
+      `<span class="badge badge-error">Source Error</span>` +
+      `<strong>${_esc(districtTitle)}</strong>` +
+      `</div>` +
+      `</div>` +
+      `<div class="ops-card-error-body">${_esc(item.error)}</div>` +
+      `</div>`
+    );
+  }
+
+  const name = item.name || item.paneId || '-';
+  const paneId = item.paneId || item.id || '';
+  const paneCaption = `<small class="sub-id">${_esc(paneId)}</small>`;
+  const districtTitle = item.districtTitle || item.districtId || '-';
+  const districtId = item.districtId ? `<small class="sub-id">${_esc(item.districtId)}</small>` : '';
+  const cliBadge = item.cli ? `<span class="badge badge-cli">${_esc(item.cli)}</span>` : '';
+  const modelBadge = item.model ? `<span class="badge badge-model">${_esc(item.model)}</span>` : '';
+  const waitLabel = formatWaitDuration(item.waitMs);
+  const prompt = item.prompt || '(empty prompt)';
+  const inspectUrl = `#screen?paneId=${encodeURIComponent(paneId)}`;
+
+  return (
+    `<div class="ops-card" data-pane-id="${_esc(paneId)}" data-since="${_esc(item.since)}">` +
+    `<div class="ops-card-header">` +
+    `<div class="ops-card-meta-left">` +
+    `<strong>${_esc(name)}</strong>${paneCaption}` +
+    `<div class="badge-group">${cliBadge}${modelBadge}</div>` +
+    `<div class="cell-wrap"><span>${_esc(districtTitle)}</span>${districtId}</div>` +
+    `</div>` +
+    `<div class="ops-card-meta-right">` +
+    `<span class="badge badge-wait">${_esc(waitLabel)}</span>` +
+    `</div>` +
+    `</div>` +
+    `<blockquote class="ops-prompt-quote">` +
+    `<p class="ops-prompt-text">${_esc(prompt)}</p>` +
+    `</blockquote>` +
+    `<div class="ops-card-footer">` +
+    `<span class="badge badge-recommendation">Recommendation: null (P1 placeholder)</span>` +
+    `<a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${_esc(paneId)}">` +
+    `Inspect Pane Screen</a>` +
+    `</div>` +
+    `</div>`
+  );
+}
+
+function renderOpsDeskQueueHtml(items, { adapterError } = {}) {
+  const headerBanner =
+    `<div class="ops-header-banner" id="opsHeaderBanner" role="note">` +
+    `<span class="ops-banner-icon" aria-hidden="true">&#9888;</span> ` +
+    `City Hall Ops Desk — Display Only (P1). Respond directly in herdr terminal.` +
+    `</div>`;
+
+  const noticeHtml = adapterError
+    ? `<div class="ops-adapter-notice" id="opsAdapterNotice" role="status">` +
+      `<span class="badge badge-error">Adapter Notice</span> ${_esc(adapterError)}</div>`
+    : '';
+
+  const hasItems = Array.isArray(items) && items.length > 0;
+  if (!hasItems) {
+    const emptyBanner =
+      `<div class="ops-empty-banner" id="opsEmpty">` +
+      `<span class="ops-check-icon" aria-hidden="true">&#10004;</span> ` +
+      `All agent queues clear. No items require attention.</div>`;
+    return `${headerBanner}${noticeHtml}${emptyBanner}`;
+  }
+
+  // Sort by since ascending (longest waiting prompt first)
+  const sorted = [...items].sort((a, b) => Number(a.since || 0) - Number(b.since || 0));
+  const cards = sorted.map((item) => renderOpsDeskCardHtml(item)).join('\n');
+
+  return (
+    `${headerBanner}${noticeHtml}` +
+    `<div class="ops-queue" id="opsQueue">${cards}</div>`
+  );
+}
+
+function renderOpsDeskView(
+  container,
+  { items, error, adapterError, loading } = {},
+) {
+  if (!container) return;
+  if (loading) {
+    container.innerHTML =
+      '<div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>';
+    return;
+  }
+
+  const effectiveAdapterError =
+    adapterError || (Array.isArray(items) && items.length > 0 ? error : null);
+
+  // Fatal error: no items list at all and error occurred
+  if (error && !effectiveAdapterError && (!Array.isArray(items) || items.length === 0)) {
+    container.innerHTML =
+      `<div class="ops-error" id="opsError" role="alert">` +
+      `Failed to load ops desk from server: ${_esc(error)}</div>`;
+    return;
+  }
+
+  container.innerHTML = renderOpsDeskQueueHtml(items, { adapterError: effectiveAdapterError });
+}
+
+async function fetchOpsDesk(
+  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
+) {
+  if (typeof fetchFn !== 'function') {
+    return { ok: false, error: 'fetch is not available', items: [], adapterError: null };
+  }
+  try {
+    const url = '/api/ops-desk';
+    const res = await fetchFn(url, { cache: 'no-store' });
+    if (!res.ok) {
+      return { ok: false, status: res.status, error: `HTTP ${res.status}`, items: [], adapterError: null };
+    }
+    const data = await res.json();
+    const items = Array.isArray(data?.items) ? data.items : [];
+    const adapterError = data?.error || null;
+    return { ok: true, data, items, adapterError, error: adapterError };
+  } catch (err) {
+    return { ok: false, error: err?.message || 'Network error', items: [], adapterError: null };
+  }
+}
+
 // Module: page/src/07-console.js
 // Purpose: P1 console shell lifecycle, events, health polling, and navigation binding
 // Maintainer: builder-gemini
@@ -6529,6 +6746,22 @@ async function fetchScreen(
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
   }
 
+  async function refreshOpsDeskData() {
+    const container = document.getElementById('opsDeskContainer');
+    if (!container) return;
+    const res = await fetchOpsDesk(window.fetch);
+    if (!res.ok) {
+      renderOpsDeskView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error reading ops desk');
+      return;
+    }
+    renderOpsDeskView(container, { items: res.items, adapterError: res.adapterError });
+    const now = new Date();
+    const countNote = `${res.items.length} item${res.items.length === 1 ? '' : 's'}`;
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
+  }
+
   function handleTabSwitch() {
     const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
@@ -6539,6 +6772,8 @@ async function fetchScreen(
       } else if (activeTab === 'screen') {
         const paneId = params?.get ? params.get('paneId') : params?.paneId;
         refreshScreenData(paneId);
+      } else if (activeTab === 'ops-desk') {
+        refreshOpsDeskData();
       }
     }
   }
@@ -6551,6 +6786,8 @@ async function fetchScreen(
         const { params } = parseHash(window.location.hash);
         const paneId = params?.get ? params.get('paneId') : params?.paneId;
         refreshScreenData(paneId);
+      } else if (activeTab === 'ops-desk') {
+        refreshOpsDeskData();
       } else {
         updateConsoleTimestamp(document, 'No data yet');
       }
@@ -6601,6 +6838,8 @@ async function fetchScreen(
           const { params } = parseHash(window.location.hash);
           const paneId = params?.get ? params.get('paneId') : params?.paneId;
           refreshScreenData(paneId);
+        } else if (activeTab === 'ops-desk') {
+          refreshOpsDeskData();
         } else {
           updateConsoleTimestamp(document, 'No data yet');
         }

@@ -70,6 +70,22 @@
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
   }
 
+  async function refreshOpsDeskData() {
+    const container = document.getElementById('opsDeskContainer');
+    if (!container) return;
+    const res = await fetchOpsDesk(window.fetch);
+    if (!res.ok) {
+      renderOpsDeskView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error reading ops desk');
+      return;
+    }
+    renderOpsDeskView(container, { items: res.items, adapterError: res.adapterError });
+    const now = new Date();
+    const countNote = `${res.items.length} item${res.items.length === 1 ? '' : 's'}`;
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
+  }
+
   function handleTabSwitch() {
     const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
@@ -80,6 +96,8 @@
       } else if (activeTab === 'screen') {
         const paneId = params?.get ? params.get('paneId') : params?.paneId;
         refreshScreenData(paneId);
+      } else if (activeTab === 'ops-desk') {
+        refreshOpsDeskData();
       }
     }
   }
@@ -92,6 +110,8 @@
         const { params } = parseHash(window.location.hash);
         const paneId = params?.get ? params.get('paneId') : params?.paneId;
         refreshScreenData(paneId);
+      } else if (activeTab === 'ops-desk') {
+        refreshOpsDeskData();
       } else {
         updateConsoleTimestamp(document, 'No data yet');
       }
@@ -142,6 +162,8 @@
           const { params } = parseHash(window.location.hash);
           const paneId = params?.get ? params.get('paneId') : params?.paneId;
           refreshScreenData(paneId);
+        } else if (activeTab === 'ops-desk') {
+          refreshOpsDeskData();
         } else {
           updateConsoleTimestamp(document, 'No data yet');
         }

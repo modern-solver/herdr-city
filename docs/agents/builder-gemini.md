@@ -35,48 +35,53 @@
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
 | U4 | User Interface Milestone 4 |
+| U6 | User Interface Milestone 6 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U4 (User Interface Milestone 4) — Pane screen viewer (`#screen?paneId=...`),
-  reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
-  raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (stacked on `feat/gemini-u2-sessions`).
-- Status: Implemented U4 pane screen viewer with 54 passing unit/integration tests; prepared draft PR.
+- Milestone: U6 (User Interface Milestone 6) — Ops desk queue view (`#ops-desk`),
+  rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
+  prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (stacked on `feat/gemini-u4-screen`).
+- Status: Implemented U6 ops desk queue view with 62 passing unit/integration tests; prepared draft PR.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u4-screen`:
+The builder-gemini agent touched and maintains the following files on `feat/gemini-u6-ops-desk`:
 
-1. `page/src/screen-view.js`:
+1. `page/src/ops-desk-view.js`:
+   - Standalone ops desk queue view rendering, card layout, wait timers, and fetch helpers.
+2. `page/src/screen-view.js`:
    - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
-2. `page/src/sessions-view.js`:
+3. `page/src/sessions-view.js`:
    - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-3. `page/src/console-router.js`:
+4. `page/src/console-router.js`:
    - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-4. `page/src/07-console.js`:
-   - Shipped console shell controller consuming `console-router.js`, `sessions-view.js`, and `screen-view.js`.
-5. `page/src/page.html`:
-   - Added `#view-screen` card layout, pre/code styles, autoscroll controls, and truncation alerts.
-6. `page/build.js`:
-   - Bundles modules before `07-console.js` into `web/index.html`.
-7. `web/index.html`:
-   - Generated client bundle containing 3D City, Console Shell, Sessions list view, and Screen viewer.
-8. `page/README.md`:
-   - Documented `screen-view.js` and `sessions-view.js` in frontend modules list (CTX-10).
-9. `test/screen-ui.test.js`:
-   - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
-10. `test/sessions-ui.test.js`:
+5. `page/src/07-console.js`:
+   - Shipped console shell controller consuming router and all view modules.
+6. `page/src/page.html`:
+   - Added `#view-ops-desk` card layout, queue styles, wait badges, and banner alerts.
+7. `page/build.js`:
+   - Bundles all modules before `07-console.js` into `web/index.html`.
+8. `web/index.html`:
+   - Generated client bundle containing 3D City, Console Shell, Sessions, Screen, and Ops Desk views.
+9. `page/README.md`:
+   - Documented `ops-desk-view.js`, `screen-view.js`, and `sessions-view.js` in modules list (CTX-10).
+10. `test/ops-desk-ui.test.js`:
+    - Unit tests for wait duration, card rendering, queue sorting, error cards, and contract fetcher.
+11. `test/screen-ui.test.js`:
+    - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
+12. `test/sessions-ui.test.js`:
     - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-11. `test/console-ui.test.js`:
+13. `test/console-ui.test.js`:
     - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-12. `CHANGELOG.md`:
-    - Added dated entry for U4 pane screen viewer implementation linking PR #14 (CHG-04).
-13. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U4 implementation.
+14. `CHANGELOG.md`:
+    - Added dated entry for U6 ops desk queue view implementation.
+15. `docs/agents/builder-gemini.md`:
+    - Updated agent memory tracking U6 implementation.
 
 ## Open questions
 
