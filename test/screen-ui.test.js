@@ -120,6 +120,81 @@ test('renderScreenView manages unselected, loading, error, and content states', 
   assert.equal(mockVp.scrollTop, 500);
 });
 
+test('renderScreenView updates in-place and preserves scroll position when auto-scroll is off', () => {
+  const mockCode = { innerHTML: 'line 1\nline 2' };
+  const mockVp = { scrollHeight: 1200, scrollTop: 350 };
+  const mockRibbonWrap = { innerHTML: '' };
+  const mockAutoScroll = { checked: false };
+  const mockToolbar = { insertAdjacentHTML: () => {} };
+
+  const elements = {
+    '#screenCode': mockCode,
+    '#screenViewport': mockVp,
+    '#screenRibbonWrap': mockRibbonWrap,
+    '#screenAutoScroll': mockAutoScroll,
+    '#screenToolbar': mockToolbar,
+  };
+
+  const container = {
+    dataset: { currentPaneId: 'w8:p1' },
+    innerHTML: '<div id="screenRibbonWrap"></div><div id="screenToolbar"></div><div id="screenViewport"></div>',
+    querySelector: (sel) => elements[sel] || null,
+  };
+
+  // 1. Same pane, same text -> innerHTML of code element NOT overwritten, scroll position maintained
+  let codeInnerHtmlWritten = false;
+  Object.defineProperty(mockCode, 'innerHTML', {
+    get() {
+      return 'line 1\nline 2';
+    },
+    set() {
+      codeInnerHtmlWritten = true;
+    },
+    configurable: true,
+  });
+
+  renderScreenView(container, {
+    paneId: 'w8:p1',
+    data: { paneId: 'w8:p1', lineCount: 2, text: 'line 1\nline 2', truncated: false },
+    autoScroll: false,
+  });
+
+  assert.equal(codeInnerHtmlWritten, false, 'text selection preserved by skipping innerHTML rewrite');
+  assert.equal(mockVp.scrollTop, 350, 'scroll position maintained when auto-scroll is false');
+  assert.match(mockRibbonWrap.innerHTML, /id="screenRibbon"/);
+
+  // 2. Updated text with autoScroll false -> innerHTML updated, scroll position held
+  let newHtmlValue = '';
+  Object.defineProperty(mockCode, 'innerHTML', {
+    get() {
+      return newHtmlValue || 'line 1\nline 2';
+    },
+    set(val) {
+      newHtmlValue = val;
+    },
+    configurable: true,
+  });
+
+  renderScreenView(container, {
+    paneId: 'w8:p1',
+    data: { paneId: 'w8:p1', lineCount: 3, text: 'line 1\nline 2\nline 3', truncated: false },
+    autoScroll: false,
+  });
+
+  assert.equal(newHtmlValue, 'line 1\nline 2\nline 3');
+  assert.equal(mockVp.scrollTop, 350, 'scroll position held at prevScrollTop when auto-scroll is false');
+
+  // 3. Auto-scroll on -> scrolls to bottom
+  mockAutoScroll.checked = true;
+  renderScreenView(container, {
+    paneId: 'w8:p1',
+    data: { paneId: 'w8:p1', lineCount: 4, text: 'line 1\nline 2\nline 3\nline 4', truncated: false },
+    autoScroll: true,
+  });
+
+  assert.equal(mockVp.scrollTop, 1200, 'scroll position updated to bottom when auto-scroll is on');
+});
+
 test('fetchScreen validates input and handles contract response and errors', async () => {
   // Missing paneId
   const missingRes = await fetchScreen(null, '');

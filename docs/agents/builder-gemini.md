@@ -45,7 +45,8 @@
   reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
   raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (stacked on `feat/gemini-u2-sessions`).
-- Status: Implemented U4 pane screen viewer with 54 passing unit/integration tests; prepared draft PR.
+- Status: Addressed PR #14 r1 review findings (CODE-05/14 import real helpers, extract
+  refreshActiveTab, in-place viewport update preserving scroll and selection); 55 tests passing.
 
 ## Files touched
 

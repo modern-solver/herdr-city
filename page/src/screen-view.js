@@ -2,26 +2,7 @@
 // Purpose: Pane screen viewer rendering, metadata ribbon, ANSI pass-through, and auto-scroll (U4)
 // Maintainer: builder-gemini
 
-const _esc = (s) => {
-  if (typeof escapeHtml === 'function') return escapeHtml(s);
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-};
-
-const _fmtTime = (ts) => {
-  if (typeof formatRelativeTime === 'function') return formatRelativeTime(ts);
-  return ts ? `${Math.floor((Date.now() - Number(ts)) / 1000)}s ago` : '-';
-};
-
-const _statusBadge = (status, label, prompt) => {
-  if (typeof getStatusBadgeHtml === 'function') return getStatusBadgeHtml(status, label, prompt);
-  return `<span class="badge badge-status">${_esc(label || status || 'idle')}</span>`;
-};
+import { escapeHtml, formatRelativeTime, getStatusBadgeHtml } from './sessions-view.js';
 
 export function renderScreenRibbonHtml(data) {
   if (!data) return '';
@@ -29,33 +10,33 @@ export function renderScreenRibbonHtml(data) {
   const name = data.session?.name || paneId;
   const districtTitle = data.session?.districtTitle || data.session?.districtId || '-';
   const districtId = data.session?.districtId
-    ? `<small class="sub-id">${_esc(data.session.districtId)}</small>`
+    ? `<small class="sub-id">${escapeHtml(data.session.districtId)}</small>`
     : '';
   const cliBadge = data.session?.cli
-    ? `<span class="badge badge-cli">${_esc(data.session.cli)}</span>`
+    ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>`
     : '';
   const modelBadge = data.session?.model
-    ? `<span class="badge badge-model">${_esc(data.session.model)}</span>`
+    ? `<span class="badge badge-model">${escapeHtml(data.session.model)}</span>`
     : '';
-  const statusBadge = _statusBadge(
+  const statusBadge = getStatusBadgeHtml(
     data.session?.status,
     data.session?.statusLabel,
     data.session?.prompt,
   );
   const lineCount = Number.isFinite(data.lineCount) ? `${data.lineCount} lines` : '';
-  const updated = data.updatedAt ? `Updated ${_fmtTime(data.updatedAt)}` : '';
+  const updated = data.updatedAt ? `Updated ${formatRelativeTime(data.updatedAt)}` : '';
 
   return (
     `<div class="screen-ribbon" id="screenRibbon">` +
     `<div class="screen-meta-left">` +
-    `<span class="badge badge-cli">${_esc(paneId)}</span>` +
-    `<h3 class="screen-title">${_esc(name)}</h3>` +
-    `<div class="cell-wrap"><span>${_esc(districtTitle)}</span>${districtId}</div>` +
+    `<span class="badge badge-cli">${escapeHtml(paneId)}</span>` +
+    `<h3 class="screen-title">${escapeHtml(name)}</h3>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
     `<div class="badge-group">${cliBadge}${modelBadge}${statusBadge}</div>` +
     `</div>` +
     `<div class="screen-meta-right">` +
-    (lineCount ? `<span class="screen-lines">${_esc(lineCount)}</span>` : '') +
-    (updated ? `<span class="screen-time">${_esc(updated)}</span>` : '') +
+    (lineCount ? `<span class="screen-lines">${escapeHtml(lineCount)}</span>` : '') +
+    (updated ? `<span class="screen-time">${escapeHtml(updated)}</span>` : '') +
     `</div>` +
     `</div>`
   );
@@ -93,7 +74,7 @@ export function renderScreenViewportHtml(text) {
   // P1 passes ANSI escape sequences through unchanged; rendered as raw text in preformatted block
   return (
     `<div class="screen-viewport" id="screenViewport">` +
-    `<pre class="screen-pre"><code class="screen-code" id="screenCode">${_esc(text)}</code></pre>` +
+    `<pre class="screen-pre"><code class="screen-code" id="screenCode">${escapeHtml(text)}</code></pre>` +
     `</div>`
   );
 }
@@ -104,6 +85,7 @@ export function renderScreenView(
 ) {
   if (!container) return;
   if (!paneId) {
+    if (container.dataset) delete container.dataset.currentPaneId;
     container.innerHTML =
       `<div class="screen-prompt" id="screenSelectPrompt">` +
       `No pane selected. Choose an agent session from the ` +
@@ -111,30 +93,98 @@ export function renderScreenView(
     return;
   }
   if (loading) {
-    container.innerHTML =
-      `<div class="screen-loading" id="screenLoading">` +
-      `Reading pane output for ${_esc(paneId)}…</div>`;
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      if (container.dataset) delete container.dataset.currentPaneId;
+      container.innerHTML =
+        `<div class="screen-loading" id="screenLoading">` +
+        `Reading pane output for ${escapeHtml(paneId)}…</div>`;
+    }
     return;
   }
   if (error) {
-    container.innerHTML =
-      `<div class="screen-error" id="screenError" role="alert">` +
-      `Unable to read pane ${_esc(paneId)}. Pane may have closed or herdr returned an error.</div>`;
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      if (container.dataset) delete container.dataset.currentPaneId;
+      container.innerHTML =
+        `<div class="screen-error" id="screenError" role="alert">` +
+        `Unable to read pane ${escapeHtml(paneId)}. Pane may have closed or herdr returned an error.</div>`;
+    }
     return;
   }
   if (!data) {
+    if (container.dataset) delete container.dataset.currentPaneId;
     container.innerHTML =
       `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
     return;
   }
 
-  const ribbonHtml = renderScreenRibbonHtml(data);
+  const isSamePane = container.dataset?.currentPaneId === paneId;
+  const existingViewport = container.querySelector ? container.querySelector('#screenViewport') : null;
+  const existingCode = container.querySelector ? container.querySelector('#screenCode') : null;
+
+  // In-place update: update metadata and text without rebuilding viewport to preserve scroll and selection
+  if (isSamePane && existingViewport && existingCode) {
+    const ribbonWrap = container.querySelector('#screenRibbonWrap');
+    if (ribbonWrap) {
+      ribbonWrap.innerHTML = renderScreenRibbonHtml(data);
+    }
+
+    const autoScrollEl = container.querySelector('#screenAutoScroll');
+    const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+
+    // Truncation banner in-place toggle
+    const toolbarEl = container.querySelector('#screenToolbar');
+    let truncEl = container.querySelector('#screenTruncationBanner');
+    if (data.truncated && !truncEl && toolbarEl) {
+      toolbarEl.insertAdjacentHTML(
+        'afterend',
+        '<div class="screen-truncation-banner" id="screenTruncationBanner" role="status">' +
+          '<span class="badge badge-error">Notice</span> Output truncated at 80,000 characters.</div>',
+      );
+    } else if (!data.truncated && truncEl) {
+      truncEl.remove();
+    }
+
+    const prevScrollTop = existingViewport.scrollTop;
+    const newHtml = escapeHtml(data.text || '');
+
+    // Only update innerHTML if text changed to preserve user text selection
+    if (existingCode.innerHTML !== newHtml) {
+      existingCode.innerHTML = newHtml;
+      if (effectiveAutoScroll) {
+        if (typeof existingViewport.scrollHeight === 'number') {
+          existingViewport.scrollTop = existingViewport.scrollHeight;
+        }
+      } else {
+        existingViewport.scrollTop = prevScrollTop;
+      }
+    } else {
+      // Content unchanged; preserve scroll position
+      if (effectiveAutoScroll) {
+        if (typeof existingViewport.scrollHeight === 'number') {
+          existingViewport.scrollTop = existingViewport.scrollHeight;
+        }
+      } else {
+        existingViewport.scrollTop = prevScrollTop;
+      }
+    }
+    return;
+  }
+
+  // Initial render or pane switch
+  if (!container.dataset) container.dataset = {};
+  container.dataset.currentPaneId = paneId;
+
+  const ribbonWrapHtml = `<div id="screenRibbonWrap">${renderScreenRibbonHtml(data)}</div>`;
   const toolbarHtml = renderScreenToolbarHtml({ autoScroll, truncated: Boolean(data.truncated) });
   const viewportHtml = renderScreenViewportHtml(data.text);
 
-  container.innerHTML = `${ribbonHtml}${toolbarHtml}${viewportHtml}`;
+  container.innerHTML = `${ribbonWrapHtml}${toolbarHtml}${viewportHtml}`;
 
-  if (autoScroll) {
+  const autoScrollEl = container.querySelector ? container.querySelector('#screenAutoScroll') : null;
+  const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+  if (effectiveAutoScroll) {
     const vp = container.querySelector ? container.querySelector('#screenViewport') : null;
     if (vp && typeof vp.scrollHeight === 'number') {
       vp.scrollTop = vp.scrollHeight;
