@@ -17,8 +17,8 @@
 
 ## Current task
 
-B3 stacked draft on PR #8: `GET /api/logs` ring buffer. Mask before cap.
-Drop for #8 main merge when #9 merges.
+B3 stacked draft PR #18 on PR #8: `GET /api/logs` ring buffer. Mask before
+cap. Drop for #8 main merge when #9 merges.
 
 ## Files touched
 
