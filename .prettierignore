@@ -1,5 +1,7 @@
 web
-page/**
+page/*
+!page/src/
+page/src/*
 !page/src/console-router.js
 !page/src/07-console.js
 docs
