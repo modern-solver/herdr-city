@@ -6,7 +6,7 @@
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b1-sessions` |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b2-screen` (from `feat/grok-b1-sessions`) |
 
 ## Acronyms
 
@@ -17,18 +17,16 @@
 
 ## Current task
 
-PR #8 (`feat/grok-b1-sessions`): GET /api/sessions with filters. Round-2
-SEC-03 and CODE-05 done: session activity is masked; `mapSession` reuses
-`inspectPane`, `agentDisplayName`, `modelBadge`, `maskedClip` from
-`src/map.js`. D3 merged `origin/main` as `10e5d57`.
+B2 stacked draft on PR #8: `GET /api/screen` with `maskSecrets` on full pane
+text, 80000-character cap, session object. Then B6 ops desk. Drop for #8
+main merge when #9 merges.
 
 ## Files touched
 
-- `src/map.js`
-- `src/sessions.js`
+- `src/screen.js`
 - `src/adapter.js`
 - `src/server.js`
-- `test/sessions.test.js`
+- `test/screen.test.js`
 - `CHANGELOG.md`
 - `docs/agents/builder-grok.md`
 
@@ -38,6 +36,7 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 
 ## Last-session learnings
 
-- `feat/grok-*` branches from `origin/main`.
-- D3 merged `origin/main` into this branch as `10e5d57`.
+- Stacked drafts allowed (Shaunak 18:11). Base is the parent branch.
+- Every git command uses `git -C C:\Users\shaun\mastopia-grok`.
 - PR body files are `*.tmp` in the worktree. Never git add them.
+- Interrupt: when #9 merges, commit WIP and merge `origin/main` into #8 first.
