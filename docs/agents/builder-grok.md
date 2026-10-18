@@ -17,9 +17,10 @@
 
 ## Current task
 
-B5 `GET /api/rulebook`: parse `docs/MAS-House-Rules-Handbook.md` from process cwd
-and report per-district presence of `CHANGELOG.md`, `briefs/`, and
-`briefs/lead-escalations.md` (Q1). Tests use a fixture handbook.
+B5 `GET /api/rulebook` on PR #13 (`feat/grok-b5-rulebook`): parse
+`docs/MAS-House-Rules-Handbook.md` from process cwd and report per-district
+presence of `CHANGELOG.md`, `briefs/`, and `briefs/lead-escalations.md` (Q1).
+Tests use a fixture handbook.
 
 ## Files touched
 
