@@ -21,7 +21,7 @@
 PR G1 on `feat/grok-context-layer` (https://github.com/modern-solver/herdr-city/pull/9),
 replacing closed PR #5. Staleness test uses `git ls-files` and CRLF normalize.
 CODEMAP lists exports and dependents. Changelog links PR #9. CODE-12 waits on
-PR #7 merge. Do not merge `main` into this branch yet.
+PR #7 merge. D3 merged `origin/main` as `968da3d`.
 
 ## Files touched
 
@@ -55,3 +55,4 @@ Shaunak.
 - `npm run codemap` is an npm script; generate with `node scripts/codemap.js`
   when the tool manifest does not list `npm run codemap`.
 - One logical change per PR. Stop after G1 is open.
+- D3 merged `origin/main` into this branch as `968da3d`.
