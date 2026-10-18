@@ -19,7 +19,7 @@
 
 ## Current task
 
-PR #15: test/README leak note; D3 merge origin/main after #6; ready for
+PR #15: test/README leak note; D3 merged origin/main after #6; ready for
 merge.
 
 ## Files touched

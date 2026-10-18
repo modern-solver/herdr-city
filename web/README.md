@@ -1,13 +1,18 @@
 # web
 
-Purpose: built static city GUI served by `src/server.js`.
+Purpose: built static city GUI and P1 console shell served by `src/server.js`.
 
-Interface: `GET /` serves `web/index.html`. `npm run build:page` regenerates
-it from `page/`. Other routes under `/` are files in this folder.
+Interface:
+- `GET /` and `GET /console` serve `web/index.html`.
+- Other routes under `/` serve static files from this folder.
+- `npm run build:page` regenerates `web/index.html` from `page/`.
 
-Gotchas: `web/assets/` holds vendor fonts, Three.js and licenses. Do not
-hand-edit `index.html`. The server refuses Host names other than loopback
-in P0. Demo Host/Origin policy is specified for P1 and is not in this tree
-yet.
+Assets:
+- `web/assets/` holds vendor fonts (`inter`, `unbounded`, `jetbrains-mono`, `martian-mono`), Three.js, and licenses.
+
+Gotchas:
+- Do not hand-edit `index.html`; edits are overwritten by `page/build.js`.
+- The server refuses Host names other than loopback in P0. Demo Host/Origin policy is specified for P1 and is not in
+  this tree yet.
 
 Owner: builder-gemini for the page; builder-grok owns how it is served.
