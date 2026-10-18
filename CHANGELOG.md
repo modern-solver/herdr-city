@@ -11,7 +11,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
   empty state banner, and responsive card styling.
   Files: `page/src/ops-desk-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
   `page/README.md`, `web/index.html`, `test/ops-desk-ui.test.js`.
-  Branch: `feat/gemini-u6-ops-desk` (stacked on PR #14 https://github.com/modern-solver/herdr-city/pull/14).
+  PR: https://github.com/modern-solver/herdr-city/pull/16 (stacked on PR #14)
 - Feature: Implemented Milestone U4 (User Interface Milestone 4) pane screen viewer (`#screen?paneId=...`),
   rendering read-only terminal screens from `GET /api/screen` with metadata ribbon, auto-scroll toggle,
   raw ANSI sequence pass-through, truncation warning banner, unselected/loading/error states, and responsive styles.

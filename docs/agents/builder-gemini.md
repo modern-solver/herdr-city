@@ -79,7 +79,7 @@ The builder-gemini agent touched and maintains the following files on `feat/gemi
 13. `test/console-ui.test.js`:
     - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
 14. `CHANGELOG.md`:
-    - Added dated entry for U6 ops desk queue view implementation.
+    - Added dated entry for U6 ops desk queue view implementation linking PR #16 (CHG-04).
 15. `docs/agents/builder-gemini.md`:
     - Updated agent memory tracking U6 implementation.
 
