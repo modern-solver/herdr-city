@@ -5,6 +5,8 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: `GET /api/ops-desk` lists blocked sessions that have a prompt.
+  `recommendation` is always null. No approve or deny fields.
 - Feature: `GET /api/sessions` console session list with district, cli, model,
   status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
   Session `activity` is masked (SEC-03). PR: https://github.com/modern-solver/herdr-city/pull/8
