@@ -161,9 +161,7 @@ export function renderModules(root, entries) {
 }
 
 export function renderJsModules(root, entries) {
-  const files = entries
-    .filter((e) => !e.isDir && e.rel.endsWith('.js'))
-    .map((e) => e.rel);
+  const files = entries.filter((e) => !e.isDir && e.rel.endsWith('.js')).map((e) => e.rel);
   const mapped = files.filter((f) => f.startsWith('src/') || f.startsWith('scripts/'));
   const meta = new Map();
   for (const f of mapped) meta.set(f, jsMeta(root, f));
@@ -177,12 +175,7 @@ export function renderJsModules(root, entries) {
       }
     }
   }
-  const lines = [
-    '## src and scripts',
-    '',
-    '| Path | Exports | Imports | Dependents |',
-    '|---|---|---|---|',
-  ];
+  const lines = ['## src and scripts', '', '| Path | Exports | Imports | Dependents |', '|---|---|---|---|'];
   for (const f of mapped) {
     const m = meta.get(f);
     const deps = (dependents.get(f) || []).sort((a, b) => a.localeCompare(b));

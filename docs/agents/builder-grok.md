@@ -18,10 +18,9 @@
 
 ## Current task
 
-PR G1 on `feat/grok-context-layer` (https://github.com/modern-solver/herdr-city/pull/9),
-replacing closed PR #5. Staleness test uses `git ls-files` and CRLF normalize.
-CODEMAP lists exports and dependents. Changelog links PR #9. CODE-12 waits on
-PR #7 merge. D3 merged `origin/main` as `968da3d`.
+PR #9 on `feat/grok-context-layer`. Merged `origin/main` (PR #7 `c1b0ccd`).
+`npm run lint` and `npm run format:check` cover `scripts/`. Resume task-1810
+on `feat/grok-b7-demo` after this push.
 
 ## Files touched
 
@@ -39,20 +38,24 @@ PR #7 merge. D3 merged `origin/main` as `968da3d`.
 - `CHANGELOG.md`
 - `docs/agents/builder-grok.md`
 - `.gitattributes`
+- `eslint.config.js`
+- `.prettierrc.json`
+- `.prettierignore`
+- `.github/workflows/ci.yml`
 
 ## Open questions
 
 None for G1. Spec Q1, Q2, Q5, Q6, Q7 are approved as written (defaults Shaunak
-may veto). Prettier and ESLint install waits on Shaunak. Extra branches wait on
-Shaunak.
+may veto). CODE-12 landed on main via PR #7.
 
 ## Last-session learnings
 
 - Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
-  `briefs/lead-escalations.md` and reading `briefs/`.
-- Do not `npm install` new packages. Do not fetch Prettier or ESLint with npx.
-- CODE-12 linters in CI stay blocked until Shaunak approves the install.
-- `npm run codemap` is an npm script; generate with `node scripts/codemap.js`
-  when the tool manifest does not list `npm run codemap`.
-- One logical change per PR. Stop after G1 is open.
-- D3 merged `origin/main` into this branch as `968da3d`.
+  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
+  `git -C C:\Users\shaun\mastopia-grok`.
+- PR body files live in the worktree as `*.tmp`. Never git add them.
+  Never write AppData or TEMP.
+- `npm run lint` and `npm run format:check` must include `scripts/`.
+- `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
+- Merge `origin/main` into feature branches (D3). Never rebase-force.
+- Independent P1 items branch from `origin/main` as `feat/grok-*`.
