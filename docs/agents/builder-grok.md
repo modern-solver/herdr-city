@@ -17,8 +17,8 @@
 
 ## Current task
 
-B6 stacked draft on PR #8: `GET /api/ops-desk`. B2 is draft PR #15. Drop for
-#8 main merge when #9 merges.
+B6 stacked draft PR #17 on PR #8: `GET /api/ops-desk`. B2 is draft PR #15.
+Drop for #8 main merge when #9 merges.
 
 ## Files touched
 
