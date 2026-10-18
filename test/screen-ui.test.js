@@ -11,6 +11,7 @@ import {
   renderScreenView,
   fetchScreen,
 } from '../page/src/screen-view.js';
+import { escapeHtml } from '../page/src/sessions-view.js';
 
 test('renderScreenRibbonHtml displays all contract metadata fields', () => {
   const sample = {
@@ -137,6 +138,7 @@ test('renderScreenView updates in-place and preserves scroll position when auto-
 
   const container = {
     dataset: { currentPaneId: 'w8:p1' },
+    _lastRawText: 'line 1\nline 2',
     innerHTML: '<div id="screenRibbonWrap"></div><div id="screenToolbar"></div><div id="screenViewport"></div>',
     querySelector: (sel) => elements[sel] || null,
   };
@@ -193,6 +195,55 @@ test('renderScreenView updates in-place and preserves scroll position when auto-
   });
 
   assert.equal(mockVp.scrollTop, 1200, 'scroll position updated to bottom when auto-scroll is on');
+});
+
+test('renderScreenView compares raw text so quotes do not trigger innerHTML rewrites', () => {
+  const quotedText = 'echo "hello world" && echo \'done\'';
+  const mockCode = { innerHTML: 'echo "hello world" && echo \'done\'' };
+  const mockVp = { scrollHeight: 1000, scrollTop: 200 };
+  const mockRibbonWrap = { innerHTML: '' };
+  const mockAutoScroll = { checked: false };
+  const mockToolbar = { insertAdjacentHTML: () => {} };
+
+  const elements = {
+    '#screenCode': mockCode,
+    '#screenViewport': mockVp,
+    '#screenRibbonWrap': mockRibbonWrap,
+    '#screenAutoScroll': mockAutoScroll,
+    '#screenToolbar': mockToolbar,
+  };
+
+  const container = {
+    dataset: { currentPaneId: 'w8:p1' },
+    _lastRawText: quotedText,
+    innerHTML: '<div id="screenRibbonWrap"></div><div id="screenToolbar"></div><div id="screenViewport"></div>',
+    querySelector: (sel) => elements[sel] || null,
+  };
+
+  // Browser serialized innerHTML has raw quotes, differing from escapeHtml(quotedText)
+  assert.notEqual(mockCode.innerHTML, escapeHtml(quotedText));
+
+  let innerHtmlSetCount = 0;
+  Object.defineProperty(mockCode, 'innerHTML', {
+    get() {
+      return 'echo "hello world" && echo \'done\'';
+    },
+    set() {
+      innerHtmlSetCount++;
+    },
+    configurable: true,
+  });
+
+  // Re-poll with exact same quoted text
+  renderScreenView(container, {
+    paneId: 'w8:p1',
+    data: { paneId: 'w8:p1', lineCount: 1, text: quotedText, truncated: false },
+    autoScroll: false,
+  });
+
+  // Raw-to-raw comparison must prevent any innerHTML assignment, preserving selection
+  assert.equal(innerHtmlSetCount, 0, 'innerHTML must not be rewritten when raw text with quotes is unchanged');
+  assert.equal(mockVp.scrollTop, 200, 'scroll position must be preserved');
 });
 
 test('fetchScreen validates input and handles contract response and errors', async () => {

@@ -79,13 +79,17 @@ export function renderScreenViewportHtml(text) {
   );
 }
 
+let lastRawText = null;
+
 export function renderScreenView(
   container,
   { data, error, loading, paneId, autoScroll = true } = {},
 ) {
   if (!container) return;
   if (!paneId) {
+    lastRawText = null;
     if (container.dataset) delete container.dataset.currentPaneId;
+    if (container._lastRawText !== undefined) delete container._lastRawText;
     container.innerHTML =
       `<div class="screen-prompt" id="screenSelectPrompt">` +
       `No pane selected. Choose an agent session from the ` +
@@ -95,7 +99,9 @@ export function renderScreenView(
   if (loading) {
     const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
     if (!hasExisting) {
+      lastRawText = null;
       if (container.dataset) delete container.dataset.currentPaneId;
+      if (container._lastRawText !== undefined) delete container._lastRawText;
       container.innerHTML =
         `<div class="screen-loading" id="screenLoading">` +
         `Reading pane output for ${escapeHtml(paneId)}…</div>`;
@@ -105,7 +111,9 @@ export function renderScreenView(
   if (error) {
     const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
     if (!hasExisting) {
+      lastRawText = null;
       if (container.dataset) delete container.dataset.currentPaneId;
+      if (container._lastRawText !== undefined) delete container._lastRawText;
       container.innerHTML =
         `<div class="screen-error" id="screenError" role="alert">` +
         `Unable to read pane ${escapeHtml(paneId)}. Pane may have closed or herdr returned an error.</div>`;
@@ -113,7 +121,9 @@ export function renderScreenView(
     return;
   }
   if (!data) {
+    lastRawText = null;
     if (container.dataset) delete container.dataset.currentPaneId;
+    if (container._lastRawText !== undefined) delete container._lastRawText;
     container.innerHTML =
       `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
     return;
@@ -147,27 +157,22 @@ export function renderScreenView(
     }
 
     const prevScrollTop = existingViewport.scrollTop;
-    const newHtml = escapeHtml(data.text || '');
+    const rawText = typeof data.text === 'string' ? data.text : '';
+    const prevRawText = container._lastRawText !== undefined ? container._lastRawText : lastRawText;
 
-    // Only update innerHTML if text changed to preserve user text selection
-    if (existingCode.innerHTML !== newHtml) {
-      existingCode.innerHTML = newHtml;
-      if (effectiveAutoScroll) {
-        if (typeof existingViewport.scrollHeight === 'number') {
-          existingViewport.scrollTop = existingViewport.scrollHeight;
-        }
-      } else {
-        existingViewport.scrollTop = prevScrollTop;
+    // Compare raw-to-raw to avoid browser quote desynchronization (e.g. &quot; vs ")
+    if (rawText !== prevRawText) {
+      existingCode.innerHTML = escapeHtml(rawText);
+      lastRawText = rawText;
+      container._lastRawText = rawText;
+    }
+
+    if (effectiveAutoScroll) {
+      if (typeof existingViewport.scrollHeight === 'number') {
+        existingViewport.scrollTop = existingViewport.scrollHeight;
       }
     } else {
-      // Content unchanged; preserve scroll position
-      if (effectiveAutoScroll) {
-        if (typeof existingViewport.scrollHeight === 'number') {
-          existingViewport.scrollTop = existingViewport.scrollHeight;
-        }
-      } else {
-        existingViewport.scrollTop = prevScrollTop;
-      }
+      existingViewport.scrollTop = prevScrollTop;
     }
     return;
   }
@@ -175,6 +180,10 @@ export function renderScreenView(
   // Initial render or pane switch
   if (!container.dataset) container.dataset = {};
   container.dataset.currentPaneId = paneId;
+
+  const rawText = typeof data.text === 'string' ? data.text : '';
+  lastRawText = rawText;
+  container._lastRawText = rawText;
 
   const ribbonWrapHtml = `<div id="screenRibbonWrap">${renderScreenRibbonHtml(data)}</div>`;
   const toolbarHtml = renderScreenToolbarHtml({ autoScroll, truncated: Boolean(data.truncated) });
