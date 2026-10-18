@@ -121,10 +121,7 @@ export function renderLogsListHtml(events, { type = 'all', query = '' } = {}) {
   return `<div class="logs-list" id="logsListContainer">${rows}</div>`;
 }
 
-export function renderLogsOverviewHtml(
-  data,
-  { type = 'all', query = '', adapterError = null } = {},
-) {
+export function renderLogsNoticesHtml(data, adapterError = null) {
   const bounded = data?.bounded || {};
   const count = Number.isFinite(bounded.count) ? bounded.count : (data?.events?.length || 0);
   const chars = Number.isFinite(bounded.chars) ? bounded.chars : 0;
@@ -148,6 +145,15 @@ export function renderLogsOverviewHtml(
       `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(effectiveAdapterError)}` +
       `</div>`
     : '';
+
+  return `${headerNotice}${adapterNotice}`;
+}
+
+export function renderLogsOverviewHtml(
+  data,
+  { type = 'all', query = '', adapterError = null } = {},
+) {
+  const noticesHtml = renderLogsNoticesHtml(data, adapterError);
 
   const types = [
     { value: 'all', label: 'All Event Types' },
@@ -183,8 +189,7 @@ export function renderLogsOverviewHtml(
 
   return (
     `<div class="logs-overview" id="logsOverview">` +
-    headerNotice +
-    adapterNotice +
+    `<div class="logs-notices" id="logsNotices">${noticesHtml}</div>` +
     filterBarHtml +
     `<div id="logsListWrap">${listHtml}</div>` +
     `</div>`
@@ -210,33 +215,62 @@ export function renderLogsView(
     return;
   }
 
+  const isMounted = Boolean(
+    (container.querySelector && container.querySelector('#logsOverview')) ||
+    (container.innerHTML && container.innerHTML.includes('id="logsOverview"'))
+  );
+
   const existingSelect = container.querySelector ? container.querySelector('#logsTypeFilter') : null;
   const existingInput = container.querySelector ? container.querySelector('#logsSearchInput') : null;
 
   const activeType = type !== undefined ? type : (existingSelect ? existingSelect.value : 'all');
   const activeQuery = query !== undefined ? query : (existingInput ? existingInput.value : '');
 
-  container.innerHTML = renderLogsOverviewHtml(data, {
-    type: activeType,
-    query: activeQuery,
-    adapterError,
-  });
+  if (!isMounted) {
+    container.innerHTML = renderLogsOverviewHtml(data, {
+      type: activeType,
+      query: activeQuery,
+      adapterError,
+    });
+    container._lastLogsJson = JSON.stringify({ data, adapterError });
+    container._currentLogsData = data;
 
-  // Attach filter event listeners
-  const selectEl = container.querySelector ? container.querySelector('#logsTypeFilter') : null;
-  const inputEl = container.querySelector ? container.querySelector('#logsSearchInput') : null;
+    const selectEl = container.querySelector ? container.querySelector('#logsTypeFilter') : null;
+    const inputEl = container.querySelector ? container.querySelector('#logsSearchInput') : null;
+
+    const updateList = () => {
+      const listWrap = container.querySelector ? container.querySelector('#logsListWrap') : null;
+      if (!listWrap) return;
+      const curType = selectEl ? selectEl.value : 'all';
+      const curQuery = inputEl ? inputEl.value : '';
+      const currentData = container._currentLogsData;
+      const events = Array.isArray(currentData?.events) ? currentData.events : [];
+      listWrap.innerHTML = renderLogsListHtml(events, { type: curType, query: curQuery });
+    };
+
+    if (typeof selectEl?.addEventListener === 'function') selectEl.addEventListener('change', updateList);
+    if (typeof inputEl?.addEventListener === 'function') inputEl.addEventListener('input', updateList);
+    return;
+  }
+
+  container._currentLogsData = data;
+  const rawJson = JSON.stringify({ data, adapterError });
+  if (container._lastLogsJson === rawJson) {
+    return;
+  }
+  container._lastLogsJson = rawJson;
+
+  // Data changed: update notices and list wrap, preserving filter select and input
+  const noticesEl = container.querySelector ? container.querySelector('#logsNotices') : null;
+  if (noticesEl) {
+    noticesEl.innerHTML = renderLogsNoticesHtml(data, adapterError);
+  }
+
   const listWrap = container.querySelector ? container.querySelector('#logsListWrap') : null;
-
-  const updateList = () => {
-    if (!listWrap) return;
-    const curType = selectEl ? selectEl.value : 'all';
-    const curQuery = inputEl ? inputEl.value : '';
+  if (listWrap) {
     const events = Array.isArray(data?.events) ? data.events : [];
-    listWrap.innerHTML = renderLogsListHtml(events, { type: curType, query: curQuery });
-  };
-
-  if (selectEl) selectEl.addEventListener('change', updateList);
-  if (inputEl) inputEl.addEventListener('input', updateList);
+    listWrap.innerHTML = renderLogsListHtml(events, { type: activeType, query: activeQuery });
+  }
 }
 
 export async function fetchLogs(

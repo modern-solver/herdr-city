@@ -115,7 +115,7 @@
     }
     renderLogsView(container, { data: res.data, adapterError: res.adapterError });
     const now = new Date();
-    const count = res.events?.length || 0;
+    const count = res.bounded?.count ?? res.events?.length ?? 0;
     const countNote = `${count} event${count === 1 ? '' : 's'}`;
     const statusNote = res.adapterError ? ' (adapter notice)' : '';
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
