@@ -163,11 +163,17 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       json(res, 200, { ok: true });
       return;
     }
-    if (req.method === 'POST' && url.pathname === '/api/answer') {
+    if (
+      req.method === 'POST' &&
+      (url.pathname === '/api/answer' ||
+        url.pathname === '/api/send-keys' ||
+        url.pathname === '/api/send-text' ||
+        url.pathname === '/api/prompt')
+    ) {
       json(res, 409, {
         ok: false,
         reason: 'readonly',
-        message: 'P0 is read-only; answer the prompt in the herdr pane.',
+        message: 'mastopia is read-only; answer the prompt in the herdr pane.',
       });
       return;
     }
