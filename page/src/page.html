@@ -621,6 +621,94 @@
     padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
     border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
   }
+  /* U7 Rulebook styles */
+  .rulebook-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto; display: flex;
+    flex-direction: column; gap: 20px;
+  }
+  .rulebook-overview{ display: flex; flex-direction: column; gap: 20px; }
+  .rulebook-notice{
+    padding: 10px 14px; border-radius: 6px; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rulebook-notice-warn{
+    background: rgba(210, 153, 34, 0.12); border: 1px solid rgba(210, 153, 34, 0.4);
+    color: #e3b341;
+  }
+  .rulebook-notice-warn code{
+    background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  }
+  .rulebook-notice-error{
+    background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    color: #f85149;
+  }
+  .rulebook-section{ display: flex; flex-direction: column; gap: 12px; }
+  .section-header{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .section-header h3{ margin: 0; font-size: 15px; font-weight: 600; color: #f0f6fc; }
+  .section-count{ font-size: 12px; color: #8b949e; }
+  .handbook-meta{ font-size: 12px; font-weight: normal; color: #8b949e; margin-left: 6px; }
+  .districts-grid{
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .district-card{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 12px;
+  }
+  .district-header{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 6px;
+  }
+  .district-meta-left{ display: flex; align-items: baseline; gap: 8px; }
+  .district-cwd{ font-size: 11px; color: #8b949e; word-break: break-all; }
+  .district-files-list{
+    list-style: none; padding: 0; margin: 4px 0; display: flex;
+    flex-direction: column; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+  }
+  .file-item{ display: flex; align-items: center; gap: 6px; }
+  .file-present .icon-status{ color: #3fb950; }
+  .file-missing .icon-status{ color: #f85149; }
+  .file-unknown .icon-status{ color: #8b949e; }
+  .district-missing-wrap{
+    margin-top: 4px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .missing-label{ font-size: 11px; color: #f85149; font-weight: 500; }
+  .district-ok-wrap{ margin-top: 4px; }
+  .district-card-error{
+    border-color: rgba(218, 54, 51, 0.4); background: rgba(218, 54, 51, 0.05);
+  }
+  .district-error-body{
+    color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+  .rulebook-filter-bar{
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .filter-label{ font-size: 13px; color: #8b949e; font-weight: 500; }
+  .filter-input{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    padding: 6px 12px; color: #f0f6fc; font-size: 13px; width: 100%; max-width: 380px;
+  }
+  .filter-input:focus{ outline: none; border-color: #58a6ff; }
+  .rulebook-table td.cell-id{ white-space: nowrap; }
+  .rulebook-table td.cell-area{ white-space: nowrap; }
+  .rulebook-table td.cell-check{ white-space: nowrap; }
+  .badge-area{ background: #1f242c; color: #79c0ff; border: 1px solid #388bfd; font-size: 11px; }
+  .badge-check{ background: #1e2621; color: #56d364; border: 1px solid #2ea043; font-size: 11px; }
+  .rules-empty, .districts-empty{
+    padding: 24px 16px; text-align: center; color: #8b949e; font-size: 13px;
+  }
+  .rulebook-loading{
+    padding: 36px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .rulebook-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -782,9 +870,10 @@
       </div>
     </section>
     <section class="console-tab-pane" id="view-rulebook" role="tabpanel" aria-labelledby="tab-rulebook" hidden>
-      <div class="console-card">
-        <h2>Rulebook &amp; Compliance</h2>
-        <p class="muted">Foundation ready for U7.</p>
+      <div class="rulebook-card">
+        <div id="rulebookContainer">
+          <div class="rulebook-loading" id="rulebookLoading">Loading rulebook &amp; compliance…</div>
+        </div>
       </div>
     </section>
     <section class="console-tab-pane" id="view-ops-desk" role="tabpanel" aria-labelledby="tab-ops-desk" hidden>

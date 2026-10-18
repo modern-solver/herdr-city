@@ -86,6 +86,24 @@
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
   }
 
+  async function refreshRulebookData() {
+    const container = document.getElementById('rulebookContainer');
+    if (!container) return;
+    const res = await fetchRulebook(window.fetch);
+    if (!res.ok) {
+      renderRulebookView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error reading rulebook');
+      return;
+    }
+    renderRulebookView(container, { data: res.data, adapterError: res.adapterError });
+    const now = new Date();
+    const dN = res.districts?.length || 0;
+    const rN = res.rules?.length || 0;
+    const countNote = `${dN} district${dN === 1 ? '' : 's'}, ${rN} rule${rN === 1 ? '' : 's'}`;
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
+  }
+
   function refreshActiveTab(params) {
     const effectiveParams = params || parseHash(window.location.hash).params;
     if (activeTab === 'sessions') {
@@ -95,6 +113,8 @@
       refreshScreenData(paneId);
     } else if (activeTab === 'ops-desk') {
       refreshOpsDeskData();
+    } else if (activeTab === 'rulebook') {
+      refreshRulebookData();
     } else {
       updateConsoleTimestamp(document, 'No data yet');
     }

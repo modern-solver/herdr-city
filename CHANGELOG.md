@@ -5,6 +5,13 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: Implemented Milestone U7 (User Interface Milestone 7) rulebook & compliance view (`#rulebook`),
+  rendering district file compliance overview and MAS house rules table from `GET /api/rulebook`,
+  interactive search filtering, missing file alert chips, handbook missing notices, adapter resilience,
+  and responsive card styling.
+  Files: `page/src/rulebook-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
+  `page/README.md`, `web/index.html`, `test/rulebook-ui.test.js`.
+  PR: https://github.com/modern-solver/herdr-city/pull/19 (stacked on PR #16)
 - Feature: Implemented Milestone U6 (User Interface Milestone 6) ops desk queue view (`#ops-desk`),
   rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, with display-only banner,
   wait timer badges, prompt quotes, recommendation placeholders, inspect links, adapter error resilience,

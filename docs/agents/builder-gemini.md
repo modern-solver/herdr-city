@@ -36,24 +36,26 @@
 | U2 | User Interface Milestone 2 |
 | U4 | User Interface Milestone 4 |
 | U6 | User Interface Milestone 6 |
+| U7 | User Interface Milestone 7 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U6 (User Interface Milestone 6) — Ops desk queue view (`#ops-desk`),
-  rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
-  prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (stacked on `feat/gemini-u4-screen`).
-- Status: Merged U4 r1 fixes (import real helpers, in-place viewport updates, extracted
-  refreshActiveTab); removed _esc fallback in ops-desk-view.js; tests green.
+- Milestone: U7 (User Interface Milestone 7) — Rulebook & compliance view (`#rulebook`),
+  rendering district file compliance overview and MAS house rules table from `GET /api/rulebook`,
+  interactive search filtering, missing file alert chips, handbook missing notices, and adapter resilience.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u7-rulebook` (stacked on `feat/gemini-u6-ops-desk`).
+- Status: Implemented U7 rulebook & compliance view with 73 passing unit/integration tests; prepared draft PR.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u6-ops-desk`:
+The builder-gemini agent touched and maintains the following files on `feat/gemini-u7-rulebook`:
 
-1. `page/src/ops-desk-view.js`:
+1. `page/src/rulebook-view.js`:
+   - Standalone rulebook and district compliance rendering, rules table, filtering, and fetch helpers.
+2. `page/src/ops-desk-view.js`:
    - Standalone ops desk queue view rendering, card layout, wait timers, and fetch helpers.
 2. `page/src/screen-view.js`:
    - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
@@ -71,18 +73,20 @@ The builder-gemini agent touched and maintains the following files on `feat/gemi
    - Generated client bundle containing 3D City, Console Shell, Sessions, Screen, and Ops Desk views.
 9. `page/README.md`:
    - Documented `ops-desk-view.js`, `screen-view.js`, and `sessions-view.js` in modules list (CTX-10).
-10. `test/ops-desk-ui.test.js`:
+10. `test/rulebook-ui.test.js`:
+    - Unit tests for district cards, rules table, filtering, error cards, and contract fetcher.
+11. `test/ops-desk-ui.test.js`:
     - Unit tests for wait duration, card rendering, queue sorting, error cards, and contract fetcher.
-11. `test/screen-ui.test.js`:
+12. `test/screen-ui.test.js`:
     - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
-12. `test/sessions-ui.test.js`:
+13. `test/sessions-ui.test.js`:
     - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-13. `test/console-ui.test.js`:
+14. `test/console-ui.test.js`:
     - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-14. `CHANGELOG.md`:
-    - Added dated entry for U6 ops desk queue view implementation linking PR #16 (CHG-04).
-15. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U6 implementation.
+15. `CHANGELOG.md`:
+    - Added dated entry for U7 rulebook & compliance view linking PR #19 (CHG-04).
+16. `docs/agents/builder-gemini.md`:
+    - Updated agent memory tracking U7 implementation.
 
 ## Open questions
 
