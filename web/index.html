@@ -6351,26 +6351,6 @@ async function fetchSessions(
 // Purpose: Pane screen viewer rendering, metadata ribbon, ANSI pass-through, and auto-scroll (U4)
 // Maintainer: builder-gemini
 
-const _esc = (s) => {
-  if (typeof escapeHtml === 'function') return escapeHtml(s);
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-};
-
-const _fmtTime = (ts) => {
-  if (typeof formatRelativeTime === 'function') return formatRelativeTime(ts);
-  return ts ? `${Math.floor((Date.now() - Number(ts)) / 1000)}s ago` : '-';
-};
-
-const _statusBadge = (status, label, prompt) => {
-  if (typeof getStatusBadgeHtml === 'function') return getStatusBadgeHtml(status, label, prompt);
-  return `<span class="badge badge-status">${_esc(label || status || 'idle')}</span>`;
-};
 
 function renderScreenRibbonHtml(data) {
   if (!data) return '';
@@ -6378,33 +6358,33 @@ function renderScreenRibbonHtml(data) {
   const name = data.session?.name || paneId;
   const districtTitle = data.session?.districtTitle || data.session?.districtId || '-';
   const districtId = data.session?.districtId
-    ? `<small class="sub-id">${_esc(data.session.districtId)}</small>`
+    ? `<small class="sub-id">${escapeHtml(data.session.districtId)}</small>`
     : '';
   const cliBadge = data.session?.cli
-    ? `<span class="badge badge-cli">${_esc(data.session.cli)}</span>`
+    ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>`
     : '';
   const modelBadge = data.session?.model
-    ? `<span class="badge badge-model">${_esc(data.session.model)}</span>`
+    ? `<span class="badge badge-model">${escapeHtml(data.session.model)}</span>`
     : '';
-  const statusBadge = _statusBadge(
+  const statusBadge = getStatusBadgeHtml(
     data.session?.status,
     data.session?.statusLabel,
     data.session?.prompt,
   );
   const lineCount = Number.isFinite(data.lineCount) ? `${data.lineCount} lines` : '';
-  const updated = data.updatedAt ? `Updated ${_fmtTime(data.updatedAt)}` : '';
+  const updated = data.updatedAt ? `Updated ${formatRelativeTime(data.updatedAt)}` : '';
 
   return (
     `<div class="screen-ribbon" id="screenRibbon">` +
     `<div class="screen-meta-left">` +
-    `<span class="badge badge-cli">${_esc(paneId)}</span>` +
-    `<h3 class="screen-title">${_esc(name)}</h3>` +
-    `<div class="cell-wrap"><span>${_esc(districtTitle)}</span>${districtId}</div>` +
+    `<span class="badge badge-cli">${escapeHtml(paneId)}</span>` +
+    `<h3 class="screen-title">${escapeHtml(name)}</h3>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
     `<div class="badge-group">${cliBadge}${modelBadge}${statusBadge}</div>` +
     `</div>` +
     `<div class="screen-meta-right">` +
-    (lineCount ? `<span class="screen-lines">${_esc(lineCount)}</span>` : '') +
-    (updated ? `<span class="screen-time">${_esc(updated)}</span>` : '') +
+    (lineCount ? `<span class="screen-lines">${escapeHtml(lineCount)}</span>` : '') +
+    (updated ? `<span class="screen-time">${escapeHtml(updated)}</span>` : '') +
     `</div>` +
     `</div>`
   );
@@ -6442,7 +6422,7 @@ function renderScreenViewportHtml(text) {
   // P1 passes ANSI escape sequences through unchanged; rendered as raw text in preformatted block
   return (
     `<div class="screen-viewport" id="screenViewport">` +
-    `<pre class="screen-pre"><code class="screen-code" id="screenCode">${_esc(text)}</code></pre>` +
+    `<pre class="screen-pre"><code class="screen-code" id="screenCode">${escapeHtml(text)}</code></pre>` +
     `</div>`
   );
 }
@@ -6453,6 +6433,7 @@ function renderScreenView(
 ) {
   if (!container) return;
   if (!paneId) {
+    if (container.dataset) delete container.dataset.currentPaneId;
     container.innerHTML =
       `<div class="screen-prompt" id="screenSelectPrompt">` +
       `No pane selected. Choose an agent session from the ` +
@@ -6460,30 +6441,98 @@ function renderScreenView(
     return;
   }
   if (loading) {
-    container.innerHTML =
-      `<div class="screen-loading" id="screenLoading">` +
-      `Reading pane output for ${_esc(paneId)}…</div>`;
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      if (container.dataset) delete container.dataset.currentPaneId;
+      container.innerHTML =
+        `<div class="screen-loading" id="screenLoading">` +
+        `Reading pane output for ${escapeHtml(paneId)}…</div>`;
+    }
     return;
   }
   if (error) {
-    container.innerHTML =
-      `<div class="screen-error" id="screenError" role="alert">` +
-      `Unable to read pane ${_esc(paneId)}. Pane may have closed or herdr returned an error.</div>`;
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      if (container.dataset) delete container.dataset.currentPaneId;
+      container.innerHTML =
+        `<div class="screen-error" id="screenError" role="alert">` +
+        `Unable to read pane ${escapeHtml(paneId)}. Pane may have closed or herdr returned an error.</div>`;
+    }
     return;
   }
   if (!data) {
+    if (container.dataset) delete container.dataset.currentPaneId;
     container.innerHTML =
       `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
     return;
   }
 
-  const ribbonHtml = renderScreenRibbonHtml(data);
+  const isSamePane = container.dataset?.currentPaneId === paneId;
+  const existingViewport = container.querySelector ? container.querySelector('#screenViewport') : null;
+  const existingCode = container.querySelector ? container.querySelector('#screenCode') : null;
+
+  // In-place update: update metadata and text without rebuilding viewport to preserve scroll and selection
+  if (isSamePane && existingViewport && existingCode) {
+    const ribbonWrap = container.querySelector('#screenRibbonWrap');
+    if (ribbonWrap) {
+      ribbonWrap.innerHTML = renderScreenRibbonHtml(data);
+    }
+
+    const autoScrollEl = container.querySelector('#screenAutoScroll');
+    const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+
+    // Truncation banner in-place toggle
+    const toolbarEl = container.querySelector('#screenToolbar');
+    let truncEl = container.querySelector('#screenTruncationBanner');
+    if (data.truncated && !truncEl && toolbarEl) {
+      toolbarEl.insertAdjacentHTML(
+        'afterend',
+        '<div class="screen-truncation-banner" id="screenTruncationBanner" role="status">' +
+          '<span class="badge badge-error">Notice</span> Output truncated at 80,000 characters.</div>',
+      );
+    } else if (!data.truncated && truncEl) {
+      truncEl.remove();
+    }
+
+    const prevScrollTop = existingViewport.scrollTop;
+    const newHtml = escapeHtml(data.text || '');
+
+    // Only update innerHTML if text changed to preserve user text selection
+    if (existingCode.innerHTML !== newHtml) {
+      existingCode.innerHTML = newHtml;
+      if (effectiveAutoScroll) {
+        if (typeof existingViewport.scrollHeight === 'number') {
+          existingViewport.scrollTop = existingViewport.scrollHeight;
+        }
+      } else {
+        existingViewport.scrollTop = prevScrollTop;
+      }
+    } else {
+      // Content unchanged; preserve scroll position
+      if (effectiveAutoScroll) {
+        if (typeof existingViewport.scrollHeight === 'number') {
+          existingViewport.scrollTop = existingViewport.scrollHeight;
+        }
+      } else {
+        existingViewport.scrollTop = prevScrollTop;
+      }
+    }
+    return;
+  }
+
+  // Initial render or pane switch
+  if (!container.dataset) container.dataset = {};
+  container.dataset.currentPaneId = paneId;
+
+  const ribbonWrapHtml = `<div id="screenRibbonWrap">${renderScreenRibbonHtml(data)}</div>`;
   const toolbarHtml = renderScreenToolbarHtml({ autoScroll, truncated: Boolean(data.truncated) });
   const viewportHtml = renderScreenViewportHtml(data.text);
 
-  container.innerHTML = `${ribbonHtml}${toolbarHtml}${viewportHtml}`;
+  container.innerHTML = `${ribbonWrapHtml}${toolbarHtml}${viewportHtml}`;
 
-  if (autoScroll) {
+  const autoScrollEl = container.querySelector ? container.querySelector('#screenAutoScroll') : null;
+  const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+  if (effectiveAutoScroll) {
     const vp = container.querySelector ? container.querySelector('#screenViewport') : null;
     if (vp && typeof vp.scrollHeight === 'number') {
       vp.scrollTop = vp.scrollHeight;
@@ -6518,16 +6567,6 @@ async function fetchScreen(
 // Purpose: Ops desk queue view rendering, card layout, wait timers, and API contract consumption (U6)
 // Maintainer: builder-gemini
 
-const _esc = (s) => {
-  if (typeof escapeHtml === 'function') return escapeHtml(s);
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-};
 
 function formatWaitDuration(waitMs) {
   const ms = Number(waitMs);
@@ -6547,50 +6586,50 @@ function renderOpsDeskCardHtml(item) {
 
   // Failed source or adapter error record for a specific source/district
   if (item.error && !item.cli && !item.prompt) {
-    const src = _esc(item.districtId || item.id || 'Unknown source');
+    const src = escapeHtml(item.districtId || item.id || 'Unknown source');
     const districtTitle = item.districtTitle || item.districtId || '-';
     return (
       `<div class="ops-card ops-card-error" data-source="${src}">` +
       `<div class="ops-card-header">` +
       `<div class="ops-card-meta-left">` +
       `<span class="badge badge-error">Source Error</span>` +
-      `<strong>${_esc(districtTitle)}</strong>` +
+      `<strong>${escapeHtml(districtTitle)}</strong>` +
       `</div>` +
       `</div>` +
-      `<div class="ops-card-error-body">${_esc(item.error)}</div>` +
+      `<div class="ops-card-error-body">${escapeHtml(item.error)}</div>` +
       `</div>`
     );
   }
 
   const name = item.name || item.paneId || '-';
   const paneId = item.paneId || item.id || '';
-  const paneCaption = `<small class="sub-id">${_esc(paneId)}</small>`;
+  const paneCaption = `<small class="sub-id">${escapeHtml(paneId)}</small>`;
   const districtTitle = item.districtTitle || item.districtId || '-';
-  const districtId = item.districtId ? `<small class="sub-id">${_esc(item.districtId)}</small>` : '';
-  const cliBadge = item.cli ? `<span class="badge badge-cli">${_esc(item.cli)}</span>` : '';
-  const modelBadge = item.model ? `<span class="badge badge-model">${_esc(item.model)}</span>` : '';
+  const districtId = item.districtId ? `<small class="sub-id">${escapeHtml(item.districtId)}</small>` : '';
+  const cliBadge = item.cli ? `<span class="badge badge-cli">${escapeHtml(item.cli)}</span>` : '';
+  const modelBadge = item.model ? `<span class="badge badge-model">${escapeHtml(item.model)}</span>` : '';
   const waitLabel = formatWaitDuration(item.waitMs);
   const prompt = item.prompt || '(empty prompt)';
   const inspectUrl = `#screen?paneId=${encodeURIComponent(paneId)}`;
 
   return (
-    `<div class="ops-card" data-pane-id="${_esc(paneId)}" data-since="${_esc(item.since)}">` +
+    `<div class="ops-card" data-pane-id="${escapeHtml(paneId)}" data-since="${escapeHtml(item.since)}">` +
     `<div class="ops-card-header">` +
     `<div class="ops-card-meta-left">` +
-    `<strong>${_esc(name)}</strong>${paneCaption}` +
+    `<strong>${escapeHtml(name)}</strong>${paneCaption}` +
     `<div class="badge-group">${cliBadge}${modelBadge}</div>` +
-    `<div class="cell-wrap"><span>${_esc(districtTitle)}</span>${districtId}</div>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
     `</div>` +
     `<div class="ops-card-meta-right">` +
-    `<span class="badge badge-wait">${_esc(waitLabel)}</span>` +
+    `<span class="badge badge-wait">${escapeHtml(waitLabel)}</span>` +
     `</div>` +
     `</div>` +
     `<blockquote class="ops-prompt-quote">` +
-    `<p class="ops-prompt-text">${_esc(prompt)}</p>` +
+    `<p class="ops-prompt-text">${escapeHtml(prompt)}</p>` +
     `</blockquote>` +
     `<div class="ops-card-footer">` +
     `<span class="badge badge-recommendation">Recommendation: null (P1 placeholder)</span>` +
-    `<a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${_esc(paneId)}">` +
+    `<a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${escapeHtml(paneId)}">` +
     `Inspect Pane Screen</a>` +
     `</div>` +
     `</div>`
@@ -6606,7 +6645,7 @@ function renderOpsDeskQueueHtml(items, { adapterError } = {}) {
 
   const noticeHtml = adapterError
     ? `<div class="ops-adapter-notice" id="opsAdapterNotice" role="status">` +
-      `<span class="badge badge-error">Adapter Notice</span> ${_esc(adapterError)}</div>`
+      `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(adapterError)}</div>`
     : '';
 
   const hasItems = Array.isArray(items) && items.length > 0;
@@ -6646,7 +6685,7 @@ function renderOpsDeskView(
   if (error && !effectiveAdapterError && (!Array.isArray(items) || items.length === 0)) {
     container.innerHTML =
       `<div class="ops-error" id="opsError" role="alert">` +
-      `Failed to load ops desk from server: ${_esc(error)}</div>`;
+      `Failed to load ops desk from server: ${escapeHtml(error)}</div>`;
     return;
   }
 
@@ -6762,35 +6801,32 @@ async function fetchOpsDesk(
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
   }
 
+  function refreshActiveTab(params) {
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    if (activeTab === 'sessions') {
+      refreshSessionsData();
+    } else if (activeTab === 'screen') {
+      const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
+      refreshScreenData(paneId);
+    } else if (activeTab === 'ops-desk') {
+      refreshOpsDeskData();
+    } else {
+      updateConsoleTimestamp(document, 'No data yet');
+    }
+  }
+
   function handleTabSwitch() {
     const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
     if (isConsolePath()) {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else if (activeTab === 'screen') {
-        const paneId = params?.get ? params.get('paneId') : params?.paneId;
-        refreshScreenData(paneId);
-      } else if (activeTab === 'ops-desk') {
-        refreshOpsDeskData();
-      }
+      refreshActiveTab(params);
     }
   }
 
   const poller = createPollingManager({
     onTick: () => {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else if (activeTab === 'screen') {
-        const { params } = parseHash(window.location.hash);
-        const paneId = params?.get ? params.get('paneId') : params?.paneId;
-        refreshScreenData(paneId);
-      } else if (activeTab === 'ops-desk') {
-        refreshOpsDeskData();
-      } else {
-        updateConsoleTimestamp(document, 'No data yet');
-      }
+      refreshActiveTab();
     },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
@@ -6832,17 +6868,7 @@ async function fetchOpsDesk(
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        if (activeTab === 'sessions') {
-          refreshSessionsData();
-        } else if (activeTab === 'screen') {
-          const { params } = parseHash(window.location.hash);
-          const paneId = params?.get ? params.get('paneId') : params?.paneId;
-          refreshScreenData(paneId);
-        } else if (activeTab === 'ops-desk') {
-          refreshOpsDeskData();
-        } else {
-          updateConsoleTimestamp(document, 'No data yet');
-        }
+        refreshActiveTab();
       });
     }
 

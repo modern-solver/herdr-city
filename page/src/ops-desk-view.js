@@ -2,16 +2,7 @@
 // Purpose: Ops desk queue view rendering, card layout, wait timers, and API contract consumption (U6)
 // Maintainer: builder-gemini
 
-const _esc = (s) => {
-  if (typeof escapeHtml === 'function') return escapeHtml(s);
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-};
+import { escapeHtml } from './sessions-view.js';
 
 export function formatWaitDuration(waitMs) {
   const ms = Number(waitMs);
@@ -31,50 +22,50 @@ export function renderOpsDeskCardHtml(item) {
 
   // Failed source or adapter error record for a specific source/district
   if (item.error && !item.cli && !item.prompt) {
-    const src = _esc(item.districtId || item.id || 'Unknown source');
+    const src = escapeHtml(item.districtId || item.id || 'Unknown source');
     const districtTitle = item.districtTitle || item.districtId || '-';
     return (
       `<div class="ops-card ops-card-error" data-source="${src}">` +
       `<div class="ops-card-header">` +
       `<div class="ops-card-meta-left">` +
       `<span class="badge badge-error">Source Error</span>` +
-      `<strong>${_esc(districtTitle)}</strong>` +
+      `<strong>${escapeHtml(districtTitle)}</strong>` +
       `</div>` +
       `</div>` +
-      `<div class="ops-card-error-body">${_esc(item.error)}</div>` +
+      `<div class="ops-card-error-body">${escapeHtml(item.error)}</div>` +
       `</div>`
     );
   }
 
   const name = item.name || item.paneId || '-';
   const paneId = item.paneId || item.id || '';
-  const paneCaption = `<small class="sub-id">${_esc(paneId)}</small>`;
+  const paneCaption = `<small class="sub-id">${escapeHtml(paneId)}</small>`;
   const districtTitle = item.districtTitle || item.districtId || '-';
-  const districtId = item.districtId ? `<small class="sub-id">${_esc(item.districtId)}</small>` : '';
-  const cliBadge = item.cli ? `<span class="badge badge-cli">${_esc(item.cli)}</span>` : '';
-  const modelBadge = item.model ? `<span class="badge badge-model">${_esc(item.model)}</span>` : '';
+  const districtId = item.districtId ? `<small class="sub-id">${escapeHtml(item.districtId)}</small>` : '';
+  const cliBadge = item.cli ? `<span class="badge badge-cli">${escapeHtml(item.cli)}</span>` : '';
+  const modelBadge = item.model ? `<span class="badge badge-model">${escapeHtml(item.model)}</span>` : '';
   const waitLabel = formatWaitDuration(item.waitMs);
   const prompt = item.prompt || '(empty prompt)';
   const inspectUrl = `#screen?paneId=${encodeURIComponent(paneId)}`;
 
   return (
-    `<div class="ops-card" data-pane-id="${_esc(paneId)}" data-since="${_esc(item.since)}">` +
+    `<div class="ops-card" data-pane-id="${escapeHtml(paneId)}" data-since="${escapeHtml(item.since)}">` +
     `<div class="ops-card-header">` +
     `<div class="ops-card-meta-left">` +
-    `<strong>${_esc(name)}</strong>${paneCaption}` +
+    `<strong>${escapeHtml(name)}</strong>${paneCaption}` +
     `<div class="badge-group">${cliBadge}${modelBadge}</div>` +
-    `<div class="cell-wrap"><span>${_esc(districtTitle)}</span>${districtId}</div>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
     `</div>` +
     `<div class="ops-card-meta-right">` +
-    `<span class="badge badge-wait">${_esc(waitLabel)}</span>` +
+    `<span class="badge badge-wait">${escapeHtml(waitLabel)}</span>` +
     `</div>` +
     `</div>` +
     `<blockquote class="ops-prompt-quote">` +
-    `<p class="ops-prompt-text">${_esc(prompt)}</p>` +
+    `<p class="ops-prompt-text">${escapeHtml(prompt)}</p>` +
     `</blockquote>` +
     `<div class="ops-card-footer">` +
     `<span class="badge badge-recommendation">Recommendation: null (P1 placeholder)</span>` +
-    `<a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${_esc(paneId)}">` +
+    `<a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${escapeHtml(paneId)}">` +
     `Inspect Pane Screen</a>` +
     `</div>` +
     `</div>`
@@ -90,7 +81,7 @@ export function renderOpsDeskQueueHtml(items, { adapterError } = {}) {
 
   const noticeHtml = adapterError
     ? `<div class="ops-adapter-notice" id="opsAdapterNotice" role="status">` +
-      `<span class="badge badge-error">Adapter Notice</span> ${_esc(adapterError)}</div>`
+      `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(adapterError)}</div>`
     : '';
 
   const hasItems = Array.isArray(items) && items.length > 0;
@@ -130,7 +121,7 @@ export function renderOpsDeskView(
   if (error && !effectiveAdapterError && (!Array.isArray(items) || items.length === 0)) {
     container.innerHTML =
       `<div class="ops-error" id="opsError" role="alert">` +
-      `Failed to load ops desk from server: ${_esc(error)}</div>`;
+      `Failed to load ops desk from server: ${escapeHtml(error)}</div>`;
     return;
   }
 

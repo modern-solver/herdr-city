@@ -46,7 +46,8 @@
   rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
   prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (stacked on `feat/gemini-u4-screen`).
-- Status: Implemented U6 ops desk queue view with 62 passing unit/integration tests; prepared draft PR.
+- Status: Merged U4 r1 fixes (import real helpers, in-place viewport updates, extracted
+  refreshActiveTab); removed _esc fallback in ops-desk-view.js; tests green.
 
 ## Files touched
 

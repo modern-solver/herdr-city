@@ -86,35 +86,32 @@
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
   }
 
+  function refreshActiveTab(params) {
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    if (activeTab === 'sessions') {
+      refreshSessionsData();
+    } else if (activeTab === 'screen') {
+      const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
+      refreshScreenData(paneId);
+    } else if (activeTab === 'ops-desk') {
+      refreshOpsDeskData();
+    } else {
+      updateConsoleTimestamp(document, 'No data yet');
+    }
+  }
+
   function handleTabSwitch() {
     const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
     if (isConsolePath()) {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else if (activeTab === 'screen') {
-        const paneId = params?.get ? params.get('paneId') : params?.paneId;
-        refreshScreenData(paneId);
-      } else if (activeTab === 'ops-desk') {
-        refreshOpsDeskData();
-      }
+      refreshActiveTab(params);
     }
   }
 
   const poller = createPollingManager({
     onTick: () => {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else if (activeTab === 'screen') {
-        const { params } = parseHash(window.location.hash);
-        const paneId = params?.get ? params.get('paneId') : params?.paneId;
-        refreshScreenData(paneId);
-      } else if (activeTab === 'ops-desk') {
-        refreshOpsDeskData();
-      } else {
-        updateConsoleTimestamp(document, 'No data yet');
-      }
+      refreshActiveTab();
     },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
@@ -156,17 +153,7 @@
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        if (activeTab === 'sessions') {
-          refreshSessionsData();
-        } else if (activeTab === 'screen') {
-          const { params } = parseHash(window.location.hash);
-          const paneId = params?.get ? params.get('paneId') : params?.paneId;
-          refreshScreenData(paneId);
-        } else if (activeTab === 'ops-desk') {
-          refreshOpsDeskData();
-        } else {
-          updateConsoleTimestamp(document, 'No data yet');
-        }
+        refreshActiveTab();
       });
     }
 
