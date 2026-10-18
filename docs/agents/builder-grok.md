@@ -36,6 +36,7 @@ Lint PR on `feat/grok-lint-ci`: Prettier, ESLint, CI `npm run lint` and
 - `src/server.js`
 - `src/*.js` and `test/*.js` (Prettier)
 - `CHANGELOG.md`
+- `README.md`
 - `docs/agents/builder-grok.md`
 
 ## Open questions
