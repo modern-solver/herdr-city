@@ -6,7 +6,7 @@
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `p1/grok-backend` (rebased on `538ba9d`) |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-context-layer` |
 
 ## Acronyms
 
@@ -18,10 +18,10 @@
 
 ## Current task
 
-PR G1 review fixes on `p1/grok-backend` (https://github.com/modern-solver/herdr-city/pull/5).
-Staleness test uses `git ls-files` and CRLF normalize. CODEMAP lists exports
-and dependents. Changelog links PR #5. CODE-12 and SDLC-12 wait on Shaunak.
-Stop after this push. Then B1 after G1 merges and branch-scope is APPROVED.
+PR G1 on `feat/grok-context-layer` (https://github.com/modern-solver/herdr-city/pull/9),
+replacing closed PR #5. Staleness test uses `git ls-files` and CRLF normalize.
+CODEMAP lists exports and dependents. Changelog links PR #9. CODE-12 waits on
+PR #7 merge. Do not merge `main` into this branch yet.
 
 ## Files touched
 
