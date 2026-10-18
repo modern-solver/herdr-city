@@ -4,7 +4,7 @@
 |---|---|
 | Agent | builder-grok |
 | Model | grok-4.5 (high) |
-| Date | 2026-10-18 |
+| Date | 2026-10-19 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
 | Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b8-readonly` |
 | Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
@@ -19,8 +19,8 @@
 
 ## Current task
 
-PR #12 (`feat/grok-b8-readonly`): reviewer fix — gotchas, README API table,
-409 message, readonly test header. Keep draft until re-review.
+PR #12 (`feat/grok-b8-readonly`): D3 merged origin/main (e7e13fa, PR #6) as
+8c98da1; ready for merge.
 
 ## Files touched
 
