@@ -12,6 +12,9 @@ Each item links the PR, commit, or file it describes (CHG-04).
   Files: `page/src/sessions-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
   `page/README.md`, `web/index.html`, `test/sessions-ui.test.js`.
   PR: https://github.com/modern-solver/herdr-city/pull/10
+- Feature: `POST /api/send-keys`, `POST /api/send-text`, and `POST /api/prompt`
+  return 409 with `reason` `readonly`. `POST /api/answer` stays 409.
+  PR: https://github.com/modern-solver/herdr-city/pull/12
 - Feature: `GET /api/sessions` console session list with district, cli, model,
   status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
   Session `activity` is masked (SEC-03). PR: https://github.com/modern-solver/herdr-city/pull/8

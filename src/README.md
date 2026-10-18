@@ -11,6 +11,8 @@ HTTP server serves `/` (city) and `/console` (console shell) routes, and
 
 Gotchas: live herdr allows only `agent list`, `workspace list`, `pane read`.
 The process binds `127.0.0.1`. Adapter poll is 2000 ms. Pane text is masked
-before it leaves the API. Session `activity` is masked (SEC-03).
+before it leaves the API. Session `activity` is masked (SEC-03). Write routes
+(`/api/answer`, `/api/send-keys`, `/api/send-text`, `/api/prompt`) always
+return 409 readonly; no write path.
 
 Owner: builder-grok.

@@ -3,10 +3,11 @@
 | Field | Value |
 |---|---|
 | Agent | builder-grok |
-| Model | grok-4.6 |
-| Date | 2026-10-18 |
+| Model | grok-4.5 (high) |
+| Date | 2026-10-19 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b1-sessions` |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b8-readonly` |
+| Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
 
 ## Acronyms
 
@@ -18,8 +19,8 @@
 
 ## Current task
 
-PR #8 (`feat/grok-b1-sessions`): merged `origin/main` after #9. `GET /api/sessions`
-with filters. Do not touch stacked B2/B6/B3 until #8 merges.
+PR #12 (`feat/grok-b8-readonly`): D3 merged origin/main (e7e13fa, PR #6) as
+8c98da1; ready for merge.
 
 ## Files touched
 
@@ -30,24 +31,21 @@ Net vs `origin/main`:
 - `docs/CODEMAP.md`
 - `docs/agents/builder-grok.md`
 - `src/README.md`
-- `src/adapter.js`
-- `src/map.js`
 - `src/server.js`
-- `src/sessions.js`
-- `test/README.md`
-- `test/sessions.test.js`
+- `test/readonly.test.js`
 
 ## Open questions
 
-None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
+None for B8. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 
 ## Last-session learnings
 
-- Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
-  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
-  `git -C C:\Users\shaun\mastopia-grok`.
+- Lead checkout `C:\Users\shaun\mastopia` is read-only except appending
+  `briefs/lead-escalations.md` and reading `briefs/`. First command of every
+  shell: `Set-Location C:\Users\shaun\mastopia-grok`, or `git -C` that path.
+- Never `reset --hard`, rebase, amend, or force-push. Mess? Escalate.
 - PR body files live in the worktree as `*.tmp`. Never git add them.
 - Merge `origin/main` into feature branches (D3). Never rebase-force.
 - `npm run lint` and `npm run format:check` must include `scripts/`.
 - `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
-- Stacked B2/B6/B3 wait until #8 merges.
+- PR Models line: grok-4.5 (high).
