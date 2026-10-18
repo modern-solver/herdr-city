@@ -12,9 +12,19 @@
     "start": "node page/build.js && node src/cli.js",
     "fixture": "node page/build.js && node src/cli.js --fixture",
     "build:page": "node page/build.js",
+    "codemap": "node scripts/codemap.js",
+    "lint": "eslint src test scripts page eslint.config.js",
+    "format:check": "prettier --check src test scripts page eslint.config.js package.json .prettierrc.json",
     "test": "node --test test/*.test.js"
   },
   "bin": {
     "mastopia": "src/cli.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10"
   }
 }

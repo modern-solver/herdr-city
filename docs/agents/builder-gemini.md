@@ -45,39 +45,27 @@
   reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
   raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (stacked on `feat/gemini-u2-sessions`).
-- Status: Addressed PR #14 r1 review findings (CODE-05/14 import real helpers, extract
-  refreshActiveTab, in-place viewport update preserving scroll and selection); 55 tests passing.
+- Status: Merged `origin/feat/gemini-u2-sessions` (including upstream main merges); leak rule verified;
+  lint, format:check and test green.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u4-screen`:
+Net diff vs `main` on `feat/gemini-u4-screen`:
 
-1. `page/src/screen-view.js`:
-   - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
-2. `page/src/sessions-view.js`:
-   - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-3. `page/src/console-router.js`:
-   - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-4. `page/src/07-console.js`:
-   - Shipped console shell controller consuming `console-router.js`, `sessions-view.js`, and `screen-view.js`.
-5. `page/src/page.html`:
-   - Added `#view-screen` card layout, pre/code styles, autoscroll controls, and truncation alerts.
-6. `page/build.js`:
-   - Bundles modules before `07-console.js` into `web/index.html`.
-7. `web/index.html`:
-   - Generated client bundle containing 3D City, Console Shell, Sessions list view, and Screen viewer.
-8. `page/README.md`:
-   - Documented `screen-view.js` and `sessions-view.js` in frontend modules list (CTX-10).
-9. `test/screen-ui.test.js`:
-   - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
-10. `test/sessions-ui.test.js`:
-    - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-11. `test/console-ui.test.js`:
-    - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-12. `CHANGELOG.md`:
-    - Added dated entry for U4 pane screen viewer implementation linking PR #14 (CHG-04).
-13. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U4 implementation.
+1. `.prettierignore`
+2. `CHANGELOG.md`
+3. `docs/agents/builder-gemini.md`
+4. `eslint.config.js`
+5. `page/README.md`
+6. `page/build.js`
+7. `page/src/07-console.js`
+8. `page/src/console-router.js`
+9. `page/src/page.html`
+10. `page/src/screen-view.js`
+11. `page/src/sessions-view.js`
+12. `test/screen-ui.test.js`
+13. `test/sessions-ui.test.js`
+14. `web/index.html`
 
 ## Open questions
 
@@ -85,7 +73,7 @@ Decisions and standing approvals from Shaunak (2026-10-18):
 
 | ID | Item | Owner | Status |
 |---|---|---|---|
-| Q1 | District files: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q1 | Expected files: `CHANGELOG.md`, `briefs/`, escalations | Shaunak | Approved (as written) |
 | Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
 | Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
 | Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |
@@ -107,5 +95,5 @@ can veto, not asked as open questions.
    - Test shipped functions with minimal stubs rather than testing isolated mock copies.
    - Decouple view rendering into pure functions that can be tested in isolation with contract mocks.
 3. Stacked branches and workflow:
-   - When base PRs are pending review/merges, building features on stacked branches preserves momentum.
-   - Draft PRs clearly document dependencies (e.g. "stacked on #6, needs #8 for live data").
+   - Retargeting PRs to main after base PR merges allows clean integration of upstream tooling and tests.
+   - All endpoint text rendered must strictly pass through the shared `escapeHtml` filter (Leak rule).

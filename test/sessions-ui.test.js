@@ -20,6 +20,14 @@ test('VALID_MODES includes live, fixture, and demo', () => {
   assert.deepEqual(VALID_MODES, ['live', 'fixture', 'demo']);
 });
 
+test('escapeHtml escapes HTML special characters to prevent XSS (leak rule)', () => {
+  assert.equal(
+    escapeHtml('<script>"foo" & \'bar\'</script>'),
+    '&lt;script&gt;&quot;foo&quot; &amp; &#39;bar&#39;&lt;/script&gt;',
+  );
+  assert.equal(escapeHtml(null), '');
+});
+
 test('formatRelativeTime formats durations accurately', () => {
   const base = 1000000000;
   assert.equal(formatRelativeTime(null), '-');
@@ -319,4 +327,3 @@ test('renderSessionsView renders adapter notice banner and table without blankin
   // Must NOT display fatal error container
   assert.doesNotMatch(container.innerHTML, /id="sessionsError"/);
 });
-

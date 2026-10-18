@@ -96,7 +96,6 @@ test('renderScreenView manages unselected, loading, error, and content states', 
   assert.match(container.innerHTML, /Unable to read pane w8:p1\. Pane may have closed or herdr returned an error\./);
 
   // 4. Content state
-  let scrolled = false;
   const mockVp = {
     scrollHeight: 500,
     scrollTop: 0,
