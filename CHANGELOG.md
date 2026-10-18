@@ -7,6 +7,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 - Feature: `POST /api/send-keys`, `POST /api/send-text`, and `POST /api/prompt`
   return 409 with `reason` `readonly`. `POST /api/answer` stays 409.
+  PR: https://github.com/modern-solver/herdr-city/pull/12
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.

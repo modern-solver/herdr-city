@@ -17,9 +17,9 @@
 
 ## Current task
 
-B8 read-only write routes: `POST /api/send-keys`, `POST /api/send-text`, and
-`POST /api/prompt` return 409 with `reason` `readonly`. `POST /api/answer`
-stays 409.
+B8 read-only write routes on PR #12 (`feat/grok-b8-readonly`):
+`POST /api/send-keys`, `POST /api/send-text`, and `POST /api/prompt` return 409
+with `reason` `readonly`. `POST /api/answer` stays 409.
 
 ## Files touched
 
