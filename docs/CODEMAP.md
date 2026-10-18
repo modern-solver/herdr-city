@@ -25,10 +25,10 @@ Uses `git ls-files`. Untracked paths are omitted. Vendor binaries are omitted.
 | `src/fixtures.js` | `createFixtureClient`, `loadFixtureBundle` | `src/herdr-cli.js`, `src/paths.js` | `src/cli.js`, `test/adapter.test.js`, `test/screen.test.js`, `test/server.test.js`, `test/sessions.test.js` |
 | `src/herdr-cli.js` | `assertReadOnly`, `createLiveClient`, `extractAgents`, `extractJson`, `extractPaneText`, `extractWorkspaces` | (none) | `src/cli.js`, `src/fixtures.js`, `test/adapter.test.js`, `test/parse.test.js` |
 | `src/map.js` | `agentDisplayName`, `districtTitle`, `fingerprint`, `IDLE_ASLEEP_MS`, `inspectPane`, `mapCity`, `maskedClip`, `modelBadge`, `setMapPatterns`, `snapshotPayload` | `src/output-filter.js`, `src/prompt-detect.js` | `src/adapter.js`, `src/sessions.js`, `test/adapter.test.js`, `test/map.test.js` |
-| `src/mask.js` | `MASK`, `maskSecrets` | (none) | `src/output-filter.js`, `test/leak.test.js`, `test/mask.test.js`, `test/screen.test.js`, `test/sessions.test.js` |
-| `src/output-filter.js` | `maskThenTruncate` | `src/mask.js` | `src/map.js`, `src/screen.js`, `src/sessions.js`, `test/leak.test.js` |
+| `src/mask.js` | `MASK`, `maskSecrets` | (none) | `src/output-filter.js`, `test/helpers/leak.js`, `test/mask.test.js`, `test/screen.test.js`, `test/sessions.test.js` |
+| `src/output-filter.js` | `maskThenTruncate` | `src/mask.js` | `src/map.js`, `src/prompt-detect.js`, `src/screen.js`, `src/sessions.js`, `test/leak.test.js` |
 | `src/paths.js` | `CONFIG_DIR`, `DEFAULT_PATTERNS_PATH`, `FIXTURES_DIR`, `ROOT`, `WEB_DIR` | (none) | `src/adapter.js`, `src/fixtures.js`, `src/prompt-detect.js`, `src/server.js` |
-| `src/prompt-detect.js` | `detectError`, `detectPrompt`, `inferCliKind`, `loadPromptPatterns` | `src/paths.js` | `src/adapter.js`, `src/map.js`, `src/sessions.js`, `test/map.test.js`, `test/prompt-detect.test.js` |
+| `src/prompt-detect.js` | `detectError`, `detectPrompt`, `inferCliKind`, `loadPromptPatterns` | `src/output-filter.js`, `src/paths.js` | `src/adapter.js`, `src/map.js`, `src/sessions.js`, `test/map.test.js`, `test/prompt-detect.test.js` |
 | `src/screen.js` | `buildScreen`, `capPaneText`, `lineCount`, `SCREEN_CAP` | `src/output-filter.js` | `src/adapter.js`, `test/leak.test.js`, `test/screen.test.js` |
 | `src/server.js` | `createServer` | `src/paths.js`, `src/sessions.js` | `src/cli.js`, `test/leak.test.js`, `test/screen.test.js`, `test/server.test.js`, `test/sessions.test.js` |
 | `src/sessions.js` | `consoleStatus`, `filterSessions`, `mapSession`, `mapSessions`, `parseSessionFilters`, `statusLabel` | `src/map.js`, `src/output-filter.js`, `src/prompt-detect.js` | `src/adapter.js`, `src/server.js`, `test/sessions.test.js` |

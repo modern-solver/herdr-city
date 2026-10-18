@@ -12,6 +12,7 @@ to console sessions and applies district/cli/model/status/`q` filters.
 
 Gotchas: live herdr allows only `agent list`, `workspace list`, `pane read`.
 The process binds `127.0.0.1`. Adapter poll is 2000 ms. Pane text is masked
-before it leaves the API. Session `activity` is masked (SEC-03).
+before it leaves the API. Session `activity` is masked (SEC-03). Prompt and
+error caps in `prompt-detect.js` use `maskThenTruncate` (no local char slice).
 
 Owner: builder-grok.

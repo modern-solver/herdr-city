@@ -6,26 +6,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
-import { MASK } from '../src/mask.js';
 import { SCREEN_CAP } from '../src/screen.js';
 import { maskThenTruncate } from '../src/output-filter.js';
+import { AKIA, GHP, JWT, LEAK_TOKENS, SK, TOKS, assertClean, boundaryText } from './helpers/leak.js';
 
-const GHP = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-const JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.signaturepartshere';
-const SK = 'sk-abcdefghijklmnopqrstuvwxyz123456';
-const AKIA = 'AKIAIOSFODNN7EXAMPLE';
-const TOKS = ` ${GHP} ${JWT} ${SK} ${AKIA} `;
+const ACTIVITY_MAX = 240;
 
-function assertClean(body) {
-  const s = JSON.stringify(body);
-  assert.equal(s.includes('ghp_'), false);
-  assert.equal(s.includes('sk-abcdefghijklmnopqrst'), false);
-  assert.equal(s.includes('AKIAIOSFODNN7EXAMPLE'), false);
-  assert.equal(s.includes('eyJhbGci'), false);
-  assert.equal(s.includes(MASK), true);
-}
-
-function leakClient({ pane, title = 'bot' }) {
+function leakClient({ pane, title = 'bot', status = 'blocked' }) {
   return {
     kind: 'test',
     async agentList() {
@@ -35,7 +22,7 @@ function leakClient({ pane, title = 'bot' }) {
           workspace_id: 'w9',
           name: 'bot',
           agent: 'grok',
-          agent_status: 'blocked',
+          agent_status: status,
           revision: 1,
           state_change_seq: 1,
           terminal_title_stripped: title,
@@ -67,43 +54,40 @@ async function withServer(client, fn) {
 }
 
 test('maskThenTruncate masks full text then keeps the tail', () => {
-  const raw = `${'x'.repeat(SCREEN_CAP - 5)} ${GHP} ${JWT}`;
-  const head = raw.slice(0, SCREEN_CAP);
-  assert.equal(head.includes('ghp_'), true);
+  const raw = `${boundaryText(SCREEN_CAP, `${GHP} ${JWT}`)}${TOKS}`;
   const out = maskThenTruncate(raw, SCREEN_CAP, { keep: 'tail' });
   assert.equal(out.truncated, true);
-  assert.equal(out.text.includes('ghp_'), false);
-  assert.equal(out.text.includes('eyJ'), false);
-  assert.equal(out.text.includes(MASK), true);
+  assertClean(out.text, LEAK_TOKENS);
 });
 
 test('GET /api/screen JSON has no secrets at start, middle, end or tail boundary', async () => {
-  const pane = `${TOKS}mid${TOKS}${'x'.repeat(SCREEN_CAP - 5)} ${GHP} ${JWT}${TOKS}`;
+  const pane = `${TOKS}mid${TOKS}${boundaryText(SCREEN_CAP, GHP)} ${JWT} ${SK} ${AKIA}${TOKS}`;
   await withServer(leakClient({ pane }), async (port) => {
     const res = await fetch(`http://127.0.0.1:${port}/api/screen?paneId=w9:p1`);
     assert.equal(res.status, 200);
     const body = await res.json();
-    assertClean(body);
+    assert.equal(body.truncated, true);
+    assertClean(body, LEAK_TOKENS);
   });
 });
 
 test('GET /api/sessions JSON has no secrets at start, middle, end or activity boundary', async () => {
-  const title = `${TOKS}mid${TOKS}${'z'.repeat(240 - 5)} ${GHP} ${JWT}${TOKS}`;
-  const pane = `plain output${TOKS}`;
-  await withServer(leakClient({ pane, title }), async (port) => {
+  const title = `${TOKS}mid${TOKS}${boundaryText(ACTIVITY_MAX, GHP)} ${JWT}${TOKS}`;
+  const pane = 'plain output';
+  await withServer(leakClient({ pane, title, status: 'idle' }), async (port) => {
     const res = await fetch(`http://127.0.0.1:${port}/api/sessions`);
     assert.equal(res.status, 200);
     const body = await res.json();
-    assertClean(body);
+    assertClean(body, LEAK_TOKENS);
   });
 });
 
 test('GET /api/city JSON has no secrets at start, middle, end or activity boundary', async () => {
-  const pane = `${TOKS}plain output${TOKS}${'x'.repeat(200)} ${GHP}${TOKS}`;
+  const pane = `${TOKS}plain output${TOKS}${boundaryText(ACTIVITY_MAX, GHP)}${TOKS}`;
   await withServer(leakClient({ pane, title: `${TOKS}title${TOKS}` }), async (port) => {
     const res = await fetch(`http://127.0.0.1:${port}/api/city`);
     assert.equal(res.status, 200);
     const body = await res.json();
-    assertClean(body);
+    assertClean(body, LEAK_TOKENS);
   });
 });
