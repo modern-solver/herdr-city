@@ -27,6 +27,16 @@ Each item links the PR, commit, or file it describes (CHG-04).
 - Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
   `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
   `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
+- Feature: Implemented Milestone U1 (User Interface Milestone 1) console shell, navigation
+  header, route switcher (`/` and `/console`), and client-side tab router (`#sessions`,
+  `#screen`, `#logs`, `#rulebook`, `#ops-desk`) with active and hidden-tab polling lifecycle.
+  Files: `page/src/console-router.js`, `page/src/07-console.js`, `page/src/page.html`,
+  `page/build.js`, `web/index.html`, `src/server.js`, `test/console-ui.test.js`.
+  PR: https://github.com/modern-solver/herdr-city/pull/6 (replaces PR #4)
+- Fix: Restored prefers-reduced-motion media query in `page/src/page.html` and rebuilt `web/index.html`.
+  Unified router and UI lifecycle helpers in `page/src/console-router.js`, extracted `closeCityConsolePanel()`
+  to prevent hidden side effects (CODE-04), and expanded unit tests in `test/console-ui.test.js` (CODE-14).
+  PR: https://github.com/modern-solver/herdr-city/pull/6 (replaces PR #4)
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.

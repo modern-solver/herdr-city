@@ -6,7 +6,8 @@ Interface: `createAdapter`, `createServer`, `createLiveClient`,
 `createFixtureClient`, `maskSecrets`, `mapSessions`. CLI entry is `cli.js`.
 `paths.js` exports `ROOT`, `WEB_DIR`, `FIXTURES_DIR`. `sessions.js` maps panes
 to console sessions and applies district/cli/model/status/`q` filters.
-`GET /api/sessions` is the console session list.
+HTTP server serves `/` (city) and `/console` (console shell) routes, and
+`GET /api/sessions` for the console session list.
 
 Gotchas: live herdr allows only `agent list`, `workspace list`, `pane read`.
 Binds 127.0.0.1 in every mode; 0.0.0.0 only with --demo plus --host 0.0.0.0 /
