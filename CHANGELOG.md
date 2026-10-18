@@ -7,7 +7,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 - Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
   `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
-  `src/server.js`. Branch: `feat/grok-lint-ci`.
+  `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.
