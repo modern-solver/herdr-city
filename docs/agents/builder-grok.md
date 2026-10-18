@@ -6,7 +6,7 @@
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-lint-ci` (from `origin/main`) |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-context-layer` |
 
 ## Acronyms
 
@@ -18,36 +18,41 @@
 
 ## Current task
 
-Lint PR on `feat/grok-lint-ci`: Prettier, ESLint, CI `npm run lint` and
-`npm run format:check`. Prettier `endOfLine` is `auto` so Windows CRLF
-checkouts pass `format:check`. D3 merged `origin/main` as `44cf6c3`.
-CODEMAP regen lives on PR #9 (`feat/grok-context-layer`). B1 is PR #8.
+PR #9 on `feat/grok-context-layer`. Merged `origin/main` (PR #7 `c1b0ccd`).
+`npm run lint` and `npm run format:check` cover `scripts/`. Resume task-1810
+on `feat/grok-b7-demo` after this push.
 
 ## Files touched
 
+- `scripts/codemap.js`
+- `scripts/README.md`
+- `src/README.md`
+- `test/README.md`
+- `page/README.md`
+- `fixtures/README.md`
+- `config/README.md`
+- `web/README.md`
 - `package.json`
-- `package-lock.json`
-- `eslint.config.js`
-- `.prettierrc.json`
-- `.prettierignore`
-- `.github/workflows/ci.yml`
-- `src/adapter.js`
-- `src/map.js`
-- `src/server.js`
-- `src/*.js` and `test/*.js` (Prettier)
+- `test/codemap.test.js`
+- `docs/CODEMAP.md`
 - `CHANGELOG.md`
-- `README.md`
 - `docs/agents/builder-grok.md`
+- `README.md`
+- `.gitattributes`
 
 ## Open questions
 
-None for this PR.
+None for G1. Spec Q1, Q2, Q5, Q6, Q7 are approved as written (defaults Shaunak
+may veto). CODE-12 landed on main via PR #7.
 
 ## Last-session learnings
 
-- Shaunak 04:25: `feat/grok-*` branches allowed. `npm install -D` in this
-  worktree only. Merge `origin/main` into feature branches. Never rebase-force.
-- PR body files live in the worktree as `pr5-body.tmp`. Never git add them.
+- Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
+  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
+  `git -C C:\Users\shaun\mastopia-grok`.
+- PR body files live in the worktree as `*.tmp`. Never git add them.
   Never write AppData or TEMP.
-- G1 CODEMAP script lives on PR #9 (`feat/grok-context-layer`).
-- D3 merged `origin/main` into this branch as `44cf6c3`.
+- `npm run lint` and `npm run format:check` must include `scripts/`.
+- `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
+- Merge `origin/main` into feature branches (D3). Never rebase-force.
+- Independent P1 items branch from `origin/main` as `feat/grok-*`.

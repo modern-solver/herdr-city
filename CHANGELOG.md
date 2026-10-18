@@ -5,6 +5,11 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Docs: Context-layer CODEMAP (`docs/CODEMAP.md`), regen script
+  (`scripts/codemap.js`, `npm run codemap`), staleness test
+  (`test/codemap.test.js`), and module READMEs under `src/`, `test/`, `page/`,
+  `fixtures/`, `config/`, `web/`, `scripts/` (CTX-09, CTX-10).
+  PR: https://github.com/modern-solver/herdr-city/pull/9
 - Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
   `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
   `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
