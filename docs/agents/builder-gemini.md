@@ -42,12 +42,13 @@
 - Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
   (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
-- Status: Opened PR #6 (replacing PR #4 for SDLC-12); updated CHANGELOG.md U1 links to PR #6 (`5fb33d6`):
+- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3 approvals `99533cf`):
   1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
   2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
   3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
   4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
   5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04 (`5fb33d6`).
+  6. Merged `origin/main` (`99533cf`) into `feat/gemini-u1-shell` under Shaunak D3.
 
 ## Files touched
 
@@ -72,13 +73,24 @@ The builder-gemini agent touched and maintains the following files on `feat/gemi
    - Module documentation satisfying CTX-10.
 9. `CHANGELOG.md`:
    - Added dated entry for U1 console shell, navigation, tab router, round-1 fixes, and PR #6 links (`5fb33d6`).
+   - Reconciled entries with `origin/main` (`99533cf`).
 10. `docs/agents/builder-gemini.md`:
     - Updated agent memory tracking current task, touched files, and learnings.
 
 ## Open questions
 
-All PRE-01 open questions (Q1, Q2, Q5, Q6, Q7) approved by Shaunak as written on 2026-10-18.
-Q3 and Q4 decided. No open questions blocking P1.
+Decisions and standing approvals from Shaunak (2026-10-18):
+
+| ID | Item | Owner | Status |
+|---|---|---|---|
+| Q1 | Expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
+| Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
+| Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |
+| Q5 | Screen text cap: 80,000 characters | Shaunak | Approved (as written) |
+| Q6 | Search input debounce: 300 ms | Shaunak | Approved (as written) |
+| Q7 | Hidden-tab poll interval: 10,000 ms | Shaunak | Approved (as written) |
+
 Standing preference (Shaunak, 2026-10-18): routine values are stated as defaults Shaunak
 can veto, not asked as open questions.
 
@@ -94,3 +106,6 @@ can veto, not asked as open questions.
    - Move cross-component mutations (like closing P0 console) into explicit named functions.
 3. Accessibility and regressions:
    - Verify that media queries like `prefers-reduced-motion` remain intact when introducing new styles.
+4. Coordination and branch management (D1, D3):
+   - Merging `origin/main` via normal merge commits (no rebase-and-force-push) keeps PR history clean.
+   - Reconcile `CHANGELOG.md` carefully to preserve all items across concurrently developed branches.
