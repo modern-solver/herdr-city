@@ -12,7 +12,7 @@ Uses `git ls-files`. Untracked paths are omitted. Vendor binaries are omitted.
 | `page/` | source for the P0 3D city page, built into `web/`. |
 | `scripts/` | repository maintenance scripts that use Node built-ins only. |
 | `src/` | read-only herdr adapter, city mapping, HTTP server and CLI. |
-| `test/` | Node built-in tests for the adapter, server, map, mask, parsers and |
+| `test/` | Node built-in tests for the adapter, server, map, mask, parsers and console sessions. |
 | `web/` | built static city GUI served by `src/server.js`. |
 
 ## src and scripts
