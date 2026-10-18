@@ -17,9 +17,9 @@
 
 ## Current task
 
-B2 stacked draft on PR #8: `GET /api/screen` with `maskSecrets` on full pane
-text, 80000-character cap, session object. Then B6 ops desk. Drop for #8
-main merge when #9 merges.
+B2 stacked draft PR #15 on PR #8: `GET /api/screen` with `maskSecrets` on
+full pane text, 80000-character cap, session object. Then B6 ops desk. Drop
+for #8 main merge when #9 merges.
 
 ## Files touched
 
