@@ -4,6 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { WEB_DIR } from './paths.js';
 import { parseSessionFilters, filterSessions } from './sessions.js';
+import { parseLogQuery } from './logs.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -78,6 +79,15 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     }
     if (req.method === 'GET' && url.pathname === '/api/agents') {
       json(res, 200, { robots: adapter.getSnapshot().robots || [] });
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/logs') {
+      const parsed = parseLogQuery(url.searchParams);
+      if (!parsed.ok) {
+        json(res, 400, { ok: false, error: 'bad_request', message: parsed.message });
+        return;
+      }
+      json(res, 200, adapter.getLogs({ after: parsed.after, limit: parsed.limit }));
       return;
     }
     if (req.method === 'GET' && url.pathname === '/api/sessions') {
