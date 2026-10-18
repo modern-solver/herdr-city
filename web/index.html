@@ -541,6 +541,59 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
     color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
   }
   .badge-error{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  /* U3 Filters UI styles */
+  .sessions-filter-bar{
+    display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px;
+  }
+  .filter-controls{
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .filter-input, .filter-select{
+    background: #161b22; border: 1px solid #30363d; color: #f0f6fc;
+    padding: 6px 10px; border-radius: 6px; font-size: 12px;
+    font-family: inherit; outline: none; transition: border-color 0.15s ease;
+  }
+  .filter-input:focus, .filter-select:focus{ border-color: #58a6ff; }
+  .filter-search{ min-width: 180px; flex: 1; }
+  .filter-district{ min-width: 120px; }
+  .filter-model{ min-width: 110px; }
+  .filter-select{ cursor: pointer; }
+  .filter-seg{
+    display: inline-flex; background: #161b22; border: 1px solid #30363d;
+    border-radius: 6px; padding: 2px; gap: 2px;
+  }
+  .seg-btn{
+    background: transparent; border: 0; color: #8b949e; padding: 4px 10px;
+    border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s ease; font-family: inherit;
+  }
+  .seg-btn:hover{ color: #f0f6fc; }
+  .seg-btn.active{
+    background: #21262d; color: #f0f6fc; font-weight: 600;
+  }
+  .btn-filter-reset{
+    background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-filter-reset:hover{ background: #30363d; color: #f0f6fc; border-color: #8b949e; }
+  .filter-chips-bar{
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .filter-chips-bar:empty{ display: none; }
+  .filter-chip{
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+    border-radius: 12px; background: #1f242c; border: 1px solid rgba(56, 139, 253, 0.4);
+    color: #58a6ff; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+  }
+  .chip-label{ display: inline-block; }
+  .chip-dismiss{
+    background: none; border: none; color: #8b949e; cursor: pointer;
+    font-size: 13px; line-height: 1; padding: 0; margin-left: 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .chip-dismiss:hover{ color: #f85149; }
   /* U4 Screen View styles */
   .screen-card{
     background: #161b22; border: 1px solid #30363d; border-radius: 8px;
@@ -923,6 +976,7 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
           <h2>Agent Sessions</h2>
           <span class="sessions-count" id="sessionsCount">0 sessions</span>
         </div>
+        <div class="sessions-filters-container" id="sessionsFiltersContainer"></div>
         <div class="sessions-table-wrap" id="sessionsContent">
           <div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>
         </div>
@@ -6440,6 +6494,7 @@ function renderSessionsView(container, { sessions, error, adapterError, loading 
   if (loading) {
     container.innerHTML =
       '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
+    container._lastSessionsJson = null;
     return;
   }
 
@@ -6451,8 +6506,15 @@ function renderSessionsView(container, { sessions, error, adapterError, loading 
     container.innerHTML =
       `<div class="sessions-error" id="sessionsError" role="alert">` +
       `Failed to load sessions from server: ${escapeHtml(error)}</div>`;
+    container._lastSessionsJson = null;
     return;
   }
+
+  const rawJson = JSON.stringify({ sessions, adapterError: effectiveAdapterError });
+  if (container._lastSessionsJson === rawJson) {
+    return;
+  }
+  container._lastSessionsJson = rawJson;
 
   const noticeHtml = effectiveAdapterError
     ? `<div class="sessions-adapter-notice" id="sessionsAdapterNotice" role="status">` +
@@ -6468,25 +6530,391 @@ async function fetchSessions(
   query = {},
 ) {
   if (typeof fetchFn !== 'function') {
-    return { ok: false, error: 'fetch is not available', sessions: [], adapterError: null };
+    return { ok: false, error: 'fetch is not available', sessions: [], adapterError: null, filters: null };
   }
   try {
     const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(query)) {
-      if (v != null && v !== '') params.set(k, String(v));
+    if (query instanceof URLSearchParams) {
+      for (const [k, v] of query.entries()) {
+        if (v != null && v !== '') params.set(k, String(v));
+      }
+    } else if (typeof query === 'string') {
+      const qPart = query.includes('?') ? query.split('?')[1] : query.replace(/^#\/?/, '');
+      const parsed = new URLSearchParams(qPart);
+      for (const [k, v] of parsed.entries()) {
+        if (v != null && v !== '') params.set(k, String(v));
+      }
+    } else if (query && typeof query === 'object') {
+      for (const [k, v] of Object.entries(query)) {
+        if (v != null && v !== '') params.set(k, String(v));
+      }
     }
     const qStr = params.toString();
     const url = `/api/sessions${qStr ? `?${qStr}` : ''}`;
     const res = await fetchFn(url, { cache: 'no-store' });
     if (!res.ok) {
-      return { ok: false, error: `HTTP ${res.status}`, sessions: [], adapterError: null };
+      return { ok: false, error: `HTTP ${res.status}`, sessions: [], adapterError: null, filters: null };
     }
     const data = await res.json();
     const sessions = Array.isArray(data?.sessions) ? data.sessions : [];
     const adapterError = data?.error || null;
-    return { ok: true, data, sessions, adapterError, error: adapterError };
+    const filters = data?.filters || null;
+    return { ok: true, data, sessions, filters, adapterError, error: adapterError };
   } catch (err) {
-    return { ok: false, error: err?.message || 'Network error', sessions: [], adapterError: null };
+    return { ok: false, error: err?.message || 'Network error', sessions: [], adapterError: null, filters: null };
+  }
+}
+
+// Module: page/src/filters-view.js
+// Purpose: Session list filters toolbar, segmented controls, debounced search, and active chips for U3
+// Maintainer: builder-gemini
+
+
+const CLI_OPTIONS = ['All', 'claude', 'grok', 'gemini', 'cursor'];
+const STATUS_OPTIONS = ['All', 'working', 'idle', 'blocked'];
+const DEBOUNCE_DELAY_MS = 300;
+
+function parseFilterParams(input) {
+  let params;
+  if (input instanceof URLSearchParams) {
+    params = input;
+  } else if (typeof input === 'string') {
+    const qPart = input.includes('?') ? input.split('?')[1] : input.replace(/^#\/?/, '');
+    params = new URLSearchParams(qPart);
+  } else if (input && typeof input === 'object') {
+    return {
+      q: cleanFilterValue(input.q),
+      district: cleanFilterValue(input.district),
+      cli: validateCliOption(input.cli),
+      status: validateStatusOption(input.status),
+      model: cleanFilterValue(input.model),
+    };
+  } else {
+    params = new URLSearchParams();
+  }
+
+  return {
+    q: cleanFilterValue(params.get('q')),
+    district: cleanFilterValue(params.get('district')),
+    cli: validateCliOption(params.get('cli')),
+    status: validateStatusOption(params.get('status')),
+    model: cleanFilterValue(params.get('model')),
+  };
+}
+
+function cleanFilterValue(val) {
+  if (val == null) return null;
+  const s = String(val).trim();
+  return s === '' ? null : s;
+}
+
+function validateCliOption(val) {
+  const s = cleanFilterValue(val);
+  if (!s) return null;
+  const lower = s.toLowerCase();
+  const found = CLI_OPTIONS.slice(1).find((opt) => opt.toLowerCase() === lower);
+  return found || null;
+}
+
+function validateStatusOption(val) {
+  const s = cleanFilterValue(val);
+  if (!s) return null;
+  const lower = s.toLowerCase();
+  const found = STATUS_OPTIONS.slice(1).find((opt) => opt.toLowerCase() === lower);
+  return found || null;
+}
+
+function buildFilterQueryParams(filters = {}) {
+  const params = new URLSearchParams();
+  const parsed = parseFilterParams(filters);
+  for (const [k, v] of Object.entries(parsed)) {
+    if (v != null && v !== '') {
+      params.set(k, v);
+    }
+  }
+  return params;
+}
+
+function updateUrlFilterHash(filters, { win = (typeof window !== 'undefined' ? window : null) } = {}) {
+  const params = buildFilterQueryParams(filters);
+  const qs = params.toString();
+  const newHash = qs ? `#sessions?${qs}` : '#sessions';
+  if (win?.location) {
+    if (win.location.hash !== newHash) {
+      win.location.hash = newHash;
+    }
+  }
+  return newHash;
+}
+
+function renderFilterChipsHtml(filters = {}) {
+  const parsed = parseFilterParams(filters);
+  const chips = [];
+
+  if (parsed.q) {
+    chips.push(renderChipItemHtml('q', `Search: &quot;${escapeHtml(parsed.q)}&quot;`));
+  }
+  if (parsed.district) {
+    chips.push(renderChipItemHtml('district', `District: ${escapeHtml(parsed.district)}`));
+  }
+  if (parsed.cli) {
+    chips.push(renderChipItemHtml('cli', `CLI: ${escapeHtml(parsed.cli)}`));
+  }
+  if (parsed.status) {
+    const label = parsed.status === 'blocked' ? 'Needs you' : parsed.status;
+    chips.push(renderChipItemHtml('status', `Status: ${escapeHtml(label)}`));
+  }
+  if (parsed.model) {
+    chips.push(renderChipItemHtml('model', `Model: ${escapeHtml(parsed.model)}`));
+  }
+
+  return chips.join('\n');
+}
+
+function renderChipItemHtml(key, labelHtml) {
+  const safeKey = escapeHtml(key);
+  return (
+    `<div class="filter-chip" data-filter-key="${safeKey}">` +
+    `<span class="chip-label">${labelHtml}</span>` +
+    `<button type="button" class="chip-dismiss" data-dismiss-key="${safeKey}" ` +
+    `aria-label="Remove ${safeKey} filter">×</button>` +
+    `</div>`
+  );
+}
+
+function renderFiltersBarHtml(activeFilters = {}) {
+  const parsed = parseFilterParams(activeFilters);
+  const qVal = parsed.q ? escapeHtml(parsed.q) : '';
+  const distVal = parsed.district ? escapeHtml(parsed.district) : '';
+  const modelVal = parsed.model ? escapeHtml(parsed.model) : '';
+
+  const cliOptionsHtml = CLI_OPTIONS.map((opt) => {
+    const val = opt === 'All' ? '' : opt;
+    const isSel = (parsed.cli || '') === val;
+    return `<option value="${escapeHtml(val)}"${isSel ? ' selected' : ''}>${escapeHtml(opt)}</option>`;
+  }).join('');
+
+  const statusBtnsHtml = STATUS_OPTIONS.map((opt) => {
+    const val = opt === 'All' ? '' : opt;
+    const isAct = (parsed.status || '') === val;
+    const label = opt === 'blocked' ? 'Needs you' : opt;
+    return (
+      `<button type="button" class="seg-btn${isAct ? ' active' : ''}" ` +
+      `data-status="${escapeHtml(val)}">${escapeHtml(label)}</button>`
+    );
+  }).join('');
+
+  const chipsHtml = renderFilterChipsHtml(parsed);
+
+  return (
+    `<div class="sessions-filter-bar" id="sessionsFilterBar">` +
+    `<div class="filter-controls">` +
+    `<input type="search" id="filterSearch" name="q" placeholder="Search sessions (name, activity...)" ` +
+    `value="${qVal}" class="filter-input filter-search" aria-label="Search sessions">` +
+    `<input type="text" id="filterDistrict" name="district" placeholder="District..." ` +
+    `value="${distVal}" class="filter-input filter-district" aria-label="Filter by district">` +
+    `<select id="filterCli" name="cli" class="filter-select filter-cli" aria-label="Filter by CLI">` +
+    `${cliOptionsHtml}` +
+    `</select>` +
+    `<div class="filter-seg" id="filterStatusGroup" role="group" aria-label="Filter by status">` +
+    `${statusBtnsHtml}` +
+    `</div>` +
+    `<input type="text" id="filterModel" name="model" placeholder="Model..." ` +
+    `value="${modelVal}" class="filter-input filter-model" aria-label="Filter by model">` +
+    `<button type="button" id="btnFilterReset" class="btn-filter-reset" ` +
+    `aria-label="Reset all filters">Reset</button>` +
+    `</div>` +
+    `<div class="filter-chips-bar" id="filterChipsBar" role="region" aria-label="Active filters">` +
+    `${chipsHtml}` +
+    `</div>` +
+    `</div>`
+  );
+}
+
+function syncFilterInputs(container, filters = {}) {
+  if (!container) return;
+  const parsed = parseFilterParams(filters);
+  const doc = container.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  const activeEl = doc?.activeElement;
+
+  const searchEl = container.querySelector('#filterSearch');
+  if (searchEl && activeEl !== searchEl) {
+    searchEl.value = parsed.q || '';
+  }
+
+  const districtEl = container.querySelector('#filterDistrict');
+  if (districtEl && activeEl !== districtEl) {
+    districtEl.value = parsed.district || '';
+  }
+
+  const modelEl = container.querySelector('#filterModel');
+  if (modelEl && activeEl !== modelEl) {
+    modelEl.value = parsed.model || '';
+  }
+
+  const cliEl = container.querySelector('#filterCli');
+  if (cliEl && activeEl !== cliEl) {
+    cliEl.value = parsed.cli || '';
+  }
+
+  const statusBtns = container.querySelectorAll('#filterStatusGroup .seg-btn');
+  for (const btn of statusBtns) {
+    const btnVal = btn.dataset.status || '';
+    const isActive = btnVal === (parsed.status || '');
+    btn.classList.toggle('active', isActive);
+  }
+}
+
+function bindFilterEvents(
+  container,
+  { onFilterChange, onReset, onDismissChip, debounceMs = DEBOUNCE_DELAY_MS } = {},
+) {
+  if (!container) return { destroy: () => {} };
+
+  let debounceTimer = null;
+
+  function getCurrentFilterValues() {
+    const searchEl = container.querySelector('#filterSearch');
+    const distEl = container.querySelector('#filterDistrict');
+    const cliEl = container.querySelector('#filterCli');
+    const modelEl = container.querySelector('#filterModel');
+    const actBtn = container.querySelector('#filterStatusGroup .seg-btn.active');
+
+    return {
+      q: cleanFilterValue(searchEl?.value),
+      district: cleanFilterValue(distEl?.value),
+      cli: validateCliOption(cliEl?.value),
+      status: validateStatusOption(actBtn?.dataset.status),
+      model: cleanFilterValue(modelEl?.value),
+    };
+  }
+
+  function triggerChange(filters) {
+    if (typeof onFilterChange === 'function') {
+      onFilterChange(filters);
+    }
+  }
+
+  function handleDebouncedInput() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      triggerChange(getCurrentFilterValues());
+    }, debounceMs);
+  }
+
+  const searchEl = container.querySelector('#filterSearch');
+  if (typeof searchEl?.addEventListener === 'function') {
+    searchEl.addEventListener('input', handleDebouncedInput);
+  }
+
+  const distEl = container.querySelector('#filterDistrict');
+  if (typeof distEl?.addEventListener === 'function') {
+    distEl.addEventListener('input', handleDebouncedInput);
+  }
+
+  const modelEl = container.querySelector('#filterModel');
+  if (typeof modelEl?.addEventListener === 'function') {
+    modelEl.addEventListener('input', handleDebouncedInput);
+  }
+
+  const cliEl = container.querySelector('#filterCli');
+  if (typeof cliEl?.addEventListener === 'function') {
+    cliEl.addEventListener('change', () => {
+      triggerChange(getCurrentFilterValues());
+    });
+  }
+
+  const statusGroup = container.querySelector('#filterStatusGroup');
+  if (typeof statusGroup?.addEventListener === 'function') {
+    statusGroup.addEventListener('click', (e) => {
+      const btn = e.target?.closest?.('.seg-btn');
+      if (!btn) return;
+      const btns = statusGroup.querySelectorAll ? statusGroup.querySelectorAll('.seg-btn') : [];
+      for (const b of btns) b.classList?.remove?.('active');
+      btn.classList?.add?.('active');
+      triggerChange(getCurrentFilterValues());
+    });
+  }
+
+  const resetBtn = container.querySelector('#btnFilterReset');
+  if (typeof resetBtn?.addEventListener === 'function') {
+    resetBtn.addEventListener('click', () => {
+      if (searchEl) searchEl.value = '';
+      if (distEl) distEl.value = '';
+      if (modelEl) modelEl.value = '';
+      if (cliEl) cliEl.value = '';
+      const btns = statusGroup?.querySelectorAll ? statusGroup.querySelectorAll('.seg-btn') : [];
+      for (const b of btns) {
+        b.classList?.toggle?.('active', !b.dataset?.status);
+      }
+      const emptyFilters = { q: null, district: null, cli: null, status: null, model: null };
+      if (typeof onReset === 'function') {
+        onReset(emptyFilters);
+      } else {
+        triggerChange(emptyFilters);
+      }
+    });
+  }
+
+  const chipsBar = container.querySelector('#filterChipsBar');
+  if (typeof chipsBar?.addEventListener === 'function') {
+    chipsBar.addEventListener('click', (e) => {
+      const dismissBtn = e.target?.closest?.('.chip-dismiss');
+      if (!dismissBtn) return;
+      const key = dismissBtn.dataset?.dismissKey;
+      if (!key) return;
+      if (typeof onDismissChip === 'function') {
+        onDismissChip(key);
+      } else {
+        const cur = getCurrentFilterValues();
+        cur[key] = null;
+        syncFilterInputs(container, cur);
+        triggerChange(cur);
+      }
+    });
+  }
+
+  return {
+    destroy: () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+    },
+  };
+}
+
+function updateFilterChips(container, filters = {}) {
+  if (!container) return;
+  const chipsBar = container.querySelector('#filterChipsBar');
+  if (!chipsBar) return;
+  const rawJson = JSON.stringify(parseFilterParams(filters));
+  if (chipsBar._lastChipsJson === rawJson) return;
+  chipsBar._lastChipsJson = rawJson;
+  chipsBar.innerHTML = renderFilterChipsHtml(filters);
+}
+
+function renderFiltersView(
+  container,
+  { activeFilters = {}, onFilterChange, onReset, onDismissChip, debounceMs = DEBOUNCE_DELAY_MS } = {},
+) {
+  if (!container) return;
+  const bar = container.querySelector('#sessionsFilterBar');
+  if (!bar) {
+    container.innerHTML = renderFiltersBarHtml(activeFilters);
+    bindFilterEvents(container, {
+      onFilterChange,
+      onReset,
+      onDismissChip,
+      debounceMs,
+    });
+    container._lastAppliedFilters = JSON.stringify(parseFilterParams(activeFilters));
+    return;
+  }
+
+  // Render controls once: on subsequent poll ticks, never overwrite user's input/focus
+  // Only sync inputs when external activeFilters actually changed (e.g. hash/navigation)
+  const filtersJson = JSON.stringify(parseFilterParams(activeFilters));
+  if (container._lastAppliedFilters !== filtersJson) {
+    container._lastAppliedFilters = filtersJson;
+    syncFilterInputs(container, activeFilters);
   }
 }
 
@@ -7572,11 +8000,32 @@ async function fetchLogs(
     }
   }
 
-  async function refreshSessionsData() {
+  async function refreshSessionsData(params) {
     const container = document.getElementById('sessionsContent');
+    const filtersContainer = document.getElementById('sessionsFiltersContainer');
     const countEl = document.getElementById('sessionsCount');
     if (!container) return;
-    const res = await fetchSessions(window.fetch);
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    const activeFilters = parseFilterParams(effectiveParams);
+
+    if (filtersContainer) {
+      renderFiltersView(filtersContainer, {
+        activeFilters,
+        onFilterChange: (newFilters) => {
+          updateUrlFilterHash(newFilters);
+        },
+        onReset: (emptyFilters) => {
+          updateUrlFilterHash(emptyFilters);
+        },
+        onDismissChip: (dismissedKey) => {
+          const cur = parseFilterParams(parseHash(window.location.hash).params);
+          cur[dismissedKey] = null;
+          updateUrlFilterHash(cur);
+        },
+      });
+    }
+
+    const res = await fetchSessions(window.fetch, activeFilters);
     if (!res.ok) {
       renderSessionsView(container, { error: res.error });
       updateConsoleTimestamp(document, 'Error loading data');
@@ -7586,6 +8035,9 @@ async function fetchLogs(
     if (countEl) {
       const n = res.sessions.length;
       countEl.textContent = `${n} session${n === 1 ? '' : 's'}`;
+    }
+    if (filtersContainer) {
+      updateFilterChips(filtersContainer, res.filters || activeFilters);
     }
     const now = new Date();
     const statusNote = res.adapterError ? ' (adapter notice)' : '';
@@ -7667,7 +8119,7 @@ async function fetchLogs(
   function refreshActiveTab(params) {
     const effectiveParams = params || parseHash(window.location.hash).params;
     if (activeTab === 'sessions') {
-      refreshSessionsData();
+      refreshSessionsData(effectiveParams);
     } else if (activeTab === 'screen') {
       const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
       refreshScreenData(paneId);

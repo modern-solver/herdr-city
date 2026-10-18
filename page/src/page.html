@@ -520,6 +520,59 @@
     color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
   }
   .badge-error{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  /* U3 Filters UI styles */
+  .sessions-filter-bar{
+    display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px;
+  }
+  .filter-controls{
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .filter-input, .filter-select{
+    background: #161b22; border: 1px solid #30363d; color: #f0f6fc;
+    padding: 6px 10px; border-radius: 6px; font-size: 12px;
+    font-family: inherit; outline: none; transition: border-color 0.15s ease;
+  }
+  .filter-input:focus, .filter-select:focus{ border-color: #58a6ff; }
+  .filter-search{ min-width: 180px; flex: 1; }
+  .filter-district{ min-width: 120px; }
+  .filter-model{ min-width: 110px; }
+  .filter-select{ cursor: pointer; }
+  .filter-seg{
+    display: inline-flex; background: #161b22; border: 1px solid #30363d;
+    border-radius: 6px; padding: 2px; gap: 2px;
+  }
+  .seg-btn{
+    background: transparent; border: 0; color: #8b949e; padding: 4px 10px;
+    border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s ease; font-family: inherit;
+  }
+  .seg-btn:hover{ color: #f0f6fc; }
+  .seg-btn.active{
+    background: #21262d; color: #f0f6fc; font-weight: 600;
+  }
+  .btn-filter-reset{
+    background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-filter-reset:hover{ background: #30363d; color: #f0f6fc; border-color: #8b949e; }
+  .filter-chips-bar{
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .filter-chips-bar:empty{ display: none; }
+  .filter-chip{
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+    border-radius: 12px; background: #1f242c; border: 1px solid rgba(56, 139, 253, 0.4);
+    color: #58a6ff; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+  }
+  .chip-label{ display: inline-block; }
+  .chip-dismiss{
+    background: none; border: none; color: #8b949e; cursor: pointer;
+    font-size: 13px; line-height: 1; padding: 0; margin-left: 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .chip-dismiss:hover{ color: #f85149; }
   /* U4 Screen View styles */
   .screen-card{
     background: #161b22; border: 1px solid #30363d; border-radius: 8px;
@@ -902,6 +955,7 @@
           <h2>Agent Sessions</h2>
           <span class="sessions-count" id="sessionsCount">0 sessions</span>
         </div>
+        <div class="sessions-filters-container" id="sessionsFiltersContainer"></div>
         <div class="sessions-table-wrap" id="sessionsContent">
           <div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>
         </div>

@@ -320,3 +320,38 @@ test('renderSessionsView renders adapter notice banner and table without blankin
   assert.doesNotMatch(container.innerHTML, /id="sessionsError"/);
 });
 
+test('renderSessionsView skips DOM update when raw JSON is unchanged on poll', () => {
+  const container = { innerHTML: '' };
+  const sessions = [
+    {
+      id: 'w1:p1',
+      paneId: 'w1:p1',
+      name: 'bot1',
+      status: 'idle',
+    },
+  ];
+
+  renderSessionsView(container, { sessions });
+  assert.match(container.innerHTML, /id="sessionsTable"/);
+
+  // Mark container DOM
+  container.innerHTML = '<table id="sessionsTable" data-marker="preserve"></table>';
+
+  // Next poll with identical data
+  renderSessionsView(container, { sessions });
+  assert.equal(container.innerHTML, '<table id="sessionsTable" data-marker="preserve"></table>');
+
+  // Next poll with updated data
+  const updatedSessions = [
+    {
+      id: 'w1:p1',
+      paneId: 'w1:p1',
+      name: 'bot1-renamed',
+      status: 'working',
+    },
+  ];
+  renderSessionsView(container, { sessions: updatedSessions });
+  assert.match(container.innerHTML, /bot1-renamed/);
+});
+
+

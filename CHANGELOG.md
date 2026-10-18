@@ -5,6 +5,14 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: Implemented Milestone U3 (User Interface Milestone 3) session filters UI (`#sessions`),
+  rendering toolbar controls for B4 parameters (`q` with 300 ms debounce, `district`, `cli`,
+  `status` segmented button group, `model`, and `Reset` button), URL hash query synchronization,
+  dismissible filter chips echoed from server response, and focus-preserving input updates.
+  Files: `page/src/filters-view.js`, `page/src/sessions-view.js`, `page/src/07-console.js`,
+  `page/src/page.html`, `page/build.js`, `page/README.md`, `web/index.html`, `test/filters-ui.test.js`.
+  PR: https://github.com/modern-solver/herdr-city/pull/21 (stacked on PR #20)
+
 - Feature: Implemented Milestone U5 (User Interface Milestone 5) event logs view (`#logs`),
   rendering bounded ring buffer telemetry and reverse-chronological event stream from `GET /api/logs`,
   with type and keyword filtering, millisecond timestamps, type badges, transitions, adapter resilience,
