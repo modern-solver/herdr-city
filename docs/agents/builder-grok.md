@@ -6,7 +6,7 @@
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | PR #2: `C:\Users\shaun\mastopia` branch `docs/p1-prebuild`. After merge: `C:\Users\shaun\mastopia-grok` branch `p1/grok-backend`. |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-context-layer` |
 
 ## Acronyms
 
@@ -14,39 +14,45 @@
 |---|---|
 | JSON | JavaScript Object Notation |
 | API | Application Programming Interface |
+| CI | Continuous Integration |
 
 ## Current task
 
-PRE-01 docs, PR #2 (https://github.com/modern-solver/herdr-city/pull/2).
-Waiting on reviewer-claude after adding this memory file (CTX-12 / CTX-13).
-No P1 code until Shaunak approves PRE-01.
+PR #9 on `feat/grok-context-layer`. Merged `origin/main` (PR #7 `c1b0ccd`).
+`npm run lint` and `npm run format:check` cover `scripts/`. Resume task-1810
+on `feat/grok-b7-demo` after this push.
 
 ## Files touched
 
-- `docs/spec-sheet.md`
-- `docs/prd.md`
-- `docs/roadmap.md`
+- `scripts/codemap.js`
+- `scripts/README.md`
+- `src/README.md`
+- `test/README.md`
+- `page/README.md`
+- `fixtures/README.md`
+- `config/README.md`
+- `web/README.md`
+- `package.json`
+- `test/codemap.test.js`
+- `docs/CODEMAP.md`
 - `CHANGELOG.md`
 - `docs/agents/builder-grok.md`
+- `README.md`
+- `.gitattributes`
 
 ## Open questions
 
-| ID | Question | Owner |
-|---|---|---|
-| Q1 | Expected files per district (`CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`). | Shaunak |
-| Q2 | Log bounds 500 events and 262144 characters. | Shaunak |
-| Q5 | Screen text cap 80000 characters. | Shaunak |
-| Q6 | Search debounce 300 ms. | Shaunak |
-| Q7 | Hidden-tab poll interval 10000 ms. | Shaunak |
+None for G1. Spec Q1, Q2, Q5, Q6, Q7 are approved as written (defaults Shaunak
+may veto). CODE-12 landed on main via PR #7.
 
 ## Last-session learnings
 
-- PR #2 remaining docs fixes stay on `docs/p1-prebuild` in
-  `C:\Users\shaun\mastopia`. Later work is `C:\Users\shaun\mastopia-grok` on
-  `p1/grok-backend`.
-- Shared checkout once committed grok spec-sheet hunks under builder-gemini. Separate worktrees are now the rule.
-- Escalations and Coordination append to `C:\Users\shaun\mastopia\briefs\lead-escalations.md` and are not committed.
-- `gh pr edit` is allowed for titles and descriptions on `modern-solver/herdr-city` only.
-- Temp deletes outside the repo are held for Shaunak. Leave scratch files.
-- More access goes to Shaunak via `briefs/lead-escalations.md`. Reviewer BLOCKED/CHANGES stays binding.
-- First code PR after PR #2: add Prettier and ESLint to CI. CODEMAP regen is after PR #2 merges.
+- Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
+  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
+  `git -C C:\Users\shaun\mastopia-grok`.
+- PR body files live in the worktree as `*.tmp`. Never git add them.
+  Never write AppData or TEMP.
+- `npm run lint` and `npm run format:check` must include `scripts/`.
+- `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
+- Merge `origin/main` into feature branches (D3). Never rebase-force.
+- Independent P1 items branch from `origin/main` as `feat/grok-*`.

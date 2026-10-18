@@ -21,8 +21,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Install dependencies
+        run: npm ci
       - name: Unit tests (fixture mode, no herdr)
         run: npm test
+      - name: Lint
+        run: npm run lint
+      - name: Format check
+        run: npm run format:check
       - name: Build city page
         run: npm run build:page
       - name: Fixture snapshot has districts and a blocked prompt

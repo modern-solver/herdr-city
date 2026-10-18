@@ -42,40 +42,31 @@
 - Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
   (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
-- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3 approvals `99533cf`):
+- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3, #7, #9):
   1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
   2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
   3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
   4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
-  5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04 (`5fb33d6`).
-  6. Merged `origin/main` (`99533cf`) into `feat/gemini-u1-shell` under Shaunak D3.
+  5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04.
+  6. Merged `origin/main` (PR #7 tooling, PR #9 codemap) into `feat/gemini-u1-shell`.
+  7. Regenerated `docs/CODEMAP.md` and updated module READMEs (`page/README.md`, `web/README.md`).
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u1-shell`:
+Net diff vs `main` on `feat/gemini-u1-shell`:
 
-1. `page/src/console-router.js`:
-   - Single source for routing, tab switching, panel visibility, and polling helpers.
-2. `page/src/07-console.js`:
-   - Shipped console shell controller consuming `console-router.js` without duplicate definitions.
-3. `page/src/page.html`:
-   - Restored `prefers-reduced-motion` CSS rule.
-   - Added `#consoleShell` container and distinct dashboard icon for `#btnGoConsole`.
-4. `page/build.js`:
-   - Bundles `console-router.js` before `07-console.js` into `web/index.html`.
-5. `web/index.html`:
-   - Generated client bundle containing 3D City and Console Shell.
-6. `src/server.js`:
-   - Routes `/console` to `index.html` to support direct browser navigation and refresh.
-7. `test/console-ui.test.js`:
-   - 35 unit/integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-8. `page/README.md` and `web/README.md`:
-   - Module documentation satisfying CTX-10.
-9. `CHANGELOG.md`:
-   - Added dated entry for U1 console shell, navigation, tab router, round-1 fixes, and PR #6 links (`5fb33d6`).
-   - Reconciled entries with `origin/main` (`99533cf`).
-10. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking current task, touched files, and learnings.
+1. `CHANGELOG.md`
+2. `docs/CODEMAP.md`
+3. `docs/agents/builder-gemini.md`
+4. `page/README.md`
+5. `page/build.js`
+6. `page/src/07-console.js`
+7. `page/src/console-router.js`
+8. `page/src/page.html`
+9. `src/server.js`
+10. `test/console-ui.test.js`
+11. `web/README.md`
+12. `web/index.html`
 
 ## Open questions
 
@@ -83,7 +74,7 @@ Decisions and standing approvals from Shaunak (2026-10-18):
 
 | ID | Item | Owner | Status |
 |---|---|---|---|
-| Q1 | Expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q1 | Expected files: `CHANGELOG.md`, `briefs/`, escalations | Shaunak | Approved (as written) |
 | Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
 | Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
 | Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |

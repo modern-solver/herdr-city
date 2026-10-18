@@ -1,0 +1,7 @@
+web
+page
+docs
+fixtures
+node_modules
+package-lock.json
+*.tmp

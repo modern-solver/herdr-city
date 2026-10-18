@@ -1,20 +1,31 @@
 import { spawn } from 'node:child_process';
 
 const FORBIDDEN = [
-  'send-keys', 'send-text', 'send-input', 'server stop', 'server.stop',
-  'prompt', 'close', 'run', 'start', 'focus', 'attach', 'rename',
+  'send-keys',
+  'send-text',
+  'send-input',
+  'server stop',
+  'server.stop',
+  'prompt',
+  'close',
+  'run',
+  'start',
+  'focus',
+  'attach',
+  'rename',
 ];
 
-const ALLOWED = new Set([
-  'agent list',
-  'pane read',
-  'workspace list',
-]);
+const ALLOWED = new Set(['agent list', 'pane read', 'workspace list']);
 
 export function assertReadOnly(args) {
   const joined = args.join(' ').toLowerCase();
   for (const bad of FORBIDDEN) {
-    if (joined.includes(bad) && !joined.startsWith('pane read') && !joined.startsWith('agent list') && !joined.startsWith('workspace list')) {
+    if (
+      joined.includes(bad) &&
+      !joined.startsWith('pane read') &&
+      !joined.startsWith('agent list') &&
+      !joined.startsWith('workspace list')
+    ) {
       throw new Error(`refusing herdr write/control command: ${args.join(' ')}`);
     }
   }
@@ -83,8 +94,12 @@ export function createLiveClient({ binary = 'herdr', timeoutMs = 8000 } = {}) {
         child.kill();
         reject(new Error(`herdr ${args.join(' ')} timed out`));
       }, timeoutMs);
-      child.stdout.on('data', (d) => { stdout += d.toString('utf8'); });
-      child.stderr.on('data', (d) => { stderr += d.toString('utf8'); });
+      child.stdout.on('data', (d) => {
+        stdout += d.toString('utf8');
+      });
+      child.stderr.on('data', (d) => {
+        stderr += d.toString('utf8');
+      });
       child.on('error', (err) => {
         clearTimeout(timer);
         reject(err);
@@ -117,11 +132,7 @@ export function createLiveClient({ binary = 'herdr', timeoutMs = 8000 } = {}) {
       }
     },
     async paneRead(paneId) {
-      const { stdout } = await run([
-        'pane', 'read', String(paneId),
-        '--source', 'recent-unwrapped',
-        '--lines', '80',
-      ]);
+      const { stdout } = await run(['pane', 'read', String(paneId), '--source', 'recent-unwrapped', '--lines', '80']);
       return extractPaneText(stdout);
     },
   };

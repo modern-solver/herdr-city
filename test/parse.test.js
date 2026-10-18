@@ -34,7 +34,10 @@ test('extractWorkspaces reads workspace_list', () => {
 
 test('extractPaneText uses stdout, or result.read.text when JSON', () => {
   assert.equal(extractPaneText('hello pane'), 'hello pane');
-  assert.equal(extractPaneText(JSON.stringify({ result: { type: 'pane_read', read: { text: 'from json' } } })), 'from json');
+  assert.equal(
+    extractPaneText(JSON.stringify({ result: { type: 'pane_read', read: { text: 'from json' } } })),
+    'from json',
+  );
 });
 
 test('assertReadOnly allows list/read and rejects writes', () => {

@@ -21,10 +21,18 @@ export function loadPromptPatterns(filePath = DEFAULT_PATTERNS_PATH) {
 
 export function inferCliKind(agent = {}) {
   const blob = [
-    agent.agent, agent.display_agent, agent.name, agent.title,
-    agent.terminal_title, agent.terminal_title_stripped,
-    agent.tokens?.model, agent.model,
-  ].filter(Boolean).join(' ').toLowerCase();
+    agent.agent,
+    agent.display_agent,
+    agent.name,
+    agent.title,
+    agent.terminal_title,
+    agent.terminal_title_stripped,
+    agent.tokens?.model,
+    agent.model,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
   if (/\b(claude|anthropic)\b/.test(blob)) return 'claude';
   if (/\b(grok|xai)\b/.test(blob)) return 'grok';
   if (/\b(gemini|google)\b/.test(blob)) return 'gemini';
@@ -79,7 +87,10 @@ export function detectPrompt(paneText, agent, clis) {
     }
   }
   if (String(agent.agent_status).toLowerCase() === 'blocked') {
-    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
     const tail = lines.slice(-8).join('\n');
     if (tail) return { cli: kind, text: tail.slice(0, 800) };
   }
@@ -92,7 +103,11 @@ export function detectError(paneText) {
   const lines = text.split(/\r?\n/);
   for (let i = lines.length - 1; i >= 0; i--) {
     if (ERROR_RE.test(lines[i])) {
-      return lines.slice(Math.max(0, i - 1), i + 2).join('\n').trim().slice(0, 400);
+      return lines
+        .slice(Math.max(0, i - 1), i + 2)
+        .join('\n')
+        .trim()
+        .slice(0, 400);
     }
   }
   return null;
