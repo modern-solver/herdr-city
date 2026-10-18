@@ -17,9 +17,9 @@
 
 ## Current task
 
-B7 PR #11 r2: README documents `--demo`, `MASTOPIA_DEMO=1`, `PORT` (demo only),
-and the `127.0.0.1` default. Demo still binds `0.0.0.0` and skips Host/Origin
-loopback checks.
+B7 PR #11: bind stays `127.0.0.1` in every mode, including `--demo`. `0.0.0.0`
+only with `--host 0.0.0.0` / `MASTOPIA_HOST=0.0.0.0` (demo-only LAN exposure).
+Live plus that opt-in is refused. README documents the opt-in.
 
 ## Files touched
 
@@ -42,3 +42,4 @@ veto).
 - PR bodies live as `*.tmp` in the worktree. Never git add them.
 - `parseArgs` takes an `env` object so tests can prove `PORT` is unread unless
   demo.
+- `--demo` does not imply `0.0.0.0`. Shaunak 17:53: explicit host opt-in only.

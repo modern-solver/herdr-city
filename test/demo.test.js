@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { parseArgs } from '../src/cli.js';
+import { parseArgs, resolveBindHost } from '../src/cli.js';
 import { createFixtureClient } from '../src/fixtures.js';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
@@ -33,34 +33,55 @@ test('default binds 127.0.0.1 and does not read PORT', () => {
   assert.equal(noMastopia.host, '127.0.0.1');
 });
 
-test('--demo and MASTOPIA_DEMO=1 bind 0.0.0.0 and read PORT', () => {
+test('--demo reads PORT and still binds 127.0.0.1 without host opt-in', () => {
   const flag = parseArgs([...argv, '--demo'], { PORT: '9999', MASTOPIA_PORT: '7741' });
   assert.equal(flag.demo, true);
   assert.equal(flag.fixture, true);
-  assert.equal(flag.host, '0.0.0.0');
+  assert.equal(flag.host, '127.0.0.1');
   assert.equal(flag.port, 9999);
   const envDemo = parseArgs(argv, { MASTOPIA_DEMO: '1', MASTOPIA_PORT: '7741' });
   assert.equal(envDemo.demo, true);
-  assert.equal(envDemo.host, '0.0.0.0');
+  assert.equal(envDemo.host, '127.0.0.1');
   assert.equal(envDemo.port, 7741);
 });
 
-test('demo flag binds 0.0.0.0; default binds 127.0.0.1', async () => {
+test('demo plus --host 0.0.0.0 or MASTOPIA_HOST binds 0.0.0.0', () => {
+  const flag = parseArgs([...argv, '--demo', '--host', '0.0.0.0'], {});
+  assert.equal(flag.host, '0.0.0.0');
+  const envHost = parseArgs([...argv, '--demo'], { MASTOPIA_HOST: '0.0.0.0' });
+  assert.equal(envHost.host, '0.0.0.0');
+});
+
+test('live plus 0.0.0.0 opt-in is refused', () => {
+  const liveFlag = resolveBindHost('0.0.0.0', false);
+  assert.ok(liveFlag.error);
+  const liveEnv = resolveBindHost('0.0.0.0', false);
+  assert.equal(resolveBindHost('127.0.0.1', false).host, '127.0.0.1');
+  assert.equal(resolveBindHost('0.0.0.0', true).host, '0.0.0.0');
+  assert.ok(liveEnv.error);
+});
+
+test('demo without opt-in binds 127.0.0.1; demo plus opt-in binds 0.0.0.0', async () => {
   const adapter = createAdapter({ client: createFixtureClient() });
   await adapter.start();
   const live = createServer({ adapter, host: '127.0.0.1', port: 0 });
-  const demo = createServer({ adapter, host: '0.0.0.0', port: 0, demo: true });
+  const demoLocal = createServer({ adapter, host: '127.0.0.1', port: 0, demo: true });
+  const demoLan = createServer({ adapter, host: '0.0.0.0', port: 0, demo: true });
   try {
     const liveInfo = await live.listen();
     assert.equal(liveInfo.host, '127.0.0.1');
     assert.equal(live.raw.address().address, '127.0.0.1');
-    const demoInfo = await demo.listen();
-    assert.equal(demoInfo.host, '0.0.0.0');
-    const bound = demo.raw.address().address;
+    const localInfo = await demoLocal.listen();
+    assert.equal(localInfo.host, '127.0.0.1');
+    assert.equal(demoLocal.raw.address().address, '127.0.0.1');
+    const lanInfo = await demoLan.listen();
+    assert.equal(lanInfo.host, '0.0.0.0');
+    const bound = demoLan.raw.address().address;
     assert.ok(bound === '0.0.0.0' || bound === '::');
   } finally {
     await live.close();
-    await demo.close();
+    await demoLocal.close();
+    await demoLan.close();
     await adapter.stop();
   }
 });
@@ -84,7 +105,7 @@ test('without demo GET /health with Host example.com returns 403', async () => {
 test('with demo GET /health with Host example.com returns 200', async () => {
   const adapter = createAdapter({ client: createFixtureClient() });
   await adapter.start();
-  const server = createServer({ adapter, host: '0.0.0.0', port: 0, demo: true });
+  const server = createServer({ adapter, host: '127.0.0.1', port: 0, demo: true });
   try {
     await server.listen();
     const { port } = server.raw.address();
@@ -93,7 +114,7 @@ test('with demo GET /health with Host example.com returns 200', async () => {
     const body = JSON.parse(res.text);
     assert.equal(body.ok, true);
     assert.equal(body.mode, 'demo');
-    assert.equal(body.host, '0.0.0.0');
+    assert.equal(body.host, '127.0.0.1');
   } finally {
     await server.close();
     await adapter.stop();
