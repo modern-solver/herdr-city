@@ -43,9 +43,12 @@
 - Milestone: U2 (User Interface Milestone 2) — Sessions list view (`#sessions`), table rendering
   from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
   empty/error/loading states, and responsive styling.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (PR #10 retargeted to `main`).
-- Status: Merged `origin/main` (including PR #6, #7, #8, #9); regenerated CODEMAP.md;
-  verified leak rule (all endpoint text sanitized via shared `escapeHtml`); green on lint, format, test.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (PR #10 ready for review).
+- Status: Merged `origin/main` (including PR #6, #7, #8, #9) and merged `origin/main` at `b6b02ec`
+  (PR #12 / B8) into `feat/gemini-u2-sessions` (merge head `c881707`); resolved `CHANGELOG.md`
+  conflict keeping both U2 and B8 entries with no conflict markers remaining; regenerated
+  CODEMAP.md and page build; leak rule verified (all endpoint text sanitized via shared
+  `escapeHtml`); green on lint, format, test.
 
 ## Files touched
 
