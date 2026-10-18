@@ -37,11 +37,8 @@ on `feat/grok-b7-demo` after this push.
 - `docs/CODEMAP.md`
 - `CHANGELOG.md`
 - `docs/agents/builder-grok.md`
+- `README.md`
 - `.gitattributes`
-- `eslint.config.js`
-- `.prettierrc.json`
-- `.prettierignore`
-- `.github/workflows/ci.yml`
 
 ## Open questions
 
