@@ -190,6 +190,69 @@ test('renderLogsView manages loading, fatal error, and content states with event
   assert.equal(inputBound, true, 'input listener bound to search filter');
 });
 
+test('filter select and input elements survive a poll when logs data is refreshed', () => {
+  const mockSelect = {
+    value: 'status_change',
+    addEventListener: () => {},
+  };
+  const mockInput = {
+    value: 'login',
+    addEventListener: () => {},
+  };
+  const mockListWrap = { innerHTML: '' };
+  const mockNotices = { innerHTML: '' };
+
+  const container = {
+    innerHTML: '',
+    querySelector: (sel) => {
+      if (sel === '#logsTypeFilter') return mockSelect;
+      if (sel === '#logsSearchInput') return mockInput;
+      if (sel === '#logsListWrap') return mockListWrap;
+      if (sel === '#logsNotices') return mockNotices;
+      if (sel === '#logsOverview') {
+        return container.innerHTML.includes('id="logsOverview"') ? {} : null;
+      }
+      return null;
+    },
+  };
+
+  const initialData = {
+    bounded: { count: 2, chars: 200 },
+    events: [
+      { type: 'status_change', paneId: 'w1:p1', text: 'login successful' },
+      { type: 'needs_you', paneId: 'w8:p1', text: 'prompt' },
+    ],
+  };
+
+  // 1. Initial render
+  renderLogsView(container, { data: initialData });
+  assert.match(container.innerHTML, /id="logsOverview"/);
+
+  // 2. User sets filter controls
+  mockSelect.value = 'status_change';
+  mockInput.value = 'login';
+
+  // 3. Next poll with updated data
+  const polledData = {
+    bounded: { count: 3, chars: 300 },
+    events: [
+      { type: 'status_change', paneId: 'w2:p1', text: 'login failed' },
+      { type: 'status_change', paneId: 'w1:p1', text: 'login successful' },
+      { type: 'needs_you', paneId: 'w8:p1', text: 'prompt' },
+    ],
+  };
+  renderLogsView(container, { data: polledData });
+
+  // Filter select and input values must survive the poll!
+  assert.equal(mockSelect.value, 'status_change', 'type filter preserved after poll');
+  assert.equal(mockInput.value, 'login', 'search filter preserved after poll');
+
+  // List wrap must update with the filtered results
+  assert.match(mockListWrap.innerHTML, /login failed/);
+  assert.match(mockListWrap.innerHTML, /login successful/);
+  assert.doesNotMatch(mockListWrap.innerHTML, /prompt/);
+});
+
 test('fetchLogs queries API endpoint and parses response data and errors', async () => {
   // 1. Missing fetch function
   const missingRes = await fetchLogs(null);

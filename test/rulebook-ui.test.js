@@ -228,6 +228,68 @@ test('renderRulebookView manages loading, fatal error, and content states', () =
   assert.equal(listenerAttached, true, 'input listener attached for in-place filtering');
 });
 
+test('filter value and input element survive a poll when rulebook data is refreshed', () => {
+  const mockInput = {
+    value: '',
+    addEventListener: () => {},
+  };
+  const mockTableContainer = { innerHTML: '' };
+  const mockNotices = { innerHTML: '' };
+  const mockDistrictsContainer = { innerHTML: '' };
+  const mockDistrictsCount = { textContent: '' };
+  const mockRulesCount = { textContent: '' };
+
+  const container = {
+    innerHTML: '',
+    querySelector: (sel) => {
+      if (sel === '#rulebookFilter') return mockInput;
+      if (sel === '#rulebookTableContainer') return mockTableContainer;
+      if (sel === '#rulebookNotices') return mockNotices;
+      if (sel === '#districtsContainer' || sel === '#districtsGrid') return mockDistrictsContainer;
+      if (sel === '#districtsCount') return mockDistrictsCount;
+      if (sel === '#rulesCount') return mockRulesCount;
+      if (sel === '#rulebookOverview') {
+        return container.innerHTML.includes('id="rulebookOverview"') ? {} : null;
+      }
+      return null;
+    },
+  };
+
+  const initialData = {
+    handbook: { version: '2.0', title: 'Rules' },
+    rules: [
+      { id: 'GOV-01', area: 'GOV', text: 'Rule 1', check: null },
+      { id: 'SEC-01', area: 'SEC', text: 'Rule 2', check: null },
+    ],
+    districts: [{ id: 'w1', title: 'mastopia', readable: true, files: [], missing: [] }],
+  };
+
+  // 1. Initial render
+  renderRulebookView(container, { data: initialData });
+  assert.match(container.innerHTML, /id="rulebookOverview"/);
+
+  // 2. User types into filter input
+  mockInput.value = 'SEC-';
+
+  // 3. Next poll tick with new data (new district added)
+  const polledData = {
+    ...initialData,
+    districts: [
+      { id: 'w1', title: 'mastopia', readable: true, files: [], missing: [] },
+      { id: 'w2', title: 'atlas', readable: true, files: [], missing: [] },
+    ],
+  };
+  renderRulebookView(container, { data: polledData });
+
+  // Filter input value must survive the poll!
+  assert.equal(mockInput.value, 'SEC-', 'filter value preserved after poll');
+  // Table must filter by the existing input value 'SEC-'
+  assert.match(mockTableContainer.innerHTML, /SEC-01/);
+  assert.doesNotMatch(mockTableContainer.innerHTML, /GOV-01/);
+  // District count must update
+  assert.equal(mockDistrictsCount.textContent, '2 districts');
+});
+
 test('fetchRulebook calls contract API and handles success and errors', async () => {
   // 1. Missing fetch function
   const missingRes = await fetchRulebook(null);

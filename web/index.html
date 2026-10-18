@@ -7428,7 +7428,7 @@ function renderRulesTableHtml(rules, filterQuery = '') {
   );
 }
 
-function renderRulebookOverviewHtml(data, { filterQuery = '', adapterError = null } = {}) {
+function renderRulebookNoticesHtml(data, adapterError = null) {
   const isHandbookMissing = data?.error === 'handbook_missing' || !data?.handbook;
 
   const handbookNotice = isHandbookMissing
@@ -7438,12 +7438,19 @@ function renderRulebookOverviewHtml(data, { filterQuery = '', adapterError = nul
       `</div>`
     : '';
 
-  const effectiveAdapterError = adapterError || (data?.error && data.error !== 'handbook_missing' ? data.error : null);
+  const effectiveAdapterError = adapterError
+    || (data?.error && data.error !== 'handbook_missing' ? data.error : null);
   const adapterNotice = effectiveAdapterError
     ? `<div class="rulebook-notice rulebook-notice-error" id="rulebookAdapterNotice" role="status">` +
       `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(effectiveAdapterError)}` +
       `</div>`
     : '';
+
+  return `${handbookNotice}${adapterNotice}`;
+}
+
+function renderRulebookOverviewHtml(data, { filterQuery = '', adapterError = null } = {}) {
+  const noticesHtml = renderRulebookNoticesHtml(data, adapterError);
 
   const districts = Array.isArray(data?.districts) ? data.districts : [];
   const districtCards = districts.map((d) => renderDistrictCardHtml(d)).join('\n');
@@ -7468,21 +7475,20 @@ function renderRulebookOverviewHtml(data, { filterQuery = '', adapterError = nul
 
   return (
     `<div class="rulebook-overview" id="rulebookOverview">` +
-    handbookNotice +
-    adapterNotice +
+    `<div class="rulebook-notices" id="rulebookNotices">${noticesHtml}</div>` +
     `<section class="rulebook-section" id="sectionDistricts">` +
     `<div class="section-header">` +
     `<h3>District Compliance Overview</h3>` +
     `<span class="section-count" id="districtsCount">${dLabel}</span>` +
     `</div>` +
-    districtsGridHtml +
+    `<div id="districtsContainer">${districtsGridHtml}</div>` +
     `</section>` +
     `<section class="rulebook-section" id="sectionRules">` +
     `<div class="section-header">` +
-    `<h3>${handbookTitle} ${handbookMeta}</h3>` +
+    `<h3 id="rulesTitle">${handbookTitle} ${handbookMeta}</h3>` +
     `<span class="section-count" id="rulesCount">${rLabel}</span>` +
     `</div>` +
-    `<div class="rulebook-filter-bar">` +
+    `<div class="rulebook-filter-bar" id="rulebookFilterBar">` +
     `<label for="rulebookFilter" class="filter-label">Filter rules:</label>` +
     `<input type="search" id="rulebookFilter" class="filter-input" ` +
     `placeholder="Search by ID (e.g. GOV-) or keyword…" value="${escapeHtml(filterQuery)}" />` +
@@ -7512,23 +7518,77 @@ function renderRulebookView(
     return;
   }
 
-  const existingInput = container.querySelector ? container.querySelector('#rulebookFilter') : null;
-  const activeQuery = filterQuery !== undefined ? filterQuery : (existingInput ? existingInput.value : '');
+  const isMounted = Boolean(
+    (container.querySelector && container.querySelector('#rulebookOverview')) ||
+    (container.innerHTML && container.innerHTML.includes('id="rulebookOverview"'))
+  );
 
-  container.innerHTML = renderRulebookOverviewHtml(data, {
-    filterQuery: activeQuery,
-    adapterError,
-  });
-
-  // Attach search filter listener to update table in place
   const filterInput = container.querySelector ? container.querySelector('#rulebookFilter') : null;
-  const tableContainer = container.querySelector ? container.querySelector('#rulebookTableContainer') : null;
-  if (filterInput && tableContainer) {
-    filterInput.addEventListener('input', (e) => {
-      const q = e.target.value;
-      const rules = Array.isArray(data?.rules) ? data.rules : [];
-      tableContainer.innerHTML = renderRulesTableHtml(rules, q);
+  const activeQuery = filterQuery !== undefined ? filterQuery : (filterInput ? filterInput.value : '');
+
+  // Mount filter controls and shell once
+  if (!isMounted) {
+    container.innerHTML = renderRulebookOverviewHtml(data, {
+      filterQuery: activeQuery,
+      adapterError,
     });
+    container._lastRulebookJson = JSON.stringify({ data, adapterError });
+    container._currentRulebookData = data;
+
+    const mountedInput = container.querySelector ? container.querySelector('#rulebookFilter') : null;
+    const tableContainer = container.querySelector ? container.querySelector('#rulebookTableContainer') : null;
+    if (typeof mountedInput?.addEventListener === 'function' && tableContainer) {
+      mountedInput.addEventListener('input', (e) => {
+        const q = e.target.value;
+        const currentData = container._currentRulebookData;
+        const rules = Array.isArray(currentData?.rules) ? currentData.rules : [];
+        tableContainer.innerHTML = renderRulesTableHtml(rules, q);
+      });
+    }
+    return;
+  }
+
+  // Already mounted: update stored data reference
+  container._currentRulebookData = data;
+  const rawJson = JSON.stringify({ data, adapterError });
+  if (container._lastRulebookJson === rawJson) {
+    return;
+  }
+  container._lastRulebookJson = rawJson;
+
+  // Data changed: update only grid/table and notices; keep filter controls intact
+  const noticesEl = container.querySelector ? container.querySelector('#rulebookNotices') : null;
+  if (noticesEl) {
+    noticesEl.innerHTML = renderRulebookNoticesHtml(data, adapterError);
+  }
+
+  const districts = Array.isArray(data?.districts) ? data.districts : [];
+  const districtsCountEl = container.querySelector ? container.querySelector('#districtsCount') : null;
+  if (districtsCountEl) {
+    const dCount = districts.length;
+    districtsCountEl.textContent = `${dCount} district${dCount === 1 ? '' : 's'}`;
+  }
+
+  const districtsContainer = container.querySelector
+    ? (container.querySelector('#districtsContainer') || container.querySelector('#districtsGrid'))
+    : null;
+  if (districtsContainer) {
+    const districtCards = districts.map((d) => renderDistrictCardHtml(d)).join('\n');
+    districtsContainer.innerHTML = districts.length > 0
+      ? `<div class="districts-grid" id="districtsGrid">${districtCards}</div>`
+      : `<div class="districts-empty" id="districtsEmpty">No districts active in this environment.</div>`;
+  }
+
+  const rules = Array.isArray(data?.rules) ? data.rules : [];
+  const rulesCountEl = container.querySelector ? container.querySelector('#rulesCount') : null;
+  if (rulesCountEl) {
+    const rCount = rules.length;
+    rulesCountEl.textContent = `${rCount} rule${rCount === 1 ? '' : 's'}`;
+  }
+
+  const tableContainer = container.querySelector ? container.querySelector('#rulebookTableContainer') : null;
+  if (tableContainer) {
+    tableContainer.innerHTML = renderRulesTableHtml(rules, activeQuery);
   }
 }
 
@@ -7695,10 +7755,7 @@ function renderLogsListHtml(events, { type = 'all', query = '' } = {}) {
   return `<div class="logs-list" id="logsListContainer">${rows}</div>`;
 }
 
-function renderLogsOverviewHtml(
-  data,
-  { type = 'all', query = '', adapterError = null } = {},
-) {
+function renderLogsNoticesHtml(data, adapterError = null) {
   const bounded = data?.bounded || {};
   const count = Number.isFinite(bounded.count) ? bounded.count : (data?.events?.length || 0);
   const chars = Number.isFinite(bounded.chars) ? bounded.chars : 0;
@@ -7722,6 +7779,15 @@ function renderLogsOverviewHtml(
       `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(effectiveAdapterError)}` +
       `</div>`
     : '';
+
+  return `${headerNotice}${adapterNotice}`;
+}
+
+function renderLogsOverviewHtml(
+  data,
+  { type = 'all', query = '', adapterError = null } = {},
+) {
+  const noticesHtml = renderLogsNoticesHtml(data, adapterError);
 
   const types = [
     { value: 'all', label: 'All Event Types' },
@@ -7757,8 +7823,7 @@ function renderLogsOverviewHtml(
 
   return (
     `<div class="logs-overview" id="logsOverview">` +
-    headerNotice +
-    adapterNotice +
+    `<div class="logs-notices" id="logsNotices">${noticesHtml}</div>` +
     filterBarHtml +
     `<div id="logsListWrap">${listHtml}</div>` +
     `</div>`
@@ -7784,33 +7849,62 @@ function renderLogsView(
     return;
   }
 
+  const isMounted = Boolean(
+    (container.querySelector && container.querySelector('#logsOverview')) ||
+    (container.innerHTML && container.innerHTML.includes('id="logsOverview"'))
+  );
+
   const existingSelect = container.querySelector ? container.querySelector('#logsTypeFilter') : null;
   const existingInput = container.querySelector ? container.querySelector('#logsSearchInput') : null;
 
   const activeType = type !== undefined ? type : (existingSelect ? existingSelect.value : 'all');
   const activeQuery = query !== undefined ? query : (existingInput ? existingInput.value : '');
 
-  container.innerHTML = renderLogsOverviewHtml(data, {
-    type: activeType,
-    query: activeQuery,
-    adapterError,
-  });
+  if (!isMounted) {
+    container.innerHTML = renderLogsOverviewHtml(data, {
+      type: activeType,
+      query: activeQuery,
+      adapterError,
+    });
+    container._lastLogsJson = JSON.stringify({ data, adapterError });
+    container._currentLogsData = data;
 
-  // Attach filter event listeners
-  const selectEl = container.querySelector ? container.querySelector('#logsTypeFilter') : null;
-  const inputEl = container.querySelector ? container.querySelector('#logsSearchInput') : null;
+    const selectEl = container.querySelector ? container.querySelector('#logsTypeFilter') : null;
+    const inputEl = container.querySelector ? container.querySelector('#logsSearchInput') : null;
+
+    const updateList = () => {
+      const listWrap = container.querySelector ? container.querySelector('#logsListWrap') : null;
+      if (!listWrap) return;
+      const curType = selectEl ? selectEl.value : 'all';
+      const curQuery = inputEl ? inputEl.value : '';
+      const currentData = container._currentLogsData;
+      const events = Array.isArray(currentData?.events) ? currentData.events : [];
+      listWrap.innerHTML = renderLogsListHtml(events, { type: curType, query: curQuery });
+    };
+
+    if (typeof selectEl?.addEventListener === 'function') selectEl.addEventListener('change', updateList);
+    if (typeof inputEl?.addEventListener === 'function') inputEl.addEventListener('input', updateList);
+    return;
+  }
+
+  container._currentLogsData = data;
+  const rawJson = JSON.stringify({ data, adapterError });
+  if (container._lastLogsJson === rawJson) {
+    return;
+  }
+  container._lastLogsJson = rawJson;
+
+  // Data changed: update notices and list wrap, preserving filter select and input
+  const noticesEl = container.querySelector ? container.querySelector('#logsNotices') : null;
+  if (noticesEl) {
+    noticesEl.innerHTML = renderLogsNoticesHtml(data, adapterError);
+  }
+
   const listWrap = container.querySelector ? container.querySelector('#logsListWrap') : null;
-
-  const updateList = () => {
-    if (!listWrap) return;
-    const curType = selectEl ? selectEl.value : 'all';
-    const curQuery = inputEl ? inputEl.value : '';
+  if (listWrap) {
     const events = Array.isArray(data?.events) ? data.events : [];
-    listWrap.innerHTML = renderLogsListHtml(events, { type: curType, query: curQuery });
-  };
-
-  if (selectEl) selectEl.addEventListener('change', updateList);
-  if (inputEl) inputEl.addEventListener('input', updateList);
+    listWrap.innerHTML = renderLogsListHtml(events, { type: activeType, query: activeQuery });
+  }
 }
 
 async function fetchLogs(
@@ -7997,7 +8091,7 @@ async function fetchLogs(
     }
     renderLogsView(container, { data: res.data, adapterError: res.adapterError });
     const now = new Date();
-    const count = res.events?.length || 0;
+    const count = res.bounded?.count ?? res.events?.length ?? 0;
     const countNote = `${count} event${count === 1 ? '' : 's'}`;
     const statusNote = res.adapterError ? ' (adapter notice)' : '';
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
