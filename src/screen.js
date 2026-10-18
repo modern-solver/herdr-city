@@ -2,14 +2,12 @@
  * Purpose: build GET /api/screen payload from cached pane text and session.
  * Owner: builder-grok
  */
-import { maskSecrets } from './mask.js';
+import { maskThenTruncate } from './output-filter.js';
 
 export const SCREEN_CAP = 80000;
 
 export function capPaneText(text) {
-  const masked = maskSecrets(String(text ?? ''));
-  if (masked.length <= SCREEN_CAP) return { text: masked, truncated: false };
-  return { text: masked.slice(-SCREEN_CAP), truncated: true };
+  return maskThenTruncate(text, SCREEN_CAP, { keep: 'tail' });
 }
 
 export function lineCount(text) {

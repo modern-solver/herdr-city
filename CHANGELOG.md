@@ -5,6 +5,9 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Security: `src/output-filter.js` `maskThenTruncate` masks full text then
+  truncates. Screen, sessions and city pane/activity fields use it (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
 - Fix: `GET /api/screen` runs `maskSecrets` on the full pane, then keeps the
   newest 80000 characters (SEC-03). A token that straddled the old head cut
   no longer leaks a `ghp_` prefix.

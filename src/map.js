@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { detectError, detectPrompt, inferCliKind } from './prompt-detect.js';
-import { maskSecrets } from './mask.js';
+import { maskThenTruncate } from './output-filter.js';
 
 export const IDLE_ASLEEP_MS = 10 * 60 * 1000;
 
@@ -36,7 +36,7 @@ export function modelBadge(agent) {
 }
 
 export function inspectPane(rawPane, agent, clis = []) {
-  const masked = maskSecrets(rawPane || '');
+  const masked = maskThenTruncate(rawPane || '').text;
   return {
     masked,
     prompt: detectPrompt(masked, agent, clis),
@@ -45,7 +45,7 @@ export function inspectPane(rawPane, agent, clis = []) {
 }
 
 export function maskedClip(text, max = 240) {
-  return maskSecrets(String(text || '')).slice(0, max);
+  return maskThenTruncate(text, max, { keep: 'tail' }).text;
 }
 
 function cityStatus(agentStatus, errorText, idleMs) {

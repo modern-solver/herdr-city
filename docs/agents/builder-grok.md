@@ -18,8 +18,8 @@
 
 ## Current task
 
-PR #15 (`feat/grok-b2-screen`): `GET /api/screen`. Base is `main` after #8.
-Keep as draft. No leak-protection hardening.
+PR #15 (`feat/grok-b2-screen`): shared `maskThenTruncate`. Screen, sessions
+and city use it. Then stack #17/#18 on this branch. Keep as draft.
 
 ## Files touched
 
@@ -31,8 +31,12 @@ Net vs `origin/main`:
 - `docs/agents/builder-grok.md`
 - `src/README.md`
 - `src/adapter.js`
+- `src/map.js`
+- `src/output-filter.js`
 - `src/screen.js`
 - `src/server.js`
+- `src/sessions.js`
+- `test/leak.test.js`
 - `test/screen.test.js`
 
 ## Open questions

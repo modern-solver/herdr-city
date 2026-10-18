@@ -4,6 +4,7 @@
  */
 import { inferCliKind } from './prompt-detect.js';
 import { agentDisplayName, districtTitle, inspectPane, maskedClip, modelBadge } from './map.js';
+import { maskThenTruncate } from './output-filter.js';
 
 const ACTIVITY_MAX = 240;
 const STATUSES = new Set(['working', 'idle', 'blocked']);
@@ -65,8 +66,8 @@ export function mapSession(agent, workspaces, paneText, lastSeenAt, clis) {
     cwd,
     lastSeenAt,
     activity,
-    prompt: prompt?.text || null,
-    error: errorText || null,
+    prompt: prompt?.text != null ? maskThenTruncate(prompt.text).text : null,
+    error: errorText != null ? maskThenTruncate(errorText).text : null,
   };
 }
 
