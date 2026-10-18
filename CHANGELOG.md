@@ -5,6 +5,12 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: Implemented Milestone U2 (User Interface Milestone 2) sessions list view (`#sessions`),
+  rendering agent sessions from `GET /api/sessions` with status badges, directory, activity preview,
+  relative timestamps, inspect links to `#screen?paneId=...`, empty and error states, and responsive styles.
+  Files: `page/src/sessions-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
+  `web/index.html`, `test/sessions-ui.test.js`.
+  Branch: `feat/gemini-u2-sessions` (stacked on PR #6 https://github.com/modern-solver/herdr-city/pull/6).
 - Feature: Implemented Milestone U1 (User Interface Milestone 1) console shell, navigation
   header, route switcher (`/` and `/console`), and client-side tab router (`#sessions`,
   `#screen`, `#logs`, `#rulebook`, `#ops-desk`) with active and hidden-tab polling lifecycle.

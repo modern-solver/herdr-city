@@ -471,6 +471,64 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
   .console-card h2{ margin: 0 0 8px 0; font-size: 20px; color: #f0f6fc; }
   .console-card p.muted{ margin: 0; color: #8b949e; font-size: 14px; }
   .route-switcher{ text-decoration: none; color: inherit; display: inline-flex; }
+  /* U2 Sessions List styles */
+  .sessions-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto;
+  }
+  .sessions-header{
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; border-bottom: 1px solid #21262d; padding-bottom: 12px;
+  }
+  .sessions-header h2{ margin: 0; font-size: 18px; color: #f0f6fc; font-weight: 600; }
+  .sessions-count{ font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
+  .sessions-table-wrap{ overflow-x: auto; width: 100%; }
+  .sessions-table{
+    width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;
+  }
+  .sessions-table th{
+    padding: 10px 12px; border-bottom: 1px solid #30363d; color: #8b949e;
+    font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;
+    background: #0d1117;
+  }
+  .sessions-table td{
+    padding: 12px; border-bottom: 1px solid #21262d; vertical-align: middle;
+  }
+  .sessions-table tr:hover td{ background: rgba(110, 118, 129, 0.04); }
+  .cell-wrap{ display: flex; flex-direction: column; gap: 2px; }
+  .sub-id{ color: #8b949e; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .badge-group{ display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .badge{
+    font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+  .badge-cli{ background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+  .badge-model{ background: #1f242c; color: #58a6ff; border: 1px solid rgba(56, 139, 253, 0.4); }
+  .badge-status{ font-weight: 600; }
+  .status-working{ background: #13231b; color: #3fb950; border: 1px solid #238636; }
+  .status-idle{ background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+  .status-blocked{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  .status-dot{ width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .status-dot.alert{ background: #f85149; }
+  .cell-cwd, .cell-activity{ font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #c9d1d9; }
+  .cell-time{ font-size: 12px; color: #8b949e; }
+  .btn-inspect{
+    background: #21262d; border: 1px solid #30363d; color: #58a6ff;
+    padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;
+    text-decoration: none; display: inline-flex; align-items: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-inspect:hover{ background: #30363d; color: #79c0ff; border-color: #58a6ff; }
+  .sessions-empty{
+    padding: 32px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .sessions-loading{
+    padding: 32px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .sessions-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -606,9 +664,14 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
 
   <main class="console-main" id="consoleMain">
     <section class="console-tab-pane" id="view-sessions" role="tabpanel" aria-labelledby="tab-sessions">
-      <div class="console-card">
-        <h2>Sessions List</h2>
-        <p class="muted">Foundation ready for U2.</p>
+      <div class="sessions-card">
+        <div class="sessions-header">
+          <h2>Agent Sessions</h2>
+          <span class="sessions-count" id="sessionsCount">0 sessions</span>
+        </div>
+        <div class="sessions-table-wrap" id="sessionsContent">
+          <div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>
+        </div>
       </div>
     </section>
     <section class="console-tab-pane" id="view-screen" role="tabpanel" aria-labelledby="tab-screen" hidden>
@@ -5842,6 +5905,7 @@ if (playUrl && !DEMO) {
 // Maintainer: builder-gemini
 
 const VALID_TABS = ['sessions', 'screen', 'logs', 'rulebook', 'ops-desk'];
+const VALID_MODES = ['live', 'fixture', 'demo'];
 const DEFAULT_TAB = 'sessions';
 const POLL_INTERVAL_ACTIVE_MS = 2000;
 const POLL_INTERVAL_HIDDEN_MS = 10000;
@@ -5965,6 +6029,133 @@ function createPollingManager({
   };
 }
 
+// Module: page/src/sessions-view.js
+// Purpose: Sessions list view rendering, table construction, and status badge formatting for U2
+// Maintainer: builder-gemini
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatRelativeTime(timestamp, now = Date.now()) {
+  const ts = Number(timestamp);
+  if (!Number.isFinite(ts) || ts <= 0) return '-';
+  const diff = Math.max(0, now - ts);
+  if (diff < 5000) return 'just now';
+  if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`;
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
+
+function getStatusBadgeHtml(status, statusLabel, prompt) {
+  const normStatus = String(status || 'idle').toLowerCase();
+  const safeStatus = ['working', 'idle', 'blocked'].includes(normStatus) ? normStatus : 'idle';
+  const label = statusLabel || (safeStatus === 'blocked' ? 'Needs you' : safeStatus === 'working' ? 'Working' : 'Idle');
+  const titleAttr = safeStatus === 'blocked' && prompt ? ` title="${escapeHtml(prompt)}"` : '';
+  const indicator = safeStatus === 'blocked' ? '<span class="status-dot alert" aria-hidden="true"></span>' : '';
+  return `<span class="badge badge-status status-${safeStatus}"${titleAttr}>${indicator}${escapeHtml(label)}</span>`;
+}
+
+function truncateString(str, max = 40) {
+  if (!str) return '-';
+  const s = String(str);
+  return s.length > max ? `${s.slice(0, max - 3)}…` : s;
+}
+
+function renderSessionRow(session) {
+  const paneId = session.paneId || session.id || '';
+  const districtTitle = session.districtTitle || session.districtId || '-';
+  const districtId = session.districtId ? `<small class="sub-id">${escapeHtml(session.districtId)}</small>` : '';
+  const name = session.name || paneId || '-';
+  const paneCaption = `<small class="sub-id">${escapeHtml(paneId)}</small>`;
+  const cliBadge = session.cli ? `<span class="badge badge-cli">${escapeHtml(session.cli)}</span>` : '';
+  const modelBadge = session.model ? `<span class="badge badge-model">${escapeHtml(session.model)}</span>` : '';
+  const statusBadge = getStatusBadgeHtml(session.status, session.statusLabel, session.prompt);
+  const cwd = session.cwd || '-';
+  const cwdShort = truncateString(cwd, 32);
+  const activity = session.activity || session.prompt || '-';
+  const actShort = truncateString(activity, 36);
+  const lastSeen = formatRelativeTime(session.lastSeenAt);
+  const inspectUrl = `#screen?paneId=${encodeURIComponent(paneId)}`;
+
+  return `<tr data-pane-id="${escapeHtml(paneId)}">` +
+    `<td class="cell-district"><div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div></td>` +
+    `<td class="cell-agent"><div class="cell-wrap"><strong>${escapeHtml(name)}</strong>${paneCaption}</div></td>` +
+    `<td class="cell-tool"><div class="badge-group">${cliBadge}${modelBadge}</div></td>` +
+    `<td class="cell-status">${statusBadge}</td>` +
+    `<td class="cell-cwd" title="${escapeHtml(cwd)}">${escapeHtml(cwdShort)}</td>` +
+    `<td class="cell-activity" title="${escapeHtml(activity)}">${escapeHtml(actShort)}</td>` +
+    `<td class="cell-time">${escapeHtml(lastSeen)}</td>` +
+    `<td class="cell-action"><a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${escapeHtml(paneId)}">Inspect</a></td>` +
+    `</tr>`;
+}
+
+function renderSessionsTableHtml(sessions) {
+  if (!Array.isArray(sessions) || sessions.length === 0) {
+    return '<div class="sessions-empty" id="sessionsEmpty">No agent sessions found matching current filters.</div>';
+  }
+
+  const rows = sessions.map((s) => renderSessionRow(s)).join('\n');
+  return `<table class="sessions-table" id="sessionsTable" aria-label="Agent sessions">` +
+    `<thead><tr>` +
+    `<th scope="col">District</th>` +
+    `<th scope="col">Agent</th>` +
+    `<th scope="col">CLI &amp; Model</th>` +
+    `<th scope="col">Status</th>` +
+    `<th scope="col">Directory</th>` +
+    `<th scope="col">Activity</th>` +
+    `<th scope="col">Last Seen</th>` +
+    `<th scope="col">Action</th>` +
+    `</tr></thead>` +
+    `<tbody>${rows}</tbody>` +
+    `</table>`;
+}
+
+function renderSessionsView(container, { sessions, error, loading } = {}) {
+  if (!container) return;
+  if (loading) {
+    container.innerHTML = '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
+    return;
+  }
+  if (error) {
+    container.innerHTML = `<div class="sessions-error" id="sessionsError" role="alert">Failed to load sessions from server: ${escapeHtml(error)}</div>`;
+    return;
+  }
+  container.innerHTML = renderSessionsTableHtml(sessions);
+}
+
+async function fetchSessions(fetchFn = (typeof window !== 'undefined' ? window.fetch : null), query = {}) {
+  if (typeof fetchFn !== 'function') {
+    return { ok: false, error: 'fetch is not available', sessions: [] };
+  }
+  try {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (v != null && v !== '') params.set(k, String(v));
+    }
+    const qStr = params.toString();
+    const url = `/api/sessions${qStr ? `?${qStr}` : ''}`;
+    const res = await fetchFn(url, { cache: 'no-store' });
+    if (!res.ok) {
+      return { ok: false, error: `HTTP ${res.status}`, sessions: [] };
+    }
+    const data = await res.json();
+    if (data?.error) {
+      return { ok: false, error: data.error, sessions: data.sessions || [] };
+    }
+    return { ok: true, data, sessions: Array.isArray(data?.sessions) ? data.sessions : [] };
+  } catch (err) {
+    return { ok: false, error: err?.message || 'Network error', sessions: [] };
+  }
+}
+
 // Module: page/src/07-console.js
 // Purpose: P1 console shell lifecycle, events, health polling, and navigation binding
 // Maintainer: builder-gemini
@@ -5980,7 +6171,7 @@ function createPollingManager({
     const badge = document.getElementById('consoleModeBadge');
     if (!badge) return;
     const safeMode = String(mode || 'live').toLowerCase();
-    if (!['live', 'fixture', 'demo'].includes(safeMode)) return;
+    if (!VALID_MODES.includes(safeMode)) return;
     badge.textContent = safeMode;
     badge.className = `mode-badge mode-${safeMode}`;
   }
@@ -5996,14 +6187,42 @@ function createPollingManager({
     }
   }
 
+  async function refreshSessionsData() {
+    const container = document.getElementById('sessionsContent');
+    const countEl = document.getElementById('sessionsCount');
+    if (!container) return;
+    const res = await fetchSessions(window.fetch);
+    if (!res.ok) {
+      renderSessionsView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error loading data');
+      return;
+    }
+    renderSessionsView(container, { sessions: res.sessions });
+    if (countEl) {
+      const n = res.sessions.length;
+      countEl.textContent = `${n} session${n === 1 ? '' : 's'}`;
+    }
+    const now = new Date();
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
+  }
+
   function handleTabSwitch() {
     const { tab } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
+    if (isConsolePath() && activeTab === 'sessions') {
+      refreshSessionsData();
+    }
   }
 
   const poller = createPollingManager({
-    onTick: () => updateConsoleTimestamp(document, 'No data yet'),
+    onTick: () => {
+      if (activeTab === 'sessions') {
+        refreshSessionsData();
+      } else {
+        updateConsoleTimestamp(document, 'No data yet');
+      }
+    },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
     hiddenMs: POLL_INTERVAL_HIDDEN_MS,
@@ -6014,6 +6233,7 @@ function createPollingManager({
     setViewVisibility(onConsole, document);
 
     if (onConsole) {
+      closeCityConsolePanel(document);
       handleTabSwitch();
       poller.start();
     } else {
@@ -6043,7 +6263,11 @@ function createPollingManager({
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        updateConsoleTimestamp(document, 'No data yet');
+        if (activeTab === 'sessions') {
+          refreshSessionsData();
+        } else {
+          updateConsoleTimestamp(document, 'No data yet');
+        }
       });
     }
 

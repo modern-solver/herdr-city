@@ -13,7 +13,7 @@
     const badge = document.getElementById('consoleModeBadge');
     if (!badge) return;
     const safeMode = String(mode || 'live').toLowerCase();
-    if (!['live', 'fixture', 'demo'].includes(safeMode)) return;
+    if (!VALID_MODES.includes(safeMode)) return;
     badge.textContent = safeMode;
     badge.className = `mode-badge mode-${safeMode}`;
   }
@@ -29,14 +29,42 @@
     }
   }
 
+  async function refreshSessionsData() {
+    const container = document.getElementById('sessionsContent');
+    const countEl = document.getElementById('sessionsCount');
+    if (!container) return;
+    const res = await fetchSessions(window.fetch);
+    if (!res.ok) {
+      renderSessionsView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error loading data');
+      return;
+    }
+    renderSessionsView(container, { sessions: res.sessions });
+    if (countEl) {
+      const n = res.sessions.length;
+      countEl.textContent = `${n} session${n === 1 ? '' : 's'}`;
+    }
+    const now = new Date();
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
+  }
+
   function handleTabSwitch() {
     const { tab } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
+    if (isConsolePath() && activeTab === 'sessions') {
+      refreshSessionsData();
+    }
   }
 
   const poller = createPollingManager({
-    onTick: () => updateConsoleTimestamp(document, 'No data yet'),
+    onTick: () => {
+      if (activeTab === 'sessions') {
+        refreshSessionsData();
+      } else {
+        updateConsoleTimestamp(document, 'No data yet');
+      }
+    },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
     hiddenMs: POLL_INTERVAL_HIDDEN_MS,
@@ -47,6 +75,7 @@
     setViewVisibility(onConsole, document);
 
     if (onConsole) {
+      closeCityConsolePanel(document);
       handleTabSwitch();
       poller.start();
     } else {
@@ -76,7 +105,11 @@
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        updateConsoleTimestamp(document, 'No data yet');
+        if (activeTab === 'sessions') {
+          refreshSessionsData();
+        } else {
+          updateConsoleTimestamp(document, 'No data yet');
+        }
       });
     }
 
