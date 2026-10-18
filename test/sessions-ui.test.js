@@ -205,3 +205,118 @@ test('fetchSessions handles HTTP error and network failures gracefully', async (
   assert.equal(netRes.error, 'Connection refused');
   assert.deepEqual(netRes.sessions, []);
 });
+
+test('fetchSessions preserves succeeded sessions and extracts adapterError when data.error present', async () => {
+  const mockPayload = {
+    v: 1,
+    generatedAt: 1760700000000,
+    mode: 'fixture',
+    error: 'herdr agent list timeout for district w9',
+    filters: { district: null, cli: null, model: null, status: null, q: null },
+    sessions: [
+      {
+        id: 'w8:p1',
+        paneId: 'w8:p1',
+        districtId: 'w8',
+        districtTitle: 'atlas-api',
+        name: 'grok-api',
+        cli: 'grok',
+        model: 'grok-4',
+        status: 'working',
+        cwd: 'C:\\Users\\Shaunak\\src\\atlas-api',
+        lastSeenAt: 1760700000000,
+        activity: 'building',
+      },
+    ],
+  };
+
+  const mockFetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => mockPayload,
+  });
+
+  const res = await fetchSessions(mockFetch);
+  assert.equal(res.ok, true);
+  assert.equal(res.sessions.length, 1);
+  assert.equal(res.sessions[0].name, 'grok-api');
+  assert.equal(res.adapterError, 'herdr agent list timeout for district w9');
+});
+
+test('renderSessionsTableHtml renders succeeded rows and inline error row for adapter notice', () => {
+  const sessions = [
+    {
+      id: 'w8:p1',
+      paneId: 'w8:p1',
+      districtTitle: 'atlas-api',
+      name: 'grok-api',
+      cli: 'grok',
+      model: 'grok-4',
+      status: 'working',
+      cwd: '/src/atlas-api',
+      lastSeenAt: 1760700000000,
+      activity: 'running',
+    },
+  ];
+
+  const html = renderSessionsTableHtml(sessions, {
+    adapterError: 'District w9 unreachable: connection refused',
+  });
+
+  // Table must not be blanked
+  assert.match(html, /id="sessionsTable"/);
+  assert.match(html, /data-pane-id="w8:p1"/);
+  assert.match(html, /<strong>grok-api<\/strong>/);
+  // Inline error row present
+  assert.match(html, /id="rowAdapterError"/);
+  assert.match(html, /class="adapter-error-text">District w9 unreachable: connection refused<\/span>/);
+});
+
+test('renderSessionRow renders an inline error row for a failed source entry', () => {
+  const failedSource = {
+    districtId: 'w9',
+    districtTitle: 'atlas-worker',
+    error: 'Failed to inspect agent process: exit 1',
+  };
+
+  const rowHtml = renderSessionRow(failedSource);
+  assert.match(rowHtml, /class="row-source-error"/);
+  assert.match(rowHtml, /data-source="w9"/);
+  assert.match(rowHtml, /atlas-worker/);
+  assert.match(rowHtml, /class="badge badge-error">Source error<\/span>/);
+  assert.match(rowHtml, /Failed to inspect agent process: exit 1/);
+});
+
+test('renderSessionsView renders adapter notice banner and table without blanking', () => {
+  const container = { innerHTML: '' };
+  const sessions = [
+    {
+      id: 'w1:p1',
+      paneId: 'w1:p1',
+      districtTitle: 'dist1',
+      name: 'bot1',
+      cli: 'claude',
+      model: 'claude-3-5',
+      status: 'idle',
+      cwd: '/tmp',
+      lastSeenAt: 1000,
+      activity: 'idle',
+    },
+  ];
+
+  renderSessionsView(container, {
+    sessions,
+    adapterError: 'Adapter warning: partial scan',
+  });
+
+  // Notice banner present
+  assert.match(container.innerHTML, /id="sessionsAdapterNotice"/);
+  assert.match(container.innerHTML, /Adapter warning: partial scan/);
+  // Table and rows intact
+  assert.match(container.innerHTML, /id="sessionsTable"/);
+  assert.match(container.innerHTML, /data-pane-id="w1:p1"/);
+  assert.match(container.innerHTML, /id="rowAdapterError"/);
+  // Must NOT display fatal error container
+  assert.doesNotMatch(container.innerHTML, /id="sessionsError"/);
+});
+

@@ -44,32 +44,35 @@
   from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
   empty/error/loading states, and responsive styling.
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (stacked on `feat/gemini-u1-shell`).
-- Status: Implemented U2 sessions list view with 44 passing unit/integration tests; prepared draft PR.
+- Status: Fixed reviewer findings on PR #10 (adapter error resilience, CHANGELOG link, README).
+  48 passing tests. Preparing U4 stacked branch.
 
 ## Files touched
 
 The builder-gemini agent touched and maintains the following files on `feat/gemini-u2-sessions`:
 
 1. `page/src/sessions-view.js`:
-   - Standalone sessions list table rendering, relative time formatting, status badges, and fetch helpers.
+   - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
 2. `page/src/console-router.js`:
    - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
 3. `page/src/07-console.js`:
    - Shipped console shell controller consuming `console-router.js` and `sessions-view.js`.
 4. `page/src/page.html`:
-   - Added `#view-sessions` table card, table styles, status badges, and empty/error states.
+   - Added `#view-sessions` table card, table styles, status badges, and empty/error/notice states.
 5. `page/build.js`:
    - Bundles `console-router.js` and `sessions-view.js` before `07-console.js` into `web/index.html`.
 6. `web/index.html`:
    - Generated client bundle containing 3D City, Console Shell, and Sessions list view.
-7. `test/sessions-ui.test.js`:
-   - Unit tests for relative time, badges, rows, table, container states, and contract fetcher.
-8. `test/console-ui.test.js`:
+7. `page/README.md`:
+   - Documented `sessions-view.js` in the frontend modules list (CTX-10).
+8. `test/sessions-ui.test.js`:
+   - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
+9. `test/console-ui.test.js`:
    - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-9. `CHANGELOG.md`:
-   - Added dated entry for U2 sessions list view implementation.
-10. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U2 implementation.
+10. `CHANGELOG.md`:
+    - Added dated entry for U2 sessions list view implementation linking PR #10 (CHG-04).
+11. `docs/agents/builder-gemini.md`:
+    - Updated agent memory tracking U2 implementation and review fixes.
 
 ## Open questions
 

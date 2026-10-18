@@ -39,13 +39,14 @@
       updateConsoleTimestamp(document, 'Error loading data');
       return;
     }
-    renderSessionsView(container, { sessions: res.sessions });
+    renderSessionsView(container, { sessions: res.sessions, adapterError: res.adapterError });
     if (countEl) {
       const n = res.sessions.length;
       countEl.textContent = `${n} session${n === 1 ? '' : 's'}`;
     }
     const now = new Date();
-    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}${statusNote}`);
   }
 
   function handleTabSwitch() {
