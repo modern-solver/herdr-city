@@ -8,6 +8,23 @@ Each item links the PR, commit, or file it describes (CHG-04).
 - Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
   `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
   `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
+- Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
+  (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
+  Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.
+  Commit: `538ba9d`.
+  PR: https://github.com/modern-solver/herdr-city/pull/2
+- Preference: Shaunak established a standing preference that routine values (bounds, caps,
+  intervals, debounce) are stated as defaults he can veto rather than asked as open questions.
+  File: `docs/spec-sheet.md`.
+  PR: https://github.com/modern-solver/herdr-city/pull/3
+- Docs: Follow-up approvals documentation updating status rows to approved by Shaunak,
+  renaming Open questions to Decisions, and recording the defaults-not-questions preference.
+  Files: `docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`.
+  PR: https://github.com/modern-solver/herdr-city/pull/3
+- Reviewer: DevOps updated `docs/agents/reviewer-claude.md` with round-6 review history row,
+  recording CLEAN verdict on commit `89a2ff2` and merge by Shaunak as `538ba9d`.
+  File: `docs/agents/reviewer-claude.md`.
+  PR: https://github.com/modern-solver/herdr-city/pull/3
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.
