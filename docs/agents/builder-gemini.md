@@ -42,31 +42,37 @@
 - Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
   (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
-- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3, #7, #9):
+- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3, #7, #8, #9):
   1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
   2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
   3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
   4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
   5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04.
-  6. Merged `origin/main` (PR #7 tooling, PR #9 codemap) into `feat/gemini-u1-shell`.
-  7. Regenerated `docs/CODEMAP.md` and updated module READMEs (`page/README.md`, `web/README.md`).
+  6. Merged `origin/main` (PR #7 tooling, PR #9 codemap, PR #8 sessions) into `feat/gemini-u1-shell`.
+  7. Regenerated `docs/CODEMAP.md` and updated module READMEs (`src/`, `test/`, `page/`, `web/`).
+  8. Brought console UI files (`page/src/console-router.js`, `07-console.js`) under ESLint and Prettier.
 
 ## Files touched
 
 Net diff vs `main` on `feat/gemini-u1-shell`:
 
-1. `CHANGELOG.md`
-2. `docs/CODEMAP.md`
-3. `docs/agents/builder-gemini.md`
-4. `page/README.md`
-5. `page/build.js`
-6. `page/src/07-console.js`
-7. `page/src/console-router.js`
-8. `page/src/page.html`
-9. `src/server.js`
-10. `test/console-ui.test.js`
-11. `web/README.md`
-12. `web/index.html`
+1. `.prettierignore`
+2. `CHANGELOG.md`
+3. `docs/CODEMAP.md`
+4. `docs/agents/builder-gemini.md`
+5. `eslint.config.js`
+6. `package.json`
+7. `page/README.md`
+8. `page/build.js`
+9. `page/src/07-console.js`
+10. `page/src/console-router.js`
+11. `page/src/page.html`
+12. `src/README.md`
+13. `src/server.js`
+14. `test/README.md`
+15. `test/console-ui.test.js`
+16. `web/README.md`
+17. `web/index.html`
 
 ## Open questions
 

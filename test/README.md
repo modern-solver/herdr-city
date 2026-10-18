@@ -1,6 +1,6 @@
 # test
 
-Purpose: Node built-in tests for the adapter, server, map, mask, parsers and console UI.
+Purpose: Node built-in tests for the adapter, server, map, mask, parsers, sessions and console UI.
 
 Interface: `npm test` runs `node --test test/*.test.js`. Tests use fixture
 data under `fixtures/` and do not need herdr.
