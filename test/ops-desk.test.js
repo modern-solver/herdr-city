@@ -34,9 +34,18 @@ test('GET /api/ops-desk lists the blocked grok prompt; recommendation is null', 
     assert.equal(grok.recommendation, null);
     assert.equal(grok.since, 1_000);
     assert.equal(grok.waitMs, 10_000);
-    assert.equal(body.items.every((item) => item.recommendation === null), true);
-    assert.equal(body.items.every((item) => !('approve' in item) && !('deny' in item)), true);
-    assert.equal(body.items.every((item) => item.prompt != null), true);
+    assert.equal(
+      body.items.every((item) => item.recommendation === null),
+      true,
+    );
+    assert.equal(
+      body.items.every((item) => !('approve' in item) && !('deny' in item)),
+      true,
+    );
+    assert.equal(
+      body.items.every((item) => item.prompt != null),
+      true,
+    );
     const dumped = JSON.stringify(body);
     assert.equal(dumped.includes('ghp_'), false);
     assert.equal(dumped.includes('sk-thisIs'), false);
@@ -49,12 +58,26 @@ test('GET /api/ops-desk lists the blocked grok prompt; recommendation is null', 
 test('ops-desk sorts by since ascending (longest wait first)', () => {
   const sessions = [
     {
-      paneId: 'w2:p1', status: 'blocked', prompt: 'later', districtId: 'w2',
-      districtTitle: 'b', name: 'b', cli: 'claude', model: 'x', lastSeenAt: 5,
+      paneId: 'w2:p1',
+      status: 'blocked',
+      prompt: 'later',
+      districtId: 'w2',
+      districtTitle: 'b',
+      name: 'b',
+      cli: 'claude',
+      model: 'x',
+      lastSeenAt: 5,
     },
     {
-      paneId: 'w1:p1', status: 'blocked', prompt: 'earlier', districtId: 'w1',
-      districtTitle: 'a', name: 'a', cli: 'grok', model: 'y', lastSeenAt: 1,
+      paneId: 'w1:p1',
+      status: 'blocked',
+      prompt: 'earlier',
+      districtId: 'w1',
+      districtTitle: 'a',
+      name: 'a',
+      cli: 'grok',
+      model: 'y',
+      lastSeenAt: 1,
     },
   ];
   const out = buildOpsDesk({

@@ -3,6 +3,7 @@
  * Owner: builder-grok
  */
 import { consoleStatus } from './sessions.js';
+import { maskThenTruncate } from './output-filter.js';
 
 export function opsDeskId(paneId, agent) {
   const seq = agent?.state_change_seq ?? agent?.revision ?? 0;
@@ -39,7 +40,7 @@ export function buildOpsDesk({ sessions, agents = [], blockedSince = {}, generat
         name: s.name,
         cli: s.cli,
         model: s.model,
-        prompt: s.prompt,
+        prompt: maskThenTruncate(s.prompt).text,
         since,
         waitMs: generatedAt - since,
         recommendation: null,

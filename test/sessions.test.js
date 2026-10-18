@@ -52,7 +52,10 @@ test('GET /api/sessions?status=blocked returns the atlas-api grok row', async ()
   const res = await fetch(`http://127.0.0.1:${port}/api/sessions?status=blocked`);
   const body = await res.json();
   assert.ok(body.sessions.some((s) => s.paneId === 'w8:p1'));
-  assert.equal(body.sessions.every((s) => s.status === 'blocked'), true);
+  assert.equal(
+    body.sessions.every((s) => s.status === 'blocked'),
+    true,
+  );
   assert.equal(body.filters.status, 'blocked');
   await adapter.stop();
   await server.close();
@@ -87,8 +90,28 @@ test('mapSession masks secrets in terminal-title activity fallback', () => {
 
 test('filterSessions ANDs district, cli and status', () => {
   const rows = [
-    { districtId: 'w8', districtTitle: 'atlas-api', cli: 'grok', model: 'grok-4', status: 'blocked', name: 'grok-api', cwd: 'x', activity: 'a', error: null },
-    { districtId: 'w1', districtTitle: 'mastopia', cli: 'claude', model: 'opus', status: 'working', name: 'c', cwd: 'y', activity: 'b', error: null },
+    {
+      districtId: 'w8',
+      districtTitle: 'atlas-api',
+      cli: 'grok',
+      model: 'grok-4',
+      status: 'blocked',
+      name: 'grok-api',
+      cwd: 'x',
+      activity: 'a',
+      error: null,
+    },
+    {
+      districtId: 'w1',
+      districtTitle: 'mastopia',
+      cli: 'claude',
+      model: 'opus',
+      status: 'working',
+      name: 'c',
+      cwd: 'y',
+      activity: 'b',
+      error: null,
+    },
   ];
   const out = filterSessions(rows, { district: 'atlas', cli: 'grok', model: null, status: 'blocked', q: null });
   assert.equal(out.length, 1);
