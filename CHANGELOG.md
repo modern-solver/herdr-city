@@ -24,7 +24,18 @@ Each item links the PR, commit, or file it describes (CHG-04).
   empty and error states, and responsive styles.
   Files: `page/src/sessions-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
   `page/README.md`, `web/index.html`, `test/sessions-ui.test.js`.
-  PR: https://github.com/modern-solver/herdr-city/pull/10 (stacked on PR #6)
+  PR: https://github.com/modern-solver/herdr-city/pull/10
+- Feature: `GET /api/sessions` console session list with district, cli, model,
+  status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
+  Session `activity` is masked (SEC-03). PR: https://github.com/modern-solver/herdr-city/pull/8
+- Docs: Context-layer CODEMAP (`docs/CODEMAP.md`), regen script
+  (`scripts/codemap.js`, `npm run codemap`), staleness test
+  (`test/codemap.test.js`), and module READMEs under `src/`, `test/`, `page/`,
+  `fixtures/`, `config/`, `web/`, `scripts/` (CTX-09, CTX-10).
+  PR: https://github.com/modern-solver/herdr-city/pull/9
+- Tooling: Prettier and ESLint in CI (`npm run lint`, `npm run format:check`,
+  `npm ci`). Unused locals removed in `src/adapter.js`, `src/map.js`,
+  `src/server.js`. PR: https://github.com/modern-solver/herdr-city/pull/7
 - Feature: Implemented Milestone U1 (User Interface Milestone 1) console shell, navigation
   header, route switcher (`/` and `/console`), and client-side tab router (`#sessions`,
   `#screen`, `#logs`, `#rulebook`, `#ops-desk`) with active and hidden-tab polling lifecycle.
@@ -52,6 +63,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
   recording CLEAN verdict on commit `89a2ff2` and merge by Shaunak as `538ba9d`.
   File: `docs/agents/reviewer-claude.md`.
   PR: https://github.com/modern-solver/herdr-city/pull/3
+
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.

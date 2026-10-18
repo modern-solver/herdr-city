@@ -6173,9 +6173,7 @@ function formatRelativeTime(timestamp, now = Date.now()) {
 
 function getStatusBadgeHtml(status, statusLabel, prompt) {
   const normStatus = String(status || 'idle').toLowerCase();
-  const safeStatus = ['working', 'idle', 'blocked', 'error'].includes(normStatus)
-    ? normStatus
-    : 'idle';
+  const safeStatus = ['working', 'idle', 'blocked', 'error'].includes(normStatus) ? normStatus : 'idle';
   const defaultLabel =
     safeStatus === 'blocked'
       ? 'Needs you'
@@ -6203,9 +6201,7 @@ function truncateString(str, max = 40) {
 function renderSessionRow(session) {
   const paneId = session.paneId || session.id || '';
   const districtTitle = session.districtTitle || session.districtId || '-';
-  const districtId = session.districtId
-    ? `<small class="sub-id">${escapeHtml(session.districtId)}</small>`
-    : '';
+  const districtId = session.districtId ? `<small class="sub-id">${escapeHtml(session.districtId)}</small>` : '';
 
   // Failed source or adapter error record for a specific source/district
   if (session.error && !session.cli && !session.model) {
@@ -6222,17 +6218,9 @@ function renderSessionRow(session) {
 
   const name = session.name || paneId || '-';
   const paneCaption = `<small class="sub-id">${escapeHtml(paneId)}</small>`;
-  const cliBadge = session.cli
-    ? `<span class="badge badge-cli">${escapeHtml(session.cli)}</span>`
-    : '';
-  const modelBadge = session.model
-    ? `<span class="badge badge-model">${escapeHtml(session.model)}</span>`
-    : '';
-  const statusBadge = getStatusBadgeHtml(
-    session.status,
-    session.statusLabel,
-    session.prompt || session.error,
-  );
+  const cliBadge = session.cli ? `<span class="badge badge-cli">${escapeHtml(session.cli)}</span>` : '';
+  const modelBadge = session.model ? `<span class="badge badge-model">${escapeHtml(session.model)}</span>` : '';
+  const statusBadge = getStatusBadgeHtml(session.status, session.statusLabel, session.prompt || session.error);
   const cwd = session.cwd || '-';
   const cwdShort = truncateString(cwd, 32);
   const activity = session.activity || session.prompt || session.error || '-';
@@ -6261,8 +6249,7 @@ function renderSessionsTableHtml(sessions, { adapterError } = {}) {
   const hasSessions = Array.isArray(sessions) && sessions.length > 0;
   if (!hasSessions && !adapterError) {
     return (
-      '<div class="sessions-empty" id="sessionsEmpty">' +
-      'No agent sessions found matching current filters.</div>'
+      '<div class="sessions-empty" id="sessionsEmpty">' + 'No agent sessions found matching current filters.</div>'
     );
   }
 
@@ -6295,13 +6282,11 @@ function renderSessionsTableHtml(sessions, { adapterError } = {}) {
 function renderSessionsView(container, { sessions, error, adapterError, loading } = {}) {
   if (!container) return;
   if (loading) {
-    container.innerHTML =
-      '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
+    container.innerHTML = '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
     return;
   }
 
-  const effectiveAdapterError =
-    adapterError || (Array.isArray(sessions) && sessions.length > 0 ? error : null);
+  const effectiveAdapterError = adapterError || (Array.isArray(sessions) && sessions.length > 0 ? error : null);
 
   // Fatal error: no sessions list at all and error occurred
   if (error && !effectiveAdapterError && (!Array.isArray(sessions) || sessions.length === 0)) {
@@ -6320,10 +6305,7 @@ function renderSessionsView(container, { sessions, error, adapterError, loading 
   container.innerHTML = `${noticeHtml}${tableHtml}`;
 }
 
-async function fetchSessions(
-  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
-  query = {},
-) {
+async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fetch : null, query = {}) {
   if (typeof fetchFn !== 'function') {
     return { ok: false, error: 'fetch is not available', sessions: [], adapterError: null };
   }
@@ -6360,17 +6342,11 @@ function renderScreenRibbonHtml(data) {
   const districtId = data.session?.districtId
     ? `<small class="sub-id">${escapeHtml(data.session.districtId)}</small>`
     : '';
-  const cliBadge = data.session?.cli
-    ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>`
-    : '';
+  const cliBadge = data.session?.cli ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>` : '';
   const modelBadge = data.session?.model
     ? `<span class="badge badge-model">${escapeHtml(data.session.model)}</span>`
     : '';
-  const statusBadge = getStatusBadgeHtml(
-    data.session?.status,
-    data.session?.statusLabel,
-    data.session?.prompt,
-  );
+  const statusBadge = getStatusBadgeHtml(data.session?.status, data.session?.statusLabel, data.session?.prompt);
   const lineCount = Number.isFinite(data.lineCount) ? `${data.lineCount} lines` : '';
   const updated = data.updatedAt ? `Updated ${formatRelativeTime(data.updatedAt)}` : '';
 
@@ -6429,10 +6405,7 @@ function renderScreenViewportHtml(text) {
 
 let lastRawText = null;
 
-function renderScreenView(
-  container,
-  { data, error, loading, paneId, autoScroll = true } = {},
-) {
+function renderScreenView(container, { data, error, loading, paneId, autoScroll = true } = {}) {
   if (!container) return;
   if (!paneId) {
     lastRawText = null;
@@ -6451,8 +6424,7 @@ function renderScreenView(
       if (container.dataset) delete container.dataset.currentPaneId;
       if (container._lastRawText !== undefined) delete container._lastRawText;
       container.innerHTML =
-        `<div class="screen-loading" id="screenLoading">` +
-        `Reading pane output for ${escapeHtml(paneId)}…</div>`;
+        `<div class="screen-loading" id="screenLoading">` + `Reading pane output for ${escapeHtml(paneId)}…</div>`;
     }
     return;
   }
@@ -6472,8 +6444,7 @@ function renderScreenView(
     lastRawText = null;
     if (container.dataset) delete container.dataset.currentPaneId;
     if (container._lastRawText !== undefined) delete container._lastRawText;
-    container.innerHTML =
-      `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
+    container.innerHTML = `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
     return;
   }
 
@@ -6549,10 +6520,7 @@ function renderScreenView(
   }
 }
 
-async function fetchScreen(
-  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
-  paneId,
-) {
+async function fetchScreen(fetchFn = typeof window !== 'undefined' ? window.fetch : null, paneId) {
   if (!paneId) {
     return { ok: false, error: 'paneId is required', data: null };
   }
@@ -6670,25 +6638,17 @@ function renderOpsDeskQueueHtml(items, { adapterError } = {}) {
   const sorted = [...items].sort((a, b) => Number(a.since || 0) - Number(b.since || 0));
   const cards = sorted.map((item) => renderOpsDeskCardHtml(item)).join('\n');
 
-  return (
-    `${headerBanner}${noticeHtml}` +
-    `<div class="ops-queue" id="opsQueue">${cards}</div>`
-  );
+  return `${headerBanner}${noticeHtml}` + `<div class="ops-queue" id="opsQueue">${cards}</div>`;
 }
 
-function renderOpsDeskView(
-  container,
-  { items, error, adapterError, loading } = {},
-) {
+function renderOpsDeskView(container, { items, error, adapterError, loading } = {}) {
   if (!container) return;
   if (loading) {
-    container.innerHTML =
-      '<div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>';
+    container.innerHTML = '<div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>';
     return;
   }
 
-  const effectiveAdapterError =
-    adapterError || (Array.isArray(items) && items.length > 0 ? error : null);
+  const effectiveAdapterError = adapterError || (Array.isArray(items) && items.length > 0 ? error : null);
 
   // Fatal error: no items list at all and error occurred
   if (error && !effectiveAdapterError && (!Array.isArray(items) || items.length === 0)) {
@@ -6701,9 +6661,7 @@ function renderOpsDeskView(
   container.innerHTML = renderOpsDeskQueueHtml(items, { adapterError: effectiveAdapterError });
 }
 
-async function fetchOpsDesk(
-  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
-) {
+async function fetchOpsDesk(fetchFn = typeof window !== 'undefined' ? window.fetch : null) {
   if (typeof fetchFn !== 'function') {
     return { ok: false, error: 'fetch is not available', items: [], adapterError: null };
   }

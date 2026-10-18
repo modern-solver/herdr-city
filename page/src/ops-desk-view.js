@@ -97,25 +97,17 @@ export function renderOpsDeskQueueHtml(items, { adapterError } = {}) {
   const sorted = [...items].sort((a, b) => Number(a.since || 0) - Number(b.since || 0));
   const cards = sorted.map((item) => renderOpsDeskCardHtml(item)).join('\n');
 
-  return (
-    `${headerBanner}${noticeHtml}` +
-    `<div class="ops-queue" id="opsQueue">${cards}</div>`
-  );
+  return `${headerBanner}${noticeHtml}` + `<div class="ops-queue" id="opsQueue">${cards}</div>`;
 }
 
-export function renderOpsDeskView(
-  container,
-  { items, error, adapterError, loading } = {},
-) {
+export function renderOpsDeskView(container, { items, error, adapterError, loading } = {}) {
   if (!container) return;
   if (loading) {
-    container.innerHTML =
-      '<div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>';
+    container.innerHTML = '<div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>';
     return;
   }
 
-  const effectiveAdapterError =
-    adapterError || (Array.isArray(items) && items.length > 0 ? error : null);
+  const effectiveAdapterError = adapterError || (Array.isArray(items) && items.length > 0 ? error : null);
 
   // Fatal error: no items list at all and error occurred
   if (error && !effectiveAdapterError && (!Array.isArray(items) || items.length === 0)) {
@@ -128,9 +120,7 @@ export function renderOpsDeskView(
   container.innerHTML = renderOpsDeskQueueHtml(items, { adapterError: effectiveAdapterError });
 }
 
-export async function fetchOpsDesk(
-  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
-) {
+export async function fetchOpsDesk(fetchFn = typeof window !== 'undefined' ? window.fetch : null) {
   if (typeof fetchFn !== 'function') {
     return { ok: false, error: 'fetch is not available', items: [], adapterError: null };
   }

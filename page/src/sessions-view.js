@@ -25,9 +25,7 @@ export function formatRelativeTime(timestamp, now = Date.now()) {
 
 export function getStatusBadgeHtml(status, statusLabel, prompt) {
   const normStatus = String(status || 'idle').toLowerCase();
-  const safeStatus = ['working', 'idle', 'blocked', 'error'].includes(normStatus)
-    ? normStatus
-    : 'idle';
+  const safeStatus = ['working', 'idle', 'blocked', 'error'].includes(normStatus) ? normStatus : 'idle';
   const defaultLabel =
     safeStatus === 'blocked'
       ? 'Needs you'
@@ -55,9 +53,7 @@ export function truncateString(str, max = 40) {
 export function renderSessionRow(session) {
   const paneId = session.paneId || session.id || '';
   const districtTitle = session.districtTitle || session.districtId || '-';
-  const districtId = session.districtId
-    ? `<small class="sub-id">${escapeHtml(session.districtId)}</small>`
-    : '';
+  const districtId = session.districtId ? `<small class="sub-id">${escapeHtml(session.districtId)}</small>` : '';
 
   // Failed source or adapter error record for a specific source/district
   if (session.error && !session.cli && !session.model) {
@@ -74,17 +70,9 @@ export function renderSessionRow(session) {
 
   const name = session.name || paneId || '-';
   const paneCaption = `<small class="sub-id">${escapeHtml(paneId)}</small>`;
-  const cliBadge = session.cli
-    ? `<span class="badge badge-cli">${escapeHtml(session.cli)}</span>`
-    : '';
-  const modelBadge = session.model
-    ? `<span class="badge badge-model">${escapeHtml(session.model)}</span>`
-    : '';
-  const statusBadge = getStatusBadgeHtml(
-    session.status,
-    session.statusLabel,
-    session.prompt || session.error,
-  );
+  const cliBadge = session.cli ? `<span class="badge badge-cli">${escapeHtml(session.cli)}</span>` : '';
+  const modelBadge = session.model ? `<span class="badge badge-model">${escapeHtml(session.model)}</span>` : '';
+  const statusBadge = getStatusBadgeHtml(session.status, session.statusLabel, session.prompt || session.error);
   const cwd = session.cwd || '-';
   const cwdShort = truncateString(cwd, 32);
   const activity = session.activity || session.prompt || session.error || '-';
@@ -113,8 +101,7 @@ export function renderSessionsTableHtml(sessions, { adapterError } = {}) {
   const hasSessions = Array.isArray(sessions) && sessions.length > 0;
   if (!hasSessions && !adapterError) {
     return (
-      '<div class="sessions-empty" id="sessionsEmpty">' +
-      'No agent sessions found matching current filters.</div>'
+      '<div class="sessions-empty" id="sessionsEmpty">' + 'No agent sessions found matching current filters.</div>'
     );
   }
 
@@ -147,13 +134,11 @@ export function renderSessionsTableHtml(sessions, { adapterError } = {}) {
 export function renderSessionsView(container, { sessions, error, adapterError, loading } = {}) {
   if (!container) return;
   if (loading) {
-    container.innerHTML =
-      '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
+    container.innerHTML = '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
     return;
   }
 
-  const effectiveAdapterError =
-    adapterError || (Array.isArray(sessions) && sessions.length > 0 ? error : null);
+  const effectiveAdapterError = adapterError || (Array.isArray(sessions) && sessions.length > 0 ? error : null);
 
   // Fatal error: no sessions list at all and error occurred
   if (error && !effectiveAdapterError && (!Array.isArray(sessions) || sessions.length === 0)) {
@@ -172,10 +157,7 @@ export function renderSessionsView(container, { sessions, error, adapterError, l
   container.innerHTML = `${noticeHtml}${tableHtml}`;
 }
 
-export async function fetchSessions(
-  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
-  query = {},
-) {
+export async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fetch : null, query = {}) {
   if (typeof fetchFn !== 'function') {
     return { ok: false, error: 'fetch is not available', sessions: [], adapterError: null };
   }

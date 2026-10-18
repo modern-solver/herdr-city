@@ -26,9 +26,26 @@ export function districtTitle(workspaceId, workspaces, agent) {
   return workspaceId || 'workspace';
 }
 
-function modelBadge(agent) {
+export function agentDisplayName(agent) {
+  return agent.name || agent.display_agent || agent.agent || agent.pane_id;
+}
+
+export function modelBadge(agent) {
   const tokens = agent.tokens && typeof agent.tokens === 'object' ? agent.tokens : {};
   return tokens.model || agent.display_agent || agent.agent || inferCliKind(agent);
+}
+
+export function inspectPane(rawPane, agent, clis = []) {
+  const masked = maskSecrets(rawPane || '');
+  return {
+    masked,
+    prompt: detectPrompt(masked, agent, clis),
+    errorText: detectError(masked),
+  };
+}
+
+export function maskedClip(text, max = 240) {
+  return maskSecrets(String(text || '')).slice(0, max);
 }
 
 function cityStatus(agentStatus, errorText, idleMs) {
@@ -65,23 +82,20 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
     group.sort((a, b) => String(a.pane_id).localeCompare(String(b.pane_id)));
     const title = districtTitle(workspaceId, workspaces, group[0]);
     const mappedAgents = group.map((agent, i) => {
-      const paneText = maskSecrets(panes[agent.pane_id] || '');
-      const prompt = detectPrompt(paneText, agent, mapCity._clis || []);
-      const errorText = detectError(paneText);
+      const { prompt, errorText } = inspectPane(panes[agent.pane_id] || '', agent, mapCity._clis || []);
       const statusRaw = String(agent.agent_status || 'unknown').toLowerCase();
       const waiting = statusRaw === 'blocked' || statusRaw === 'waiting';
       const activeAt = lastActive[agent.pane_id] || now;
       const idleMs = now - activeAt;
       const status = cityStatus(statusRaw, errorText, idleMs);
       const id = i === 0 ? 'main' : String(agent.pane_id);
-      const name = agent.name || agent.display_agent || agent.agent || agent.pane_id;
+      const name = agentDisplayName(agent);
       const model = modelBadge(agent);
       const activity = waiting
-        ? (prompt?.text || 'Needs you')
+        ? prompt?.text || 'Needs you'
         : errorText
           ? errorText.split('\n')[0]
-          : (agent.terminal_title_stripped || agent.title || (status === 'working' ? 'Working' : 'Idle'));
-      const updatedAt = waiting || status === 'working' || errorText ? now : activeAt;
+          : agent.terminal_title_stripped || agent.title || (status === 'working' ? 'Working' : 'Idle');
       robots.push({
         id,
         workspaceId,
@@ -116,7 +130,7 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
         status,
         kind: kindFor(status, waiting, errorText),
         tool: waiting ? 'Prompt' : '',
-        activity: maskSecrets(activity).slice(0, 240),
+        activity: maskedClip(activity, 240),
         activitySince: activeAt,
         parent: i === 0 ? null : 'main',
         waiting,
@@ -129,30 +143,34 @@ export function mapCity({ agents, workspaces = [], panes = {}, now = Date.now(),
 
     const newest = Math.max(...mappedAgents.map((a) => a.activitySince), 0);
     const waitingAgent = mappedAgents.find((a) => a.waiting);
-    const headline = waitingAgent?.activity
-      || mappedAgents.find((a) => a.status === 'error')?.activity
-      || mappedAgents.find((a) => a.status === 'working')?.activity
-      || 'On screen';
+    const headline =
+      waitingAgent?.activity ||
+      mappedAgents.find((a) => a.status === 'error')?.activity ||
+      mappedAgents.find((a) => a.status === 'working')?.activity ||
+      'On screen';
     const startedAt = Math.min(...group.map((a) => lastActive[a.pane_id] || now));
 
     docs.push({
       v: 2,
       id: workspaceId,
       title,
-      headline: maskSecrets(headline).slice(0, 240),
+      headline: maskedClip(headline, 240),
       startedAt,
       updatedAt: waitingAgent ? now : newest,
       turns: 0,
       tokens: { total: 0, in: 0, out: 0, cw: 0, cr: 0, helpers: [] },
       waiting: waitingAgent ? { agent: waitingAgent.id, tool: 'Prompt', since: waitingAgent.activitySince } : null,
       agents: mappedAgents,
-      feed: mappedAgents.map((a) => ({
-        ts: a.activitySince,
-        agent: a.name,
-        agentId: a.id,
-        kind: a.kind,
-        text: a.activity,
-      })).sort((x, y) => y.ts - x.ts).slice(0, 50),
+      feed: mappedAgents
+        .map((a) => ({
+          ts: a.activitySince,
+          agent: a.name,
+          agentId: a.id,
+          kind: a.kind,
+          text: a.activity,
+        }))
+        .sort((x, y) => y.ts - x.ts)
+        .slice(0, 50),
     });
   }
 

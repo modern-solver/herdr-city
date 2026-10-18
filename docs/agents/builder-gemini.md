@@ -46,43 +46,29 @@
   rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
   prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (stacked on `feat/gemini-u4-screen`).
-- Status: Merged U4 r1 fixes (import real helpers, in-place viewport updates, extracted
-  refreshActiveTab); removed _esc fallback in ops-desk-view.js; tests green.
+- Status: Merged `origin/feat/gemini-u4-screen` (including upstream main merges); leak rule verified;
+  lint, format:check and test green.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u6-ops-desk`:
+Net diff vs `main` on `feat/gemini-u6-ops-desk`:
 
-1. `page/src/ops-desk-view.js`:
-   - Standalone ops desk queue view rendering, card layout, wait timers, and fetch helpers.
-2. `page/src/screen-view.js`:
-   - Standalone pane screen viewer rendering, metadata ribbon, toolbar, viewport, and fetch helpers.
-3. `page/src/sessions-view.js`:
-   - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-4. `page/src/console-router.js`:
-   - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-5. `page/src/07-console.js`:
-   - Shipped console shell controller consuming router and all view modules.
-6. `page/src/page.html`:
-   - Added `#view-ops-desk` card layout, queue styles, wait badges, and banner alerts.
-7. `page/build.js`:
-   - Bundles all modules before `07-console.js` into `web/index.html`.
-8. `web/index.html`:
-   - Generated client bundle containing 3D City, Console Shell, Sessions, Screen, and Ops Desk views.
-9. `page/README.md`:
-   - Documented `ops-desk-view.js`, `screen-view.js`, and `sessions-view.js` in modules list (CTX-10).
-10. `test/ops-desk-ui.test.js`:
-    - Unit tests for wait duration, card rendering, queue sorting, error cards, and contract fetcher.
-11. `test/screen-ui.test.js`:
-    - Unit tests for ribbon, toolbar, viewport, ANSI pass-through, error states, and contract fetcher.
-12. `test/sessions-ui.test.js`:
-    - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-13. `test/console-ui.test.js`:
-    - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-14. `CHANGELOG.md`:
-    - Added dated entry for U6 ops desk queue view implementation linking PR #16 (CHG-04).
-15. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U6 implementation.
+1. `.prettierignore`
+2. `CHANGELOG.md`
+3. `docs/agents/builder-gemini.md`
+4. `eslint.config.js`
+5. `page/README.md`
+6. `page/build.js`
+7. `page/src/07-console.js`
+8. `page/src/console-router.js`
+9. `page/src/ops-desk-view.js`
+10. `page/src/page.html`
+11. `page/src/screen-view.js`
+12. `page/src/sessions-view.js`
+13. `test/ops-desk-ui.test.js`
+14. `test/screen-ui.test.js`
+15. `test/sessions-ui.test.js`
+16. `web/index.html`
 
 ## Open questions
 
@@ -90,7 +76,7 @@ Decisions and standing approvals from Shaunak (2026-10-18):
 
 | ID | Item | Owner | Status |
 |---|---|---|---|
-| Q1 | District files: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q1 | Expected files: `CHANGELOG.md`, `briefs/`, escalations | Shaunak | Approved (as written) |
 | Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
 | Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
 | Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |
@@ -112,5 +98,5 @@ can veto, not asked as open questions.
    - Test shipped functions with minimal stubs rather than testing isolated mock copies.
    - Decouple view rendering into pure functions that can be tested in isolation with contract mocks.
 3. Stacked branches and workflow:
-   - When base PRs are pending review/merges, building features on stacked branches preserves momentum.
-   - Draft PRs clearly document dependencies (e.g. "stacked on #6, needs #8 for live data").
+   - Retargeting PRs to main after base PR merges allows clean integration of upstream tooling and tests.
+   - All endpoint text rendered must strictly pass through the shared `escapeHtml` filter (Leak rule).

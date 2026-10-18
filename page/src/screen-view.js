@@ -12,17 +12,11 @@ export function renderScreenRibbonHtml(data) {
   const districtId = data.session?.districtId
     ? `<small class="sub-id">${escapeHtml(data.session.districtId)}</small>`
     : '';
-  const cliBadge = data.session?.cli
-    ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>`
-    : '';
+  const cliBadge = data.session?.cli ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>` : '';
   const modelBadge = data.session?.model
     ? `<span class="badge badge-model">${escapeHtml(data.session.model)}</span>`
     : '';
-  const statusBadge = getStatusBadgeHtml(
-    data.session?.status,
-    data.session?.statusLabel,
-    data.session?.prompt,
-  );
+  const statusBadge = getStatusBadgeHtml(data.session?.status, data.session?.statusLabel, data.session?.prompt);
   const lineCount = Number.isFinite(data.lineCount) ? `${data.lineCount} lines` : '';
   const updated = data.updatedAt ? `Updated ${formatRelativeTime(data.updatedAt)}` : '';
 
@@ -81,10 +75,7 @@ export function renderScreenViewportHtml(text) {
 
 let lastRawText = null;
 
-export function renderScreenView(
-  container,
-  { data, error, loading, paneId, autoScroll = true } = {},
-) {
+export function renderScreenView(container, { data, error, loading, paneId, autoScroll = true } = {}) {
   if (!container) return;
   if (!paneId) {
     lastRawText = null;
@@ -103,8 +94,7 @@ export function renderScreenView(
       if (container.dataset) delete container.dataset.currentPaneId;
       if (container._lastRawText !== undefined) delete container._lastRawText;
       container.innerHTML =
-        `<div class="screen-loading" id="screenLoading">` +
-        `Reading pane output for ${escapeHtml(paneId)}…</div>`;
+        `<div class="screen-loading" id="screenLoading">` + `Reading pane output for ${escapeHtml(paneId)}…</div>`;
     }
     return;
   }
@@ -124,8 +114,7 @@ export function renderScreenView(
     lastRawText = null;
     if (container.dataset) delete container.dataset.currentPaneId;
     if (container._lastRawText !== undefined) delete container._lastRawText;
-    container.innerHTML =
-      `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
+    container.innerHTML = `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
     return;
   }
 
@@ -201,10 +190,7 @@ export function renderScreenView(
   }
 }
 
-export async function fetchScreen(
-  fetchFn = (typeof window !== 'undefined' ? window.fetch : null),
-  paneId,
-) {
+export async function fetchScreen(fetchFn = typeof window !== 'undefined' ? window.fetch : null, paneId) {
   if (!paneId) {
     return { ok: false, error: 'paneId is required', data: null };
   }
