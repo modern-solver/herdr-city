@@ -149,6 +149,7 @@ export function renderSessionsView(container, { sessions, error, adapterError, l
   if (loading) {
     container.innerHTML =
       '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
+    container._lastSessionsJson = null;
     return;
   }
 
@@ -160,8 +161,15 @@ export function renderSessionsView(container, { sessions, error, adapterError, l
     container.innerHTML =
       `<div class="sessions-error" id="sessionsError" role="alert">` +
       `Failed to load sessions from server: ${escapeHtml(error)}</div>`;
+    container._lastSessionsJson = null;
     return;
   }
+
+  const rawJson = JSON.stringify({ sessions, adapterError: effectiveAdapterError });
+  if (container._lastSessionsJson === rawJson) {
+    return;
+  }
+  container._lastSessionsJson = rawJson;
 
   const noticeHtml = effectiveAdapterError
     ? `<div class="sessions-adapter-notice" id="sessionsAdapterNotice" role="status">` +

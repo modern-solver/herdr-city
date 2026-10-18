@@ -315,10 +315,13 @@ export function bindFilterEvents(
   };
 }
 
-export function updateFilterChips(container, filters = {}, onDismissChip) {
+export function updateFilterChips(container, filters = {}) {
   if (!container) return;
   const chipsBar = container.querySelector('#filterChipsBar');
   if (!chipsBar) return;
+  const rawJson = JSON.stringify(parseFilterParams(filters));
+  if (chipsBar._lastChipsJson === rawJson) return;
+  chipsBar._lastChipsJson = rawJson;
   chipsBar.innerHTML = renderFilterChipsHtml(filters);
 }
 
@@ -336,7 +339,15 @@ export function renderFiltersView(
       onDismissChip,
       debounceMs,
     });
-  } else {
+    container._lastAppliedFilters = JSON.stringify(parseFilterParams(activeFilters));
+    return;
+  }
+
+  // Render controls once: on subsequent poll ticks, never overwrite user's input/focus
+  // Only sync inputs when external activeFilters actually changed (e.g. hash/navigation)
+  const filtersJson = JSON.stringify(parseFilterParams(activeFilters));
+  if (container._lastAppliedFilters !== filtersJson) {
+    container._lastAppliedFilters = filtersJson;
     syncFilterInputs(container, activeFilters);
   }
 }

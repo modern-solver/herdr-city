@@ -6494,6 +6494,7 @@ function renderSessionsView(container, { sessions, error, adapterError, loading 
   if (loading) {
     container.innerHTML =
       '<div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>';
+    container._lastSessionsJson = null;
     return;
   }
 
@@ -6505,8 +6506,15 @@ function renderSessionsView(container, { sessions, error, adapterError, loading 
     container.innerHTML =
       `<div class="sessions-error" id="sessionsError" role="alert">` +
       `Failed to load sessions from server: ${escapeHtml(error)}</div>`;
+    container._lastSessionsJson = null;
     return;
   }
+
+  const rawJson = JSON.stringify({ sessions, adapterError: effectiveAdapterError });
+  if (container._lastSessionsJson === rawJson) {
+    return;
+  }
+  container._lastSessionsJson = rawJson;
 
   const noticeHtml = effectiveAdapterError
     ? `<div class="sessions-adapter-notice" id="sessionsAdapterNotice" role="status">` +
@@ -6873,10 +6881,13 @@ function bindFilterEvents(
   };
 }
 
-function updateFilterChips(container, filters = {}, onDismissChip) {
+function updateFilterChips(container, filters = {}) {
   if (!container) return;
   const chipsBar = container.querySelector('#filterChipsBar');
   if (!chipsBar) return;
+  const rawJson = JSON.stringify(parseFilterParams(filters));
+  if (chipsBar._lastChipsJson === rawJson) return;
+  chipsBar._lastChipsJson = rawJson;
   chipsBar.innerHTML = renderFilterChipsHtml(filters);
 }
 
@@ -6894,7 +6905,15 @@ function renderFiltersView(
       onDismissChip,
       debounceMs,
     });
-  } else {
+    container._lastAppliedFilters = JSON.stringify(parseFilterParams(activeFilters));
+    return;
+  }
+
+  // Render controls once: on subsequent poll ticks, never overwrite user's input/focus
+  // Only sync inputs when external activeFilters actually changed (e.g. hash/navigation)
+  const filtersJson = JSON.stringify(parseFilterParams(activeFilters));
+  if (container._lastAppliedFilters !== filtersJson) {
+    container._lastAppliedFilters = filtersJson;
     syncFilterInputs(container, activeFilters);
   }
 }

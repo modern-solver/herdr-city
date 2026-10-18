@@ -353,3 +353,55 @@ test('fetchSessions passes query filter parameters and extracts filters response
     q: null,
   });
 });
+
+test('filter values and focus survive poll ticks without re-rendering controls', () => {
+  const searchEl = { value: '', addEventListener: () => {} };
+  const districtEl = { value: '', addEventListener: () => {} };
+  const cliEl = { value: '', addEventListener: () => {} };
+  const modelEl = { value: '', addEventListener: () => {} };
+  const chipsBar = { innerHTML: '', _lastChipsJson: null };
+  const statusGroup = {
+    addEventListener: () => {},
+    querySelectorAll: () => [],
+  };
+  const resetBtn = { addEventListener: () => {} };
+
+  const elements = {
+    '#filterSearch': searchEl,
+    '#filterDistrict': districtEl,
+    '#filterCli': cliEl,
+    '#filterModel': modelEl,
+    '#filterChipsBar': chipsBar,
+    '#filterStatusGroup': statusGroup,
+    '#btnFilterReset': resetBtn,
+  };
+
+  const mockContainer = {
+    innerHTML: '',
+    querySelector: (sel) => {
+      if (sel === '#sessionsFilterBar') {
+        return mockContainer.innerHTML.includes('id="sessionsFilterBar"') ? {} : null;
+      }
+      return elements[sel] || null;
+    },
+    querySelectorAll: () => [],
+  };
+
+  // 1. Initial mount on tab entry
+  renderFiltersView(mockContainer, { activeFilters: {} });
+  assert.match(mockContainer.innerHTML, /id="sessionsFilterBar"/);
+
+  // 2. User types into filter inputs
+  searchEl.value = 'mastopia';
+  districtEl.value = 'atlas';
+  cliEl.value = 'grok';
+
+  // 3. 2000 ms poll tick occurs with same activeFilters
+  renderFiltersView(mockContainer, { activeFilters: {} });
+
+  // 4. Filter inputs must survive poll tick
+  assert.equal(searchEl.value, 'mastopia', 'search filter preserved after poll');
+  assert.equal(districtEl.value, 'atlas', 'district filter preserved after poll');
+  assert.equal(cliEl.value, 'grok', 'cli filter preserved after poll');
+});
+
