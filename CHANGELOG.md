@@ -5,6 +5,9 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: `GET /api/sessions` console session list with district, cli, model,
+  status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
+  Session `activity` is masked (SEC-03). PR: https://github.com/modern-solver/herdr-city/pull/8
 - Docs: Context-layer CODEMAP (`docs/CODEMAP.md`), regen script
   (`scripts/codemap.js`, `npm run codemap`), staleness test
   (`test/codemap.test.js`), and module READMEs under `src/`, `test/`, `page/`,
@@ -30,6 +33,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
   recording CLEAN verdict on commit `89a2ff2` and merge by Shaunak as `538ba9d`.
   File: `docs/agents/reviewer-claude.md`.
   PR: https://github.com/modern-solver/herdr-city/pull/3
+
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.

@@ -12,7 +12,7 @@ Uses `git ls-files`. Untracked paths are omitted. Vendor binaries are omitted.
 | `page/` | source for the P0 3D city page, built into `web/`. |
 | `scripts/` | repository maintenance scripts that use Node built-ins only. |
 | `src/` | read-only herdr adapter, city mapping, HTTP server and CLI. |
-| `test/` | Node built-in tests for the adapter, server, map, mask and parsers. |
+| `test/` | Node built-in tests for the adapter, server, map, mask, parsers and console sessions. |
 | `web/` | built static city GUI served by `src/server.js`. |
 
 ## src and scripts
@@ -20,12 +20,13 @@ Uses `git ls-files`. Untracked paths are omitted. Vendor binaries are omitted.
 | Path | Exports | Imports | Dependents |
 |---|---|---|---|
 | `scripts/codemap.js` | `CODEMAP_REL`, `entriesFromGit`, `generateCodemapText`, `listGitFiles`, `localImportsFromText`, `normalizeEol`, `parseExports`, `renderJsModules`, `renderModules`, `resolveImport`, `ROOT`, `shouldSkip`, `toPosix`, `walk`, `writeCodemap` | (none) | `test/codemap.test.js` |
-| `src/adapter.js` | `createAdapter` | `src/map.js`, `src/paths.js`, `src/prompt-detect.js` | `src/cli.js`, `test/adapter.test.js`, `test/server.test.js` |
+| `src/adapter.js` | `createAdapter` | `src/map.js`, `src/paths.js`, `src/prompt-detect.js`, `src/sessions.js` | `src/cli.js`, `test/adapter.test.js`, `test/server.test.js`, `test/sessions.test.js` |
 | `src/cli.js` | (none) | `src/adapter.js`, `src/fixtures.js`, `src/herdr-cli.js`, `src/server.js` | (none) |
-| `src/fixtures.js` | `createFixtureClient`, `loadFixtureBundle` | `src/herdr-cli.js`, `src/paths.js` | `src/cli.js`, `test/adapter.test.js`, `test/server.test.js` |
+| `src/fixtures.js` | `createFixtureClient`, `loadFixtureBundle` | `src/herdr-cli.js`, `src/paths.js` | `src/cli.js`, `test/adapter.test.js`, `test/server.test.js`, `test/sessions.test.js` |
 | `src/herdr-cli.js` | `assertReadOnly`, `createLiveClient`, `extractAgents`, `extractJson`, `extractPaneText`, `extractWorkspaces` | (none) | `src/cli.js`, `src/fixtures.js`, `test/adapter.test.js`, `test/parse.test.js` |
-| `src/map.js` | `districtTitle`, `fingerprint`, `IDLE_ASLEEP_MS`, `mapCity`, `setMapPatterns`, `snapshotPayload` | `src/mask.js`, `src/prompt-detect.js` | `src/adapter.js`, `test/adapter.test.js`, `test/map.test.js` |
-| `src/mask.js` | `MASK`, `maskSecrets` | (none) | `src/map.js`, `test/mask.test.js` |
+| `src/map.js` | `agentDisplayName`, `districtTitle`, `fingerprint`, `IDLE_ASLEEP_MS`, `inspectPane`, `mapCity`, `maskedClip`, `modelBadge`, `setMapPatterns`, `snapshotPayload` | `src/mask.js`, `src/prompt-detect.js` | `src/adapter.js`, `src/sessions.js`, `test/adapter.test.js`, `test/map.test.js` |
+| `src/mask.js` | `MASK`, `maskSecrets` | (none) | `src/map.js`, `test/mask.test.js`, `test/sessions.test.js` |
 | `src/paths.js` | `CONFIG_DIR`, `DEFAULT_PATTERNS_PATH`, `FIXTURES_DIR`, `ROOT`, `WEB_DIR` | (none) | `src/adapter.js`, `src/fixtures.js`, `src/prompt-detect.js`, `src/server.js` |
-| `src/prompt-detect.js` | `detectError`, `detectPrompt`, `inferCliKind`, `loadPromptPatterns` | `src/paths.js` | `src/adapter.js`, `src/map.js`, `test/map.test.js`, `test/prompt-detect.test.js` |
-| `src/server.js` | `createServer` | `src/paths.js` | `src/cli.js`, `test/server.test.js` |
+| `src/prompt-detect.js` | `detectError`, `detectPrompt`, `inferCliKind`, `loadPromptPatterns` | `src/paths.js` | `src/adapter.js`, `src/map.js`, `src/sessions.js`, `test/map.test.js`, `test/prompt-detect.test.js` |
+| `src/server.js` | `createServer` | `src/paths.js`, `src/sessions.js` | `src/cli.js`, `test/server.test.js`, `test/sessions.test.js` |
+| `src/sessions.js` | `consoleStatus`, `filterSessions`, `mapSession`, `mapSessions`, `parseSessionFilters`, `statusLabel` | `src/map.js`, `src/prompt-detect.js` | `src/adapter.js`, `src/server.js`, `test/sessions.test.js` |

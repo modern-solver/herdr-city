@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { WEB_DIR } from './paths.js';
+import { parseSessionFilters, filterSessions } from './sessions.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -77,6 +78,23 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     }
     if (req.method === 'GET' && url.pathname === '/api/agents') {
       json(res, 200, { robots: adapter.getSnapshot().robots || [] });
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/sessions') {
+      const parsed = parseSessionFilters(url.searchParams);
+      if (!parsed.ok) {
+        json(res, 400, { ok: false, error: 'bad_request', message: parsed.message });
+        return;
+      }
+      const payload = adapter.getSessions();
+      json(res, 200, {
+        v: 1,
+        generatedAt: payload.generatedAt,
+        mode: payload.mode,
+        error: payload.error,
+        filters: parsed.filters,
+        sessions: filterSessions(payload.sessions, parsed.filters),
+      });
       return;
     }
     if (req.method === 'GET' && url.pathname === '/events') {
