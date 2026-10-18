@@ -42,11 +42,12 @@
 - Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
   (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
 - Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
-- Status: Opened PR #6 (replacing PR #4 for SDLC-12) with round 1 fixes:
+- Status: Opened PR #6 (replacing PR #4 for SDLC-12); updated CHANGELOG.md U1 links to PR #6 (`5fb33d6`):
   1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
   2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
   3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
   4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
+  5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04 (`5fb33d6`).
 
 ## Files touched
 
@@ -70,7 +71,7 @@ The builder-gemini agent touched and maintains the following files on `feat/gemi
 8. `page/README.md` and `web/README.md`:
    - Module documentation satisfying CTX-10.
 9. `CHANGELOG.md`:
-   - Added dated entry for U1 console shell, navigation, tab router, and round-1 fixes.
+   - Added dated entry for U1 console shell, navigation, tab router, round-1 fixes, and PR #6 links (`5fb33d6`).
 10. `docs/agents/builder-gemini.md`:
     - Updated agent memory tracking current task, touched files, and learnings.
 
