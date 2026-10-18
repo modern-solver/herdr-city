@@ -43,36 +43,26 @@
 - Milestone: U2 (User Interface Milestone 2) — Sessions list view (`#sessions`), table rendering
   from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
   empty/error/loading states, and responsive styling.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (stacked on `feat/gemini-u1-shell`).
-- Status: Fixed reviewer findings on PR #10 (adapter error resilience, CHANGELOG link, README).
-  48 passing tests. Preparing U4 stacked branch.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (PR #10 retargeted to `main`).
+- Status: Merged `origin/main` (including PR #6, #7, #8, #9); regenerated CODEMAP.md;
+  verified leak rule (all endpoint text sanitized via shared `escapeHtml`); green on lint, format, test.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `feat/gemini-u2-sessions`:
+Net diff vs `main` on `feat/gemini-u2-sessions`:
 
-1. `page/src/sessions-view.js`:
-   - Standalone sessions list table rendering, relative time, badges, error resilience, and fetch helpers.
-2. `page/src/console-router.js`:
-   - Single source for routing, tab switching, panel visibility, polling helpers, and `VALID_MODES`.
-3. `page/src/07-console.js`:
-   - Shipped console shell controller consuming `console-router.js` and `sessions-view.js`.
-4. `page/src/page.html`:
-   - Added `#view-sessions` table card, table styles, status badges, and empty/error/notice states.
-5. `page/build.js`:
-   - Bundles `console-router.js` and `sessions-view.js` before `07-console.js` into `web/index.html`.
-6. `web/index.html`:
-   - Generated client bundle containing 3D City, Console Shell, and Sessions list view.
-7. `page/README.md`:
-   - Documented `sessions-view.js` in the frontend modules list (CTX-10).
-8. `test/sessions-ui.test.js`:
-   - Unit tests for relative time, badges, rows, table, container states, contract fetcher, and error notices.
-9. `test/console-ui.test.js`:
-   - Unit and integration tests covering router, tabs, visibility, polling manager, and reduced-motion.
-10. `CHANGELOG.md`:
-    - Added dated entry for U2 sessions list view implementation linking PR #10 (CHG-04).
-11. `docs/agents/builder-gemini.md`:
-    - Updated agent memory tracking U2 implementation and review fixes.
+1. `.prettierignore`
+2. `CHANGELOG.md`
+3. `docs/agents/builder-gemini.md`
+4. `eslint.config.js`
+5. `page/README.md`
+6. `page/build.js`
+7. `page/src/07-console.js`
+8. `page/src/console-router.js`
+9. `page/src/page.html`
+10. `page/src/sessions-view.js`
+11. `test/sessions-ui.test.js`
+12. `web/index.html`
 
 ## Open questions
 
@@ -80,7 +70,7 @@ Decisions and standing approvals from Shaunak (2026-10-18):
 
 | ID | Item | Owner | Status |
 |---|---|---|---|
-| Q1 | District files: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q1 | Expected files: `CHANGELOG.md`, `briefs/`, escalations | Shaunak | Approved (as written) |
 | Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
 | Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
 | Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |
@@ -102,5 +92,5 @@ can veto, not asked as open questions.
    - Test shipped functions with minimal stubs rather than testing isolated mock copies.
    - Decouple view rendering into pure functions that can be tested in isolation with contract mocks.
 3. Stacked branches and workflow:
-   - When base PRs are pending review/merges, building features on stacked branches preserves momentum.
-   - Draft PRs clearly document dependencies (e.g. "stacked on #6, needs #8 for live data").
+   - Retargeting PRs to main after base PR merges allows clean integration of upstream tooling and tests.
+   - All endpoint text rendered must strictly pass through the shared `escapeHtml` filter (Leak rule).

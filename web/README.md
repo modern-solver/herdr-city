@@ -1,9 +1,18 @@
 # web
 
-Compiled static assets and bundles served by the mastopia HTTP server.
+Purpose: built static city GUI and P1 console shell served by `src/server.js`.
 
-- Purpose: Holds static web assets, vendor dependencies, and `index.html`.
-- Interface: Built from `page/` via `npm run build:page`; served by `src/server.js`.
-- Assets: `assets/` contains vendored three.js and font files (`inter`, `unbounded`, `jetbrains-mono`, `martian-mono`).
-- Gotchas: `index.html` is generated from `page/src/page.html` and `page/src/*.js`.
-  Do not commit local build artifacts that diverge from `page/build.js`.
+Interface:
+- `GET /` and `GET /console` serve `web/index.html`.
+- Other routes under `/` serve static files from this folder.
+- `npm run build:page` regenerates `web/index.html` from `page/`.
+
+Assets:
+- `web/assets/` holds vendor fonts (`inter`, `unbounded`, `jetbrains-mono`, `martian-mono`), Three.js, and licenses.
+
+Gotchas:
+- Do not hand-edit `index.html`; edits are overwritten by `page/build.js`.
+- The server refuses Host names other than loopback in P0. Demo Host/Origin policy is specified for P1 and is not in
+  this tree yet.
+
+Owner: builder-gemini for the page; builder-grok owns how it is served.
