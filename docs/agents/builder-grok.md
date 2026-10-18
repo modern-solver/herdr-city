@@ -17,10 +17,9 @@
 
 ## Current task
 
-B7 demo mode on PR #11 (`feat/grok-b7-demo`): `--demo` / `MASTOPIA_DEMO=1` uses
-fixture data, binds `0.0.0.0`, and reads `PORT` then `MASTOPIA_PORT` then 7740.
-Without demo the process binds `127.0.0.1` and does not read `PORT`. Host and
-Origin loopback checks are skipped in demo only.
+B7 PR #11 r2: README documents `--demo`, `MASTOPIA_DEMO=1`, `PORT` (demo only),
+and the `127.0.0.1` default. Demo still binds `0.0.0.0` and skips Host/Origin
+loopback checks.
 
 ## Files touched
 
@@ -28,6 +27,7 @@ Origin loopback checks are skipped in demo only.
 - `src/server.js`
 - `test/demo.test.js`
 - `CHANGELOG.md`
+- `README.md`
 - `docs/agents/builder-grok.md`
 
 ## Open questions

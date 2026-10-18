@@ -4,7 +4,7 @@ Local web GUI that shows every [herdr](https://herdr.dev) agent as a live 3D sky
 
 The city and console frontend are derived from [Skyborne](https://github.com/ishraq21/skyborne) (Apache-2.0). Skyborne ingests Claude Code hooks; mastopia replaces that with a **read-only herdr adapter**. New name and logo (Skyborne's TRADEMARK.md forbids reusing its marks). See `NOTICE` and `LICENSE`.
 
-**P0 is read-only.** The process never runs `herdr pane send-keys`, never `herdr server stop`, and never writes to herdr. No telemetry, no cloud calls. The HTTP server binds **127.0.0.1 only**.
+**P0 is read-only.** The process never runs `herdr pane send-keys`, never `herdr server stop`, and never writes to herdr. No telemetry, no cloud calls. The HTTP server binds **127.0.0.1** by default. `--demo` / `MASTOPIA_DEMO=1` binds `0.0.0.0` (see Hosted demo below).
 
 <p align="center"><img src="docs/images/fixture-city.png" alt="Fixture mode: four districts around City Hall, a Needs you card for grok-api on atlas-api" width="900"></p>
 
@@ -44,6 +44,21 @@ Unix:
 ```bash
 npm run fixture
 ```
+
+## Hosted demo (`--demo`)
+
+Default bind is `127.0.0.1`. Default port is `MASTOPIA_PORT` if set, else 7740. Without `--demo` / `MASTOPIA_DEMO=1` the process does not read `PORT` and does not bind `0.0.0.0`.
+
+`--demo` or `MASTOPIA_DEMO=1` uses the same checked-in fixtures, binds `0.0.0.0`, and reads `PORT` then `MASTOPIA_PORT` then 7740.
+
+```powershell
+node .\src\cli.js --demo
+$env:MASTOPIA_DEMO = '1'
+$env:PORT = '8080'
+node .\src\cli.js
+```
+
+`GET /health` in demo reports `"mode": "demo"` and `"host": "0.0.0.0"`.
 
 ## Live herdr on Windows (PowerShell)
 
