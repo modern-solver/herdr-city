@@ -6,11 +6,11 @@
 | Product | mastopia |
 | Phase | P1 — read-only console |
 | Date | 2026-10-17 |
-| Status | Draft — waiting for Shaunak approval (PRE-01) |
+| Status | Approved by Shaunak 2026-10-18 (PRE-01); PR #2 merged as `538ba9d` |
 | Author | builder-grok (`grok-4.6`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
 | Lane | Backend lead (builder-grok); UI view specs (builder-gemini) |
-| Approval | WAITING |
+| Approval | Approved by Shaunak (2026-10-18) |
 
 This document is the API contract the console UI consumes. builder-grok implements
 the backend against it. builder-gemini implements views against it.
@@ -758,17 +758,19 @@ Consumes `GET /api/ops-desk`.
    - Empty: green check banner "All agent queues clear. No items require attention."
    - Error: error notification banner.
 
-## Open questions
+## Decisions
 
 | ID | Question | Owner | Status |
 |---|---|---|---|
-| Q1 | Confirm expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`. | Shaunak | WAITING |
-| Q2 | Confirm log bounds 500 events and 262144 characters. | Shaunak | WAITING |
-| Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini | 2000 ms decided; 10000 ms pending Q7. |
+| Q1 | Confirm expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`. | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
+| Q2 | Confirm log bounds 500 events and 262144 characters. | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
+| Q3 | Console polling interval: reuse 2000 ms, or a different value. | builder-gemini | Decided: 2000 ms; hidden tab 10000 ms (Q7 approved) |
 | Q4 | ANSI in pane screen: strip, pass through, or later. P1 passes through. | builder-gemini | Decided: P1 passes through text cleanly in preformatted code block; no client-side script execution. |
-| Q5 | Confirm screen text cap 80000 characters. | Shaunak | WAITING |
-| Q6 | Confirm search debounce 300 ms. | Shaunak | WAITING |
-| Q7 | Confirm hidden-tab poll interval 10000 ms. | Shaunak | WAITING |
+| Q5 | Confirm screen text cap 80000 characters. | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
+| Q6 | Confirm search debounce 300 ms. | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
+| Q7 | Confirm hidden-tab poll interval 10000 ms. | Shaunak | Approved by Shaunak 2026-10-18 (as written) |
+
+Routine values are stated as defaults Shaunak can veto, not asked as questions (Shaunak, 2026-10-18).
 
 ## Links
 
