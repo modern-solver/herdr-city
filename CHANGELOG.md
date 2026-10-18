@@ -5,6 +5,10 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Fix: `GET /api/screen` runs `maskSecrets` on the full pane, then keeps the
+  newest 80000 characters (SEC-03). A token that straddled the old head cut
+  no longer leaks a `ghp_` prefix.
+  PR: https://github.com/modern-solver/herdr-city/pull/15
 - Feature: `GET /api/screen` returns the last pane read after `maskSecrets`,
   with `lineCount`, 80000-character `truncated` cap, and the session object.
   Missing `paneId` is 400; unknown pane is 404.

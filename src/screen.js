@@ -7,9 +7,9 @@ import { maskSecrets } from './mask.js';
 export const SCREEN_CAP = 80000;
 
 export function capPaneText(text) {
-  const raw = String(text ?? '');
-  if (raw.length <= SCREEN_CAP) return { text: raw, truncated: false };
-  return { text: raw.slice(0, SCREEN_CAP), truncated: true };
+  const masked = maskSecrets(String(text ?? ''));
+  if (masked.length <= SCREEN_CAP) return { text: masked, truncated: false };
+  return { text: masked.slice(-SCREEN_CAP), truncated: true };
 }
 
 export function lineCount(text) {
@@ -19,14 +19,14 @@ export function lineCount(text) {
 }
 
 export function buildScreen({ paneId, rawText, truncated, updatedAt, session }) {
-  const text = maskSecrets(rawText || '');
+  const capped = capPaneText(rawText);
   return {
     v: 1,
     paneId,
     updatedAt,
-    lineCount: lineCount(text),
-    truncated: Boolean(truncated),
-    text,
+    lineCount: lineCount(capped.text),
+    truncated: Boolean(truncated) || capped.truncated,
+    text: capped.text,
     session,
   };
 }

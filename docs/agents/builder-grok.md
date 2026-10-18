@@ -17,9 +17,8 @@
 
 ## Current task
 
-B2 stacked draft PR #15 on PR #8: `GET /api/screen` with `maskSecrets` on
-full pane text, 80000-character cap, session object. Then B6 ops desk. Drop
-for #8 main merge when #9 merges.
+B2 PR #15 SEC-03: mask full pane, then keep the newest 80000 characters.
+B6 (#17) has no cap path. Drop for #8 main merge when #9 merges.
 
 ## Files touched
 

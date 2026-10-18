@@ -54,20 +54,27 @@ test('GET /api/screen missing paneId is 400; unknown pane is 404', async () => {
   await server.close();
 });
 
-test('capPaneText cuts at 80000 and buildScreen masks the cap', () => {
-  const secret = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  const raw = `${secret}\n${'x'.repeat(SCREEN_CAP)}`;
+test('tokens straddling the old head cut are masked; output keeps the tail', () => {
+  const ghp = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  const jwt =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.signaturepartshere';
+  const raw = `${'x'.repeat(SCREEN_CAP - 5)} ${ghp} ${jwt}`;
+  const headCut = raw.slice(0, SCREEN_CAP);
+  assert.equal(headCut.includes('ghp_'), true);
   const capped = capPaneText(raw);
   assert.equal(capped.truncated, true);
   assert.equal(capped.text.length, SCREEN_CAP);
+  assert.equal(capped.text.includes('ghp_'), false);
+  assert.equal(capped.text.includes('eyJ'), false);
+  assert.equal(capped.text.includes(MASK), true);
   const screen = buildScreen({
     paneId: 'w9:p1',
-    rawText: capped.text,
-    truncated: capped.truncated,
+    rawText: raw,
     updatedAt: 1,
     session: { paneId: 'w9:p1' },
   });
   assert.equal(screen.truncated, true);
   assert.equal(screen.text.includes('ghp_'), false);
+  assert.equal(screen.text.includes('eyJ'), false);
   assert.equal(screen.text.includes(MASK), true);
 });
