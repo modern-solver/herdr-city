@@ -96,6 +96,7 @@ Same origin, 127.0.0.1:
 | --- | --- |
 | `GET /api/city` | districts, robots, asks (Needs you) |
 | `GET /api/agents` | flat robot list |
+| `GET /api/sessions` | console session list (district, cli, model, status, `q` filters) |
 | `GET /events` | Skyborne-compatible SSE for the city page |
 | `GET /health` | liveness |
 | `POST /api/answer` | always `409` in P0 (read-only) |
@@ -107,10 +108,14 @@ Per-CLI patterns live in `config/prompt-patterns.json` (Claude, Grok, Gemini, pl
 ## Tests
 
 ```powershell
+npm ci
 npm test
+npm run lint
+npm run format:check
 ```
 
-GitHub Actions (ubuntu) runs the same tests; herdr is **not** installed in CI.
+`npm ci` installs locked devDependencies. `npm run lint` runs ESLint. `npm run format:check` runs Prettier check. GitHub Actions (ubuntu) runs the same four commands. herdr is not installed in CI.
+`npm run codemap` regenerates `docs/CODEMAP.md`; run it after adding or removing files or exports; `npm test` fails when the map is stale.
 
 ## herdr JSON fields (verified)
 

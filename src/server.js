@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { WEB_DIR } from './paths.js';
+import { parseSessionFilters, filterSessions } from './sessions.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -15,7 +16,7 @@ const MIME = {
   '.txt': 'text/plain; charset=utf-8',
 };
 
-function originOk(req, hostHeader) {
+function originOk(req) {
   const origin = req.headers.origin;
   if (!origin) return true;
   try {
@@ -83,6 +84,23 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       json(res, 200, { robots: adapter.getSnapshot().robots || [] });
       return;
     }
+    if (req.method === 'GET' && url.pathname === '/api/sessions') {
+      const parsed = parseSessionFilters(url.searchParams);
+      if (!parsed.ok) {
+        json(res, 400, { ok: false, error: 'bad_request', message: parsed.message });
+        return;
+      }
+      const payload = adapter.getSessions();
+      json(res, 200, {
+        v: 1,
+        generatedAt: payload.generatedAt,
+        mode: payload.mode,
+        error: payload.error,
+        filters: parsed.filters,
+        sessions: filterSessions(payload.sessions, parsed.filters),
+      });
+      return;
+    }
     if (req.method === 'GET' && url.pathname === '/events') {
       res.writeHead(200, {
         'Content-Type': 'text/event-stream',
@@ -92,18 +110,35 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       sseClients.add(res);
       sendSnapshot(res);
       const beat = setInterval(() => res.write(': heartbeat\n\n'), 15000);
-      req.on('close', () => { clearInterval(beat); sseClients.delete(res); });
+      req.on('close', () => {
+        clearInterval(beat);
+        sseClients.delete(res);
+      });
       return;
     }
     if (req.method === 'GET' && url.pathname === '/api/session') {
-      if (!tokenOk(req, token) || (!demo && !originOk(req))) { json(res, 403, { ok: false }); return; }
+      if (!tokenOk(req, token) || (!demo && !originOk(req))) {
+        json(res, 403, { ok: false });
+        return;
+      }
       const id = url.searchParams.get('id');
       const doc = (adapter.getSnapshot().docs || []).find((d) => d.id === id);
-      if (!doc) { json(res, 404, { ok: false }); return; }
+      if (!doc) {
+        json(res, 404, { ok: false });
+        return;
+      }
       json(res, 200, {
         id: doc.id,
         updatedAt: doc.updatedAt,
-        agents: doc.agents.map((a) => ({ id: a.id, name: a.name, role: a.role, type: a.type, parent: a.parent, start: doc.startedAt, end: null })),
+        agents: doc.agents.map((a) => ({
+          id: a.id,
+          name: a.name,
+          role: a.role,
+          type: a.type,
+          parent: a.parent,
+          start: doc.startedAt,
+          end: null,
+        })),
         steps: [],
         conversation: [],
         files: [],
@@ -112,12 +147,18 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       return;
     }
     if (req.method === 'GET' && url.pathname === '/api/step') {
-      if (!tokenOk(req, token)) { json(res, 403, { ok: false }); return; }
+      if (!tokenOk(req, token)) {
+        json(res, 403, { ok: false });
+        return;
+      }
       json(res, 404, { ok: false });
       return;
     }
     if (req.method === 'POST' && url.pathname === '/api/names') {
-      if (!tokenOk(req, token) || (!demo && !originOk(req))) { json(res, 403, { ok: false }); return; }
+      if (!tokenOk(req, token) || (!demo && !originOk(req))) {
+        json(res, 403, { ok: false });
+        return;
+      }
       const body = await readJson(req);
       if (body?.id) {
         if (body.name) names[body.id] = String(body.name).slice(0, 40);
@@ -127,20 +168,35 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       return;
     }
     if (req.method === 'POST' && url.pathname === '/api/answer') {
-      json(res, 409, { ok: false, reason: 'readonly', message: 'P0 is read-only; answer the prompt in the herdr pane.' });
+      json(res, 409, {
+        ok: false,
+        reason: 'readonly',
+        message: 'P0 is read-only; answer the prompt in the herdr pane.',
+      });
       return;
     }
 
     let filePath = path.join(webDir, url.pathname === '/' ? 'index.html' : url.pathname);
-    if (!filePath.startsWith(webDir)) { res.writeHead(403); res.end(); return; }
+    if (!filePath.startsWith(webDir)) {
+      res.writeHead(403);
+      res.end();
+      return;
+    }
     if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-      res.writeHead(404); res.end('not found'); return;
+      res.writeHead(404);
+      res.end('not found');
+      return;
     }
     let buf = fs.readFileSync(filePath);
     if (filePath.endsWith('index.html')) {
-      buf = Buffer.from(buf.toString('utf8').replaceAll('__MASTOPIA_TOKEN__', token).replaceAll('__SKYBORNE_TOKEN__', token));
+      buf = Buffer.from(
+        buf.toString('utf8').replaceAll('__MASTOPIA_TOKEN__', token).replaceAll('__SKYBORNE_TOKEN__', token),
+      );
     }
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+    res.writeHead(200, {
+      'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream',
+      'Cache-Control': 'no-store',
+    });
     res.end(buf);
   });
 
@@ -166,7 +222,16 @@ function json(res, code, obj) {
 function readJson(req) {
   return new Promise((resolve) => {
     let d = '';
-    req.on('data', (c) => { d += c; if (d.length > 1e6) req.destroy(); });
-    req.on('end', () => { try { resolve(JSON.parse(d || '{}')); } catch { resolve({}); } });
+    req.on('data', (c) => {
+      d += c;
+      if (d.length > 1e6) req.destroy();
+    });
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(d || '{}'));
+      } catch {
+        resolve({});
+      }
+    });
   });
 }
