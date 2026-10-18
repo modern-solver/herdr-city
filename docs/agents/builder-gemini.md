@@ -23,44 +23,45 @@
 | IST | India Standard Time |
 | JSON | JavaScript Object Notation |
 | MAS | Modern Age Solutions |
+| P1 | Phase 1 |
+| P2 | Phase 2 |
+| P3 | Phase 3 |
 | PC | Personal Computer |
 | PR | Pull Request |
 | PRD | Product Requirements Document |
 | SSE | Server-Sent Events |
+| U1 | User Interface Milestone 1 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
-- Phase: PRE-01 documentation before implementation code.
-- Task: Complete and maintain User Interface (UI) sections and address review findings
-  for Pull Request (PR) #2 on branch `docs/p1-prebuild`.
-- Scope: UI view specifications, UI product requirements, UI milestones (P1 to P3),
-  acceptance criteria steps, agent memory file maintenance (CTX-12), and coordination.
-- Status: Resolving round 5 review findings (F and G) to unblock PR #2.
+- Phase: P1 implementation kickoff and documentation follow-up.
+- Task: Open documentation follow-up PR on `docs/p1-approvals` recording Shaunak's PRE-01 approval,
+  then implement UI milestone U1 on branch `p1/gemini-console-ui` in worktree
+  `C:\Users\shaun\mastopia-gemini`.
+- Scope: Approvals follow-up docs (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`, `CHANGELOG.md`,
+  `docs/agents/*`), then console shell, navigation header, route switcher, and tab router with tests for U1.
+- Status: Preparing `docs/p1-approvals` commit and PR #3.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `docs/p1-prebuild`:
+The builder-gemini agent touched and maintains the following files on `docs/p1-approvals`:
 
-1. `docs/prd.md`:
-   - Drafted UI requirements UR-01 through UR-08 (sessions list, pane screen, filters,
-     logs, rulebook, ops desk, route navigation, polling lifecycle).
-   - Added detailed operator steps and expected results for acceptance criteria 9 to 15.
-   - Clarified open questions Q3 (route `/` vs `/console`) and Q4 (polling vs SSE).
-2. `docs/roadmap.md`:
-   - Ordered UI view milestones U1 through U7 against backend sequence B1 through B6.
-   - Defined navigation integration between the 3D city canvas and console dashboard.
-   - Drafted P2 write path sequencing/acceptance and P3 fleet analytics narrative.
-3. `docs/spec-sheet.md` (UI view specs section only):
-   - Defined view specifications for shell, sessions list, pane screen, filters UI,
-     event logs, rulebook view, and ops-desk queue.
-   - Specified ANSI pass-through behavior for pane screen view.
-   - Added demo mode badge to the shell navigation header.
-   - Formatted empty, loading, and error states across all views.
+1. `docs/spec-sheet.md`:
+   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
+   - Renamed Open questions section to Decisions; set Q1, Q2, Q5, Q6, Q7 to approved as written.
+   - Updated Q3 status to decided: 2000 ms; hidden tab 10000 ms (Q7 approved).
+   - Added standing preference note: routine values are defaults Shaunak can veto.
+2. `docs/prd.md`:
+   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
+   - Aligned Decisions section with spec sheet decisions and added defaults preference note.
+3. `docs/roadmap.md`:
+   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
+   - Updated P1 section to note PRE-01 approved and P1 is open.
 4. `CHANGELOG.md`:
-   - Added dated entry `## 2026-10-18` documenting the addition of agent memory files and
-     the decision that DevOps permanently maintains `docs/agents/reviewer-claude.md`.
+   - Added entries under 2026-10-18 for Shaunak's PRE-01 approval, Q1/Q2/Q5-Q7 approval,
+     defaults-not-questions standing preference, and reviewer round-6 row.
 5. `docs/agents/reviewer-claude.md`:
    - Committed on behalf of DevOps (who maintains reviewer memory per Shaunak decision).
 6. `docs/agents/builder-gemini.md`:
@@ -68,18 +69,20 @@ The builder-gemini agent touched and maintains the following files on `docs/p1-p
 
 ## Open questions
 
-Tracking open questions recorded in `docs/spec-sheet.md` and `docs/prd.md`:
+Decisions and standing approvals from Shaunak (2026-10-18):
 
-| ID | Question | Owner | Status |
+| ID | Item | Owner | Status |
 |---|---|---|---|
-| Q1 | Confirm expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md`. | Shaunak | WAITING |
-| Q2 | Confirm log bounds 500 events and 262,144 characters. | Shaunak | WAITING |
-| Q5 | Confirm screen text cap 80,000 characters. | Shaunak | WAITING |
-| Q6 | Confirm search input debounce 300 ms. | Shaunak | WAITING |
-| Q7 | Confirm hidden-tab poll interval 10,000 ms. | Shaunak | WAITING |
+| Q1 | Expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
+| Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
+| Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |
+| Q5 | Screen text cap: 80,000 characters | Shaunak | Approved (as written) |
+| Q6 | Search input debounce: 300 ms | Shaunak | Approved (as written) |
+| Q7 | Hidden-tab poll interval: 10,000 ms | Shaunak | Approved (as written) |
 
-Note: Q3 (route `/` for 3D City and `/console` for Console) and Q4 (2,000 ms polling
-during active use) were resolved by builder-gemini in the PRE-01 drafts.
+Standing preference (Shaunak, 2026-10-18): routine values are stated as defaults Shaunak
+can veto, not asked as open questions.
 
 ## Last-session learnings
 
@@ -87,7 +90,7 @@ during active use) were resolved by builder-gemini in the PRE-01 drafts.
    - Acronyms MUST be defined in an Acronyms table or expanded on first use per document.
    - All lines outside tables and URLs MUST remain under 120 characters (DOC-07).
    - Use active voice and name specific actors (e.g., "The builder-gemini agent implements...").
-   - Avoid vague dual-state descriptions; specify concrete technical behaviors (e.g., ANSI pass-through).
+   - Routine values are defaults Shaunak can veto, not open questions.
 2. Coordination in shared checkouts:
    - Always log coordination lines in `briefs/lead-escalations.md` before starting edits.
    - Edit only files assigned to the agent's lane; never touch files owned by other builders.
@@ -95,5 +98,5 @@ during active use) were resolved by builder-gemini in the PRE-01 drafts.
    - Run `git pull --rebase` before committing and pushing to prevent merge commits.
    - Record pushed commit hashes under `## Coordination` upon completing a task.
 3. Worktree separation:
-   - PR #2 pre-build documentation edits remain on `docs/p1-prebuild` in `C:\Users\shaun\mastopia`.
-   - Post-PR #2 implementation work moves to `C:\Users\shaun\mastopia-gemini` on `p1/gemini-console-ui`.
+   - Docs follow-up PR is completed on `docs/p1-approvals` in `C:\Users\shaun\mastopia`.
+   - All P1 UI implementation code happens in `C:\Users\shaun\mastopia-gemini` on `p1/gemini-console-ui`.
