@@ -5,7 +5,12 @@ import { createAdapter } from './adapter.js';
 import { createServer } from './server.js';
 
 function parseArgs(argv) {
-  const out = { fixture: false, port: Number(process.env.MASTOPIA_PORT || 7740), host: '127.0.0.1', herdr: process.env.HERDR_BIN || 'herdr' };
+  const out = {
+    fixture: false,
+    port: Number(process.env.MASTOPIA_PORT || 7740),
+    host: '127.0.0.1',
+    herdr: process.env.HERDR_BIN || 'herdr',
+  };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--fixture' || a === '--fake') out.fixture = true;

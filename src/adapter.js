@@ -19,8 +19,8 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   let started = false;
 
   async function tick() {
-    let agents = [];
-    let workspaces = [];
+    let agents;
+    let workspaces;
     let error = null;
     try {
       agents = await client.agentList();
@@ -90,7 +90,9 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   }
 
   return {
-    getSnapshot() { return lastSnapshot; },
+    getSnapshot() {
+      return lastSnapshot;
+    },
     getSessions() {
       return {
         generatedAt: lastSnapshot.generatedAt,
@@ -111,12 +113,17 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
         session,
       });
     },
-    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+    onChange(fn) {
+      listeners.add(fn);
+      return () => listeners.delete(fn);
+    },
     async start() {
       if (started) return;
       started = true;
       await tick();
-      timer = setInterval(() => { tick().catch(() => {}); }, POLL_MS);
+      timer = setInterval(() => {
+        tick().catch(() => {});
+      }, POLL_MS);
       if (typeof timer.unref === 'function') timer.unref();
     },
     async stop() {

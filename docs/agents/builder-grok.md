@@ -6,7 +6,7 @@
 | Model | grok-4.6 |
 | Date | 2026-10-18 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b2-screen` (from `feat/grok-b1-sessions`) |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b2-screen` |
 
 ## Acronyms
 
@@ -14,20 +14,26 @@
 |---|---|
 | JSON | JavaScript Object Notation |
 | API | Application Programming Interface |
+| CI | Continuous Integration |
 
 ## Current task
 
-B2 PR #15 SEC-03: mask full pane, then keep the newest 80000 characters.
-B6 (#17) has no cap path. Drop for #8 main merge when #9 merges.
+PR #15 (`feat/grok-b2-screen`): `GET /api/screen`. Base is `main` after #8.
+Keep as draft. No leak-protection hardening.
 
 ## Files touched
 
-- `src/screen.js`
+Net vs `origin/main`:
+
+- `CHANGELOG.md`
+- `README.md`
+- `docs/CODEMAP.md`
+- `docs/agents/builder-grok.md`
+- `src/README.md`
 - `src/adapter.js`
+- `src/screen.js`
 - `src/server.js`
 - `test/screen.test.js`
-- `CHANGELOG.md`
-- `docs/agents/builder-grok.md`
 
 ## Open questions
 
@@ -35,7 +41,11 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 
 ## Last-session learnings
 
-- Stacked drafts allowed (Shaunak 18:11). Base is the parent branch.
-- Every git command uses `git -C C:\Users\shaun\mastopia-grok`.
-- PR body files are `*.tmp` in the worktree. Never git add them.
-- Interrupt: when #9 merges, commit WIP and merge `origin/main` into #8 first.
+- Lead checkout `C:\Users\shaun\mastopia` is out of scope except appending
+  `briefs/lead-escalations.md` and reading `briefs/`. Every git command uses
+  `git -C C:\Users\shaun\mastopia-grok`.
+- PR body files live in the worktree as `*.tmp`. Never git add them.
+- Merge `origin/main` into feature branches (D3). Never rebase-force.
+- `npm run lint` and `npm run format:check` must include `scripts/`.
+- `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
+- Purpose lines in module READMEs stay on one line for CODEMAP.

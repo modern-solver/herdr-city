@@ -56,8 +56,7 @@ test('GET /api/screen missing paneId is 400; unknown pane is 404', async () => {
 
 test('tokens straddling the old head cut are masked; output keeps the tail', () => {
   const ghp = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  const jwt =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.signaturepartshere';
+  const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.signaturepartshere';
   const raw = `${'x'.repeat(SCREEN_CAP - 5)} ${ghp} ${jwt}`;
   const headCut = raw.slice(0, SCREEN_CAP);
   assert.equal(headCut.includes('ghp_'), true);
