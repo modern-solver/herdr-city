@@ -7,7 +7,7 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 - Feature: `GET /api/sessions` console session list with district, cli, model,
   status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
-  Branch: `feat/grok-b1-sessions`.
+  PR: https://github.com/modern-solver/herdr-city/pull/8
 - Docs: Added agent memory files under `docs/agents/` for builder-gemini (`docs/agents/builder-gemini.md`),
   builder-grok (`docs/agents/builder-grok.md`), and reviewer-claude (`docs/agents/reviewer-claude.md`)
   satisfying Context layer rule CTX-12 on Pull Request (PR) #2.
