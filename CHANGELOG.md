@@ -5,6 +5,11 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: demo mode (`--demo` / `MASTOPIA_DEMO=1`) uses fixture data, binds
+  `0.0.0.0`, and reads `PORT` then `MASTOPIA_PORT` then 7740. Without demo the
+  process binds `127.0.0.1` and does not read `PORT`. `/health` reports
+  `mode` `demo` and `host`. Host and Origin loopback checks are skipped in demo
+  only.
 - Approval: Shaunak approved Phase 1 (P1) read-only console pre-build (PRE-01) documentation
   (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`) and merged PR #2 as commit `538ba9d`.
   Open questions Q1, Q2, Q5, Q6, and Q7 approved as written.
