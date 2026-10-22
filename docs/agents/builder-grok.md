@@ -6,7 +6,7 @@
 | Model | grok-4.5 (high) |
 | Date | 2026-10-22 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b2-screen` |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b6-ops-desk` |
 | Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
 
 ## Acronyms
@@ -19,9 +19,9 @@
 
 ## Current task
 
-PR #15: D3 merged `origin/main` (`7a99ee2`, PR #10) into
-`feat/grok-b2-screen` as `3a79329`. Leak tests kept. Ready for
-reviewer re-review (SDLC-25).
+PR #17: D3 merged `origin/main` (`57425d5`, PR #15) into
+`feat/grok-b6-ops-desk` as `e9be97d`. Retargeted base to main; undrafted.
+Leak tests kept. Ready for reviewer re-review (SDLC-25).
 
 ## Files touched
 
@@ -31,18 +31,14 @@ Net vs `origin/main`:
 - `README.md`
 - `docs/CODEMAP.md`
 - `docs/agents/builder-grok.md`
+- `scripts/codemap.js`
 - `src/README.md`
 - `src/adapter.js`
-- `src/map.js`
-- `src/output-filter.js`
-- `src/prompt-detect.js`
-- `src/screen.js`
+- `src/ops-desk.js`
 - `src/server.js`
-- `src/sessions.js`
-- `test/README.md`
-- `test/helpers/leak.js`
+- `test/codemap.test.js`
 - `test/leak.test.js`
-- `test/screen.test.js`
+- `test/ops-desk.test.js`
 
 ## Open questions
 
