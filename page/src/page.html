@@ -450,6 +450,76 @@
   .console-card h2{ margin: 0 0 8px 0; font-size: 20px; color: #f0f6fc; }
   .console-card p.muted{ margin: 0; color: #8b949e; font-size: 14px; }
   .route-switcher{ text-decoration: none; color: inherit; display: inline-flex; }
+  /* U2 Sessions List styles */
+  .sessions-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto;
+  }
+  .sessions-header{
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; border-bottom: 1px solid #21262d; padding-bottom: 12px;
+  }
+  .sessions-header h2{ margin: 0; font-size: 18px; color: #f0f6fc; font-weight: 600; }
+  .sessions-count{ font-size: 12px; color: #8b949e; font-family: 'JetBrains Mono', monospace; }
+  .sessions-table-wrap{ overflow-x: auto; width: 100%; }
+  .sessions-table{
+    width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;
+  }
+  .sessions-table th{
+    padding: 10px 12px; border-bottom: 1px solid #30363d; color: #8b949e;
+    font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;
+    background: #0d1117;
+  }
+  .sessions-table td{
+    padding: 12px; border-bottom: 1px solid #21262d; vertical-align: middle;
+  }
+  .sessions-table tr:hover td{ background: rgba(110, 118, 129, 0.04); }
+  .cell-wrap{ display: flex; flex-direction: column; gap: 2px; }
+  .sub-id{ color: #8b949e; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .badge-group{ display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .badge{
+    font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+  .badge-cli{ background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+  .badge-model{ background: #1f242c; color: #58a6ff; border: 1px solid rgba(56, 139, 253, 0.4); }
+  .badge-status{ font-weight: 600; }
+  .status-working{ background: #13231b; color: #3fb950; border: 1px solid #238636; }
+  .status-idle{ background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+  .status-blocked{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  .status-dot{ width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .status-dot.alert{ background: #f85149; }
+  .cell-cwd, .cell-activity{ font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #c9d1d9; }
+  .cell-time{ font-size: 12px; color: #8b949e; }
+  .btn-inspect{
+    background: #21262d; border: 1px solid #30363d; color: #58a6ff;
+    padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;
+    text-decoration: none; display: inline-flex; align-items: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-inspect:hover{ background: #30363d; color: #79c0ff; border-color: #58a6ff; }
+  .sessions-empty{
+    padding: 32px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .sessions-loading{
+    padding: 32px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .sessions-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
+  .sessions-adapter-notice{
+    padding: 10px 14px; background: rgba(210, 153, 34, 0.12); border: 1px solid rgba(210, 153, 34, 0.4);
+    border-radius: 6px; color: #e3b341; font-size: 13px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .row-adapter-error td, .row-source-error td{
+    background: rgba(218, 54, 51, 0.08); border-bottom: 1px solid rgba(218, 54, 51, 0.3);
+  }
+  .cell-adapter-error-msg, .cell-source-error-msg{
+    color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+  .badge-error{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -585,9 +655,14 @@
 
   <main class="console-main" id="consoleMain">
     <section class="console-tab-pane" id="view-sessions" role="tabpanel" aria-labelledby="tab-sessions">
-      <div class="console-card">
-        <h2>Sessions List</h2>
-        <p class="muted">Foundation ready for U2.</p>
+      <div class="sessions-card">
+        <div class="sessions-header">
+          <h2>Agent Sessions</h2>
+          <span class="sessions-count" id="sessionsCount">0 sessions</span>
+        </div>
+        <div class="sessions-table-wrap" id="sessionsContent">
+          <div class="sessions-loading" id="sessionsLoading">Loading sessions…</div>
+        </div>
       </div>
     </section>
     <section class="console-tab-pane" id="view-screen" role="tabpanel" aria-labelledby="tab-screen" hidden>
