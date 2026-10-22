@@ -4,6 +4,7 @@ page/*
 page/src/*
 !page/src/console-router.js
 !page/src/07-console.js
+!page/src/sessions-view.js
 docs
 fixtures
 node_modules

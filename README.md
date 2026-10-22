@@ -82,7 +82,10 @@ Same origin, 127.0.0.1:
 | `GET /api/ops-desk` | blocked sessions with a prompt (`recommendation` always null) |
 | `GET /events` | Skyborne-compatible SSE for the city page |
 | `GET /health` | liveness |
-| `POST /api/answer` | always `409` in P0 (read-only) |
+| `POST /api/answer` | always `409` readonly |
+| `POST /api/send-keys` | always `409` readonly |
+| `POST /api/send-text` | always `409` readonly |
+| `POST /api/prompt` | always `409` readonly |
 
 ## Prompt detection
 

@@ -33,46 +33,39 @@
 | PRD | Product Requirements Document |
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
+| U2 | User Interface Milestone 2 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
-  (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
-- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3, #7, #8, #9):
-  1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
-  2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
-  3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
-  4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
-  5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04.
-  6. Merged `origin/main` (PR #7 tooling, PR #9 codemap, PR #8 sessions) into `feat/gemini-u1-shell`.
-  7. Regenerated `docs/CODEMAP.md` and updated module READMEs (`src/`, `test/`, `page/`, `web/`).
-  8. Brought console UI files (`page/src/console-router.js`, `07-console.js`) under ESLint and Prettier.
+- Milestone: U2 (User Interface Milestone 2) — Sessions list view (`#sessions`), table rendering
+  from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
+  empty/error/loading states, and responsive styling.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (PR #10 ready for review).
+- Status: Merged `origin/main` (including PR #6, #7, #8, #9) and merged `origin/main` at `b6b02ec`
+  (PR #12 / B8) into `feat/gemini-u2-sessions` (merge head `c881707`); resolved `CHANGELOG.md`
+  conflict keeping both U2 and B8 entries with no conflict markers remaining; regenerated
+  CODEMAP.md and page build; leak rule verified (all endpoint text sanitized via shared
+  `escapeHtml`); green on lint, format, test.
 
 ## Files touched
 
-Net diff vs `main` on `feat/gemini-u1-shell`:
+Net diff vs `main` on `feat/gemini-u2-sessions`:
 
 1. `.prettierignore`
 2. `CHANGELOG.md`
-3. `docs/CODEMAP.md`
-4. `docs/agents/builder-gemini.md`
-5. `eslint.config.js`
-6. `package.json`
-7. `page/README.md`
-8. `page/build.js`
-9. `page/src/07-console.js`
-10. `page/src/console-router.js`
-11. `page/src/page.html`
-12. `src/README.md`
-13. `src/server.js`
-14. `test/README.md`
-15. `test/console-ui.test.js`
-16. `web/README.md`
-17. `web/index.html`
+3. `docs/agents/builder-gemini.md`
+4. `eslint.config.js`
+5. `page/README.md`
+6. `page/build.js`
+7. `page/src/07-console.js`
+8. `page/src/console-router.js`
+9. `page/src/page.html`
+10. `page/src/sessions-view.js`
+11. `test/sessions-ui.test.js`
+12. `web/index.html`
 
 ## Open questions
 
@@ -100,9 +93,7 @@ can veto, not asked as open questions.
 2. Code alignment and testing (CODE-04, CODE-05, CODE-14):
    - Keep a single source of truth for routing helpers; avoid duplicating constants in controller scripts.
    - Test shipped functions with minimal stubs rather than testing isolated mock copies.
-   - Move cross-component mutations (like closing P0 console) into explicit named functions.
-3. Accessibility and regressions:
-   - Verify that media queries like `prefers-reduced-motion` remain intact when introducing new styles.
-4. Coordination and branch management (D1, D3):
-   - Merging `origin/main` via normal merge commits (no rebase-and-force-push) keeps PR history clean.
-   - Reconcile `CHANGELOG.md` carefully to preserve all items across concurrently developed branches.
+   - Decouple view rendering into pure functions that can be tested in isolation with contract mocks.
+3. Stacked branches and workflow:
+   - Retargeting PRs to main after base PR merges allows clean integration of upstream tooling and tests.
+   - All endpoint text rendered must strictly pass through the shared `escapeHtml` filter (Leak rule).
