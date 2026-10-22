@@ -19,12 +19,13 @@
 
 ## Current task
 
-PR #17 r5: merge fixed B2; codemap dedupe unit test; ops-desk prompt-line
-and filler tokens. Keep draft. Retarget after #15.
+PR #17: D3 merged `origin/main` (`57425d5`, PR #15) into
+`feat/grok-b6-ops-desk` as `e9be97d`. Retargeted base to main; undrafted.
+Leak tests kept. Ready for reviewer re-review (SDLC-25).
 
 ## Files touched
 
-Net vs `origin/feat/grok-b2-screen`:
+Net vs `origin/main`:
 
 - `CHANGELOG.md`
 - `README.md`
