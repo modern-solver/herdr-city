@@ -44,9 +44,10 @@
 - Milestone: U4 (User Interface Milestone 4) — Pane screen viewer (`#screen?paneId=...`),
   reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
   raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (stacked on `feat/gemini-u2-sessions`).
-- Status: Merged `origin/feat/gemini-u2-sessions` (including upstream main merges); leak rule verified;
-  lint, format:check and test green.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (PR #14 retargeted to `main`).
+- Status: Merged `origin/main` at `3c31b0f` into `feat/gemini-u4-screen` (merge head `f1faef1`);
+  resolved `CHANGELOG.md` and `docs/agents/builder-gemini.md` conflicts keeping both sides;
+  leak rule verified; 88/88 tests pass; lint and format:check green. Ready for review.
 
 ## Files touched
 
@@ -59,13 +60,10 @@ Net diff vs `main` on `feat/gemini-u4-screen`:
 5. `page/README.md`
 6. `page/build.js`
 7. `page/src/07-console.js`
-8. `page/src/console-router.js`
-9. `page/src/page.html`
-10. `page/src/screen-view.js`
-11. `page/src/sessions-view.js`
-12. `test/screen-ui.test.js`
-13. `test/sessions-ui.test.js`
-14. `web/index.html`
+8. `page/src/page.html`
+9. `page/src/screen-view.js`
+10. `test/screen-ui.test.js`
+11. `web/index.html`
 
 ## Open questions
 
