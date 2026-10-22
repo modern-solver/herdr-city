@@ -80,6 +80,20 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       json(res, 200, { robots: adapter.getSnapshot().robots || [] });
       return;
     }
+    if (req.method === 'GET' && url.pathname === '/api/screen') {
+      const paneId = String(url.searchParams.get('paneId') || '').trim();
+      if (!paneId) {
+        json(res, 400, { ok: false, error: 'bad_request', message: 'paneId is required' });
+        return;
+      }
+      const body = adapter.getScreen(paneId);
+      if (!body) {
+        json(res, 404, { ok: false, error: 'not_found', message: 'unknown pane' });
+        return;
+      }
+      json(res, 200, body);
+      return;
+    }
     if (req.method === 'GET' && url.pathname === '/api/sessions') {
       const parsed = parseSessionFilters(url.searchParams);
       if (!parsed.ok) {
