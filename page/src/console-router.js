@@ -3,6 +3,7 @@
 // Maintainer: builder-gemini
 
 export const VALID_TABS = ['sessions', 'screen', 'logs', 'rulebook', 'ops-desk'];
+export const VALID_MODES = ['live', 'fixture', 'demo'];
 export const DEFAULT_TAB = 'sessions';
 export const POLL_INTERVAL_ACTIVE_MS = 2000;
 export const POLL_INTERVAL_HIDDEN_MS = 10000;

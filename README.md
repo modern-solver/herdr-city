@@ -10,14 +10,14 @@ The city and console frontend are derived from [Skyborne](https://github.com/ish
 
 ## What you see
 
-| herdr | City |
-| --- | --- |
-| workspace (`w1`, `w8`, `wD`, …) | district |
-| agent in a pane | robot (name = herdr agent `name`, badge = model / `agent` kind) |
-| `working` | cyan eyes |
-| `blocked` / waiting | amber + **Needs you** card with the prompt text from the pane |
-| idle 10 minutes or more | dim / asleep |
-| error text on the pane | red |
+| herdr                           | City                                                            |
+| ------------------------------- | --------------------------------------------------------------- |
+| workspace (`w1`, `w8`, `wD`, …) | district                                                        |
+| agent in a pane                 | robot (name = herdr agent `name`, badge = model / `agent` kind) |
+| `working`                       | cyan eyes                                                       |
+| `blocked` / waiting             | amber + **Needs you** card with the prompt text from the pane   |
+| idle 10 minutes or more         | dim / asleep                                                    |
+| error text on the pane          | red                                                             |
 
 Approvals from the GUI are **not** in P0. Answer the prompt in the herdr pane. P2 (later) may send a single yes.
 
@@ -92,14 +92,20 @@ Polling: `herdr agent list` every 2 seconds. `herdr pane read <pane>` runs **onl
 
 Same origin, 127.0.0.1:
 
-| Path | |
-| --- | --- |
-| `GET /api/city` | districts, robots, asks (Needs you) |
-| `GET /api/agents` | flat robot list |
+| Path                |                                                                  |
+| ------------------- | ---------------------------------------------------------------- |
+| `GET /api/city`     | districts, robots, asks (Needs you)                              |
+| `GET /api/agents`   | flat robot list                                                  |
 | `GET /api/sessions` | console session list (district, cli, model, status, `q` filters) |
-| `GET /events` | Skyborne-compatible SSE for the city page |
-| `GET /health` | liveness |
-| `POST /api/answer` | always `409` in P0 (read-only) |
+| `GET /api/screen`     | last pane read after `maskSecrets` (`paneId` required)           |
+| `GET /api/logs`       | event ring after `maskThenTruncate` (`after`, `limit` 1–200)     |
+| `GET /api/ops-desk`   | blocked sessions with a prompt (`recommendation` always null)    |
+| `GET /events`         | Skyborne-compatible SSE for the city page                        |
+| `GET /health`         | liveness                                                         |
+| `POST /api/answer`    | always `409` readonly                                            |
+| `POST /api/send-keys` | always `409` readonly                                            |
+| `POST /api/send-text` | always `409` readonly                                            |
+| `POST /api/prompt`    | always `409` readonly                                            |
 
 ## Prompt detection
 
@@ -121,18 +127,18 @@ npm run format:check
 
 Adapter parsing is written against herdr's published CLI/socket docs and source (`AgentInfo` in `src/api/schema/agents.rs`, `AgentStatus` in `common.rs`, `herdr agent list` → `result.type: "agent_list"` with `agents[]`):
 
-| Field | Role |
-| --- | --- |
-| `name` | robot name |
-| `agent` | kind (claude, grok, gemini, …) |
-| `pane_id` | pane read target (`w1:p1`) |
-| `workspace_id` | district id |
-| `cwd` / `foreground_cwd` | district title fallback |
-| `agent_status` | `idle` \| `working` \| `blocked` \| `done` \| `unknown` |
-| `terminal_title` / `terminal_title_stripped` | activity line |
-| `display_agent`, `tokens.model` | model badge |
-| `revision`, `state_change_seq` | change detection |
-| `title` | optional metadata title |
+| Field                                        | Role                                                    |
+| -------------------------------------------- | ------------------------------------------------------- |
+| `name`                                       | robot name                                              |
+| `agent`                                      | kind (claude, grok, gemini, …)                          |
+| `pane_id`                                    | pane read target (`w1:p1`)                              |
+| `workspace_id`                               | district id                                             |
+| `cwd` / `foreground_cwd`                     | district title fallback                                 |
+| `agent_status`                               | `idle` \| `working` \| `blocked` \| `done` \| `unknown` |
+| `terminal_title` / `terminal_title_stripped` | activity line                                           |
+| `display_agent`, `tokens.model`              | model badge                                             |
+| `revision`, `state_change_seq`               | change detection                                        |
+| `title`                                      | optional metadata title                                 |
 
 `herdr pane read` prints UTF-8 text (not JSON) by default; if JSON with `result.read.text` appears, that is used. Workspace labels come from optional `herdr workspace list` (`WorkspaceInfo.label`).
 

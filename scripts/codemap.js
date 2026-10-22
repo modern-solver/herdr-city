@@ -75,6 +75,7 @@ export function entriesFromGit(root) {
   }
   for (const file of files) {
     if (shouldSkip(file, false)) continue;
+    if (seen.has(file)) continue;
     const dir = file.includes('/') ? file.slice(0, file.lastIndexOf('/')) : '';
     if (dir) addDir(dir);
     seen.add(file);
@@ -161,24 +162,25 @@ export function renderModules(root, entries) {
 }
 
 export function renderJsModules(root, entries) {
-  const files = entries.filter((e) => !e.isDir && e.rel.endsWith('.js')).map((e) => e.rel);
+  const files = [...new Set(entries.filter((e) => !e.isDir && e.rel.endsWith('.js')).map((e) => e.rel))];
   const mapped = files.filter((f) => f.startsWith('src/') || f.startsWith('scripts/'));
   const meta = new Map();
   for (const f of mapped) meta.set(f, jsMeta(root, f));
   const dependents = new Map();
   for (const f of files) {
     if (f.startsWith('src/') || f.startsWith('scripts/') || f.startsWith('test/')) {
-      const imps = jsMeta(root, f).imports;
+      const imps = [...new Set(jsMeta(root, f).imports)];
       for (const dep of imps) {
         if (!dependents.has(dep)) dependents.set(dep, []);
-        dependents.get(dep).push(f);
+        const list = dependents.get(dep);
+        if (!list.includes(f)) list.push(f);
       }
     }
   }
   const lines = ['## src and scripts', '', '| Path | Exports | Imports | Dependents |', '|---|---|---|---|'];
   for (const f of mapped) {
     const m = meta.get(f);
-    const deps = (dependents.get(f) || []).sort((a, b) => a.localeCompare(b));
+    const deps = [...new Set(dependents.get(f) || [])].sort((a, b) => a.localeCompare(b));
     lines.push(`| \`${f}\` | ${fmtList(m.exports)} | ${fmtList(m.imports)} | ${fmtList(deps)} |`);
   }
   lines.push('');

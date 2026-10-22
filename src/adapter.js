@@ -3,6 +3,9 @@ import { mapCity, setMapPatterns, snapshotPayload } from './map.js';
 import { loadPromptPatterns } from './prompt-detect.js';
 import { DEFAULT_PATTERNS_PATH } from './paths.js';
 import { mapSessions } from './sessions.js';
+import { collectTickEvents, createLogBuffer } from './logs.js';
+import { buildOpsDesk, updateBlockedSince } from './ops-desk.js';
+import { buildScreen, capPaneText } from './screen.js';
 
 const POLL_MS = 2000;
 
@@ -11,8 +14,14 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   setMapPatterns(clis);
   const paneCache = new Map(); // pane_id -> { fp, text }
   const lastActive = {};
+  const blockedSince = {};
   let lastSnapshot = snapshotPayload({ docs: [], asks: [], robots: [], mode: client.kind, error: null });
   let lastSessions = [];
+  let lastAgents = [];
+  let lastTickAt = 0;
+  const logBuffer = createLogBuffer();
+  const prevByPane = new Map();
+  let outageOpen = false;
   let listeners = new Set();
   let timer = null;
   let started = false;
@@ -26,12 +35,25 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       workspaces = await client.workspaceList();
     } catch (err) {
       error = String(err.message || err);
-      lastSnapshot = { ...lastSnapshot, error, generatedAt: now() };
+      const t = now();
+      lastTickAt = t;
+      lastSnapshot = { ...lastSnapshot, error, generatedAt: t };
+      for (const ev of collectTickEvents({
+        prevByPane,
+        sessions: lastSessions,
+        ts: t,
+        adapterError: error,
+        outageOpen,
+      })) {
+        logBuffer.append(ev, t);
+      }
+      outageOpen = true;
       emit();
       return lastSnapshot;
     }
 
     const t = now();
+    lastTickAt = t;
     for (const agent of agents) {
       const fp = fingerprint(agent);
       const prev = paneCache.get(agent.pane_id);
@@ -44,10 +66,20 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       }
       if (!prev || prev.fp !== fp) {
         try {
-          const text = await client.paneRead(agent.pane_id);
-          paneCache.set(agent.pane_id, { fp, text: String(text || '') });
+          const capped = capPaneText(await client.paneRead(agent.pane_id));
+          paneCache.set(agent.pane_id, {
+            fp,
+            text: capped.text,
+            truncated: capped.truncated,
+            updatedAt: t,
+          });
         } catch (err) {
-          paneCache.set(agent.pane_id, { fp, text: prev?.text || '' });
+          paneCache.set(agent.pane_id, {
+            fp,
+            text: prev?.text || '',
+            truncated: prev?.truncated || false,
+            updatedAt: prev?.updatedAt || t,
+          });
           error = error || String(err.message || err);
         }
       }
@@ -70,6 +102,29 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
       now: t,
       clis,
     });
+    for (const ev of collectTickEvents({
+      prevByPane,
+      sessions: lastSessions,
+      ts: t,
+      adapterError: null,
+      outageOpen,
+    })) {
+      logBuffer.append(ev, t);
+    }
+    outageOpen = false;
+    prevByPane.clear();
+    for (const s of lastSessions) {
+      prevByPane.set(s.paneId, {
+        status: s.status,
+        prompt: s.prompt,
+        error: s.error,
+        districtId: s.districtId,
+        districtTitle: s.districtTitle,
+        name: s.name,
+      });
+    }
+    lastAgents = agents;
+    updateBlockedSince(blockedSince, agents, t);
     emit();
     return lastSnapshot;
   }
@@ -89,6 +144,34 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
         error: lastSnapshot.error,
         sessions: lastSessions,
       };
+    },
+    getLogs({ after = null, limit = 100 } = {}) {
+      return {
+        v: 1,
+        generatedAt: lastTickAt || lastSnapshot.generatedAt,
+        bounded: logBuffer.bounded(),
+        events: logBuffer.query({ after, limit }),
+      };
+    },
+    getOpsDesk() {
+      return buildOpsDesk({
+        sessions: lastSessions,
+        agents: lastAgents,
+        blockedSince,
+        generatedAt: lastTickAt || lastSnapshot.generatedAt,
+      });
+    },
+    getScreen(paneId) {
+      const session = lastSessions.find((s) => s.paneId === paneId);
+      if (!session) return null;
+      const cached = paneCache.get(paneId);
+      return buildScreen({
+        paneId,
+        rawText: cached?.text || '',
+        truncated: cached?.truncated,
+        updatedAt: cached?.updatedAt ?? session.lastSeenAt,
+        session,
+      });
     },
     onChange(fn) {
       listeners.add(fn);

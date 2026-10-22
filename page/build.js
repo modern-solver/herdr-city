@@ -8,7 +8,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const WEB = path.join(here, '..', 'web');
 const ORDER = [
   '01-core.js', '02-world.js', '03a-blocks.js', '03-district.js', '03b-transit.js',
-  '04-robot.js', '05-city.js', '05b-detail.js', '06-ui.js', 'console-router.js', '07-console.js',
+  '04-robot.js', '05-city.js', '05b-detail.js', '06-ui.js', 'console-router.js',
+  'sessions-view.js', '07-console.js',
 ];
 
 const app = ORDER.map((f) => fs.readFileSync(path.join(here, 'src', f), 'utf8').replace(/^export\s+/gm, '')).join('\n');
