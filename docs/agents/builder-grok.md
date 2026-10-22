@@ -19,10 +19,9 @@
 
 ## Current task
 
-PR #18: D3 merged `origin/main` (`57425d5`, PR #15) into
-`feat/grok-b3-logs` as `5f792e1`. Retargeted base to main; undrafted.
-`GET /api/logs` uses `maskThenTruncate`. Leak tests kept. Ready for
-reviewer re-review (SDLC-25).
+PR #18: D3 merged `origin/main` (`100dada`, PR #17) into
+`feat/grok-b3-logs` as `11f967b`. Kept logs + ops-desk; leak tests kept.
+Ready for reviewer re-review (SDLC-25).
 
 ## Files touched
 
