@@ -4,7 +4,7 @@
 |---|---|
 | Agent | builder-grok |
 | Model | grok-4.5 (high) |
-| Date | 2026-10-19 |
+| Date | 2026-10-22 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
 | Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b2-screen` |
 | Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
@@ -19,8 +19,9 @@
 
 ## Current task
 
-PR #15: test/README leak note; D3 merged origin/main after #6; ready for
-merge.
+PR #15: D3 merged `origin/main` (`7a99ee2`, PR #10) into
+`feat/grok-b2-screen` as `3a79329`. Leak tests kept. Ready for
+reviewer re-review (SDLC-25).
 
 ## Files touched
 
@@ -56,6 +57,9 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 - PR body files live in the worktree as `*.tmp`. Never git add them.
 - Write commit msg file in its own step before commit.
 - No `>` redirection into tracked files.
+- Per-commit identity: `git -c user.name=builder-grok -c
+  user.email=modernagesales@gmail.com`. Never `git config user.name` (shared
+  `.git/config` with gemini and lead).
 - Merge `origin/main` into feature branches (D3). Never rebase-force.
 - `npm run lint` and `npm run format:check` must include `scripts/`.
 - `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
