@@ -9,6 +9,8 @@ Modules:
 - `page/src/07-console.js`: P1 console shell and views.
 - `page/src/console-router.js`: client-side hash routing and view lifecycles.
 - `page/src/sessions-view.js`: agent sessions list view and table construction.
+- `page/src/screen-view.js`: terminal pane screen viewer and viewport controller.
+- `page/src/ops-desk-view.js`: ops desk queue view and blocked prompt cards.
 - `page/src/page.html`: main template containing both city and console layout.
 
 Gotchas:

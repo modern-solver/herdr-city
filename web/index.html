@@ -541,6 +541,107 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
     color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
   }
   .badge-error{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  /* U4 Screen View styles */
+  .screen-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto; display: flex;
+    flex-direction: column; gap: 16px;
+  }
+  .screen-ribbon{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #21262d; padding-bottom: 14px;
+  }
+  .screen-meta-left{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .screen-meta-right{ display: flex; align-items: center; gap: 12px; font-size: 12px; color: #8b949e; }
+  .screen-title{ font-size: 16px; font-weight: 600; color: #f0f6fc; margin: 0; }
+  .screen-lines{ font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8b949e; }
+  .screen-time{ font-size: 12px; color: #8b949e; }
+  .screen-toolbar{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; font-size: 12px; color: #8b949e;
+  }
+  .screen-autoscroll-label{
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    user-select: none; color: #c9d1d9;
+  }
+  .screen-truncation-banner{
+    padding: 8px 12px; background: rgba(210, 153, 34, 0.15); border: 1px solid rgba(210, 153, 34, 0.4);
+    border-radius: 6px; color: #e3b341; font-size: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .screen-viewport{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    max-height: 560px; overflow: auto; padding: 14px; position: relative;
+  }
+  .screen-pre{
+    margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.5; color: #c9d1d9; white-space: pre-wrap; word-break: break-all;
+  }
+  .screen-code{ font-family: inherit; color: inherit; }
+  .screen-loading, .screen-empty, .screen-prompt{
+    padding: 36px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .screen-prompt a{ color: #58a6ff; text-decoration: none; font-weight: 500; }
+  .screen-prompt a:hover{ text-decoration: underline; }
+  .screen-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
+  /* U6 Ops Desk styles */
+  .ops-desk-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto; display: flex;
+    flex-direction: column; gap: 16px;
+  }
+  .ops-header-banner{
+    padding: 12px 16px; background: rgba(56, 139, 253, 0.1); border: 1px solid rgba(56, 139, 253, 0.4);
+    border-radius: 6px; color: #79c0ff; font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ops-empty-banner{
+    padding: 32px 16px; background: rgba(46, 160, 67, 0.1); border: 1px solid rgba(46, 160, 67, 0.4);
+    border-radius: 6px; color: #3fb950; font-size: 14px; font-weight: 500;
+    text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .ops-adapter-notice{
+    padding: 10px 14px; background: rgba(210, 153, 34, 0.12); border: 1px solid rgba(210, 153, 34, 0.4);
+    border-radius: 6px; color: #e3b341; font-size: 13px; display: flex; align-items: center; gap: 8px;
+  }
+  .ops-queue{ display: flex; flex-direction: column; gap: 14px; }
+  .ops-card{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .ops-card-header{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .ops-card-meta-left{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ops-prompt-quote{
+    margin: 0; padding: 12px 16px; background: #161b22; border-left: 3px solid #da3633;
+    border-radius: 0 4px 4px 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    color: #f0f6fc; line-height: 1.5; white-space: pre-wrap; word-break: break-all;
+  }
+  .ops-card-footer{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; font-size: 12px;
+  }
+  .badge-wait{ background: #341a1a; color: #f85149; border: 1px solid #da3633; font-weight: 600; }
+  .badge-recommendation{
+    background: #21262d; color: #8b949e; border: 1px dashed #30363d;
+  }
+  .ops-card-error{
+    border-color: rgba(218, 54, 51, 0.4); background: rgba(218, 54, 51, 0.05);
+  }
+  .ops-card-error-body{
+    color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+  .ops-loading{
+    padding: 36px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .ops-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -687,9 +788,12 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
       </div>
     </section>
     <section class="console-tab-pane" id="view-screen" role="tabpanel" aria-labelledby="tab-screen" hidden>
-      <div class="console-card">
-        <h2>Pane Screen Viewer</h2>
-        <p class="muted">Foundation ready for U4.</p>
+      <div class="screen-card">
+        <div id="screenContainer">
+          <div class="screen-prompt" id="screenSelectPrompt">
+            No pane selected. Choose an agent session from the <a href="#sessions">Sessions tab</a> to view its terminal screen.
+          </div>
+        </div>
       </div>
     </section>
     <section class="console-tab-pane" id="view-logs" role="tabpanel" aria-labelledby="tab-logs" hidden>
@@ -705,9 +809,10 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
       </div>
     </section>
     <section class="console-tab-pane" id="view-ops-desk" role="tabpanel" aria-labelledby="tab-ops-desk" hidden>
-      <div class="console-card">
-        <h2>Ops Desk Queue</h2>
-        <p class="muted">Foundation ready for U6.</p>
+      <div class="ops-desk-card">
+        <div id="opsDeskContainer">
+          <div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>
+        </div>
       </div>
     </section>
   </main>
@@ -6224,6 +6329,357 @@ async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fe
   }
 }
 
+// Module: page/src/screen-view.js
+// Purpose: Pane screen viewer rendering, metadata ribbon, ANSI pass-through, and auto-scroll (U4)
+// Maintainer: builder-gemini
+
+
+function renderScreenRibbonHtml(data) {
+  if (!data) return '';
+  const paneId = data.paneId || data.session?.paneId || '-';
+  const name = data.session?.name || paneId;
+  const districtTitle = data.session?.districtTitle || data.session?.districtId || '-';
+  const districtId = data.session?.districtId
+    ? `<small class="sub-id">${escapeHtml(data.session.districtId)}</small>`
+    : '';
+  const cliBadge = data.session?.cli ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>` : '';
+  const modelBadge = data.session?.model
+    ? `<span class="badge badge-model">${escapeHtml(data.session.model)}</span>`
+    : '';
+  const statusBadge = getStatusBadgeHtml(data.session?.status, data.session?.statusLabel, data.session?.prompt);
+  const lineCount = Number.isFinite(data.lineCount) ? `${data.lineCount} lines` : '';
+  const updated = data.updatedAt ? `Updated ${formatRelativeTime(data.updatedAt)}` : '';
+
+  return (
+    `<div class="screen-ribbon" id="screenRibbon">` +
+    `<div class="screen-meta-left">` +
+    `<span class="badge badge-cli">${escapeHtml(paneId)}</span>` +
+    `<h3 class="screen-title">${escapeHtml(name)}</h3>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
+    `<div class="badge-group">${cliBadge}${modelBadge}${statusBadge}</div>` +
+    `</div>` +
+    `<div class="screen-meta-right">` +
+    (lineCount ? `<span class="screen-lines">${escapeHtml(lineCount)}</span>` : '') +
+    (updated ? `<span class="screen-time">${escapeHtml(updated)}</span>` : '') +
+    `</div>` +
+    `</div>`
+  );
+}
+
+function renderScreenToolbarHtml({ autoScroll = true, truncated = false } = {}) {
+  const truncationBanner = truncated
+    ? `<div class="screen-truncation-banner" id="screenTruncationBanner" role="status">` +
+      `<span class="badge badge-error">Notice</span> Output truncated at 80,000 characters.</div>`
+    : '';
+
+  return (
+    `<div class="screen-toolbar" id="screenToolbar">` +
+    `<div class="screen-tools-left">` +
+    `<label class="screen-autoscroll-label">` +
+    `<input type="checkbox" id="screenAutoScroll" ${autoScroll ? 'checked' : ''}> ` +
+    `Auto-scroll to bottom</label>` +
+    `</div>` +
+    `<div class="screen-tools-right">` +
+    `<a href="#sessions" class="btn-city-link" aria-label="Back to Sessions">&larr; Back to Sessions</a>` +
+    `</div>` +
+    `</div>` +
+    truncationBanner
+  );
+}
+
+function renderScreenViewportHtml(text) {
+  if (text == null || text === '') {
+    return (
+      `<div class="screen-viewport" id="screenViewport">` +
+      `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>` +
+      `</div>`
+    );
+  }
+  // P1 passes ANSI escape sequences through unchanged; rendered as raw text in preformatted block
+  return (
+    `<div class="screen-viewport" id="screenViewport">` +
+    `<pre class="screen-pre"><code class="screen-code" id="screenCode">${escapeHtml(text)}</code></pre>` +
+    `</div>`
+  );
+}
+
+let lastRawText = null;
+
+function renderScreenView(container, { data, error, loading, paneId, autoScroll = true } = {}) {
+  if (!container) return;
+  if (!paneId) {
+    lastRawText = null;
+    if (container.dataset) delete container.dataset.currentPaneId;
+    if (container._lastRawText !== undefined) delete container._lastRawText;
+    container.innerHTML =
+      `<div class="screen-prompt" id="screenSelectPrompt">` +
+      `No pane selected. Choose an agent session from the ` +
+      `<a href="#sessions">Sessions tab</a> to view its terminal screen.</div>`;
+    return;
+  }
+  if (loading) {
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      lastRawText = null;
+      if (container.dataset) delete container.dataset.currentPaneId;
+      if (container._lastRawText !== undefined) delete container._lastRawText;
+      container.innerHTML =
+        `<div class="screen-loading" id="screenLoading">` + `Reading pane output for ${escapeHtml(paneId)}…</div>`;
+    }
+    return;
+  }
+  if (error) {
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      lastRawText = null;
+      if (container.dataset) delete container.dataset.currentPaneId;
+      if (container._lastRawText !== undefined) delete container._lastRawText;
+      container.innerHTML =
+        `<div class="screen-error" id="screenError" role="alert">` +
+        `Unable to read pane ${escapeHtml(paneId)}. Pane may have closed or herdr returned an error.</div>`;
+    }
+    return;
+  }
+  if (!data) {
+    lastRawText = null;
+    if (container.dataset) delete container.dataset.currentPaneId;
+    if (container._lastRawText !== undefined) delete container._lastRawText;
+    container.innerHTML = `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
+    return;
+  }
+
+  const isSamePane = container.dataset?.currentPaneId === paneId;
+  const existingViewport = container.querySelector ? container.querySelector('#screenViewport') : null;
+  const existingCode = container.querySelector ? container.querySelector('#screenCode') : null;
+
+  // In-place update: update metadata and text without rebuilding viewport to preserve scroll and selection
+  if (isSamePane && existingViewport && existingCode) {
+    const ribbonWrap = container.querySelector('#screenRibbonWrap');
+    if (ribbonWrap) {
+      ribbonWrap.innerHTML = renderScreenRibbonHtml(data);
+    }
+
+    const autoScrollEl = container.querySelector('#screenAutoScroll');
+    const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+
+    // Truncation banner in-place toggle
+    const toolbarEl = container.querySelector('#screenToolbar');
+    let truncEl = container.querySelector('#screenTruncationBanner');
+    if (data.truncated && !truncEl && toolbarEl) {
+      toolbarEl.insertAdjacentHTML(
+        'afterend',
+        '<div class="screen-truncation-banner" id="screenTruncationBanner" role="status">' +
+          '<span class="badge badge-error">Notice</span> Output truncated at 80,000 characters.</div>',
+      );
+    } else if (!data.truncated && truncEl) {
+      truncEl.remove();
+    }
+
+    const prevScrollTop = existingViewport.scrollTop;
+    const rawText = typeof data.text === 'string' ? data.text : '';
+    const prevRawText = container._lastRawText !== undefined ? container._lastRawText : lastRawText;
+
+    // Compare raw-to-raw to avoid browser quote desynchronization (e.g. &quot; vs ")
+    if (rawText !== prevRawText) {
+      existingCode.innerHTML = escapeHtml(rawText);
+      lastRawText = rawText;
+      container._lastRawText = rawText;
+    }
+
+    if (effectiveAutoScroll) {
+      if (typeof existingViewport.scrollHeight === 'number') {
+        existingViewport.scrollTop = existingViewport.scrollHeight;
+      }
+    } else {
+      existingViewport.scrollTop = prevScrollTop;
+    }
+    return;
+  }
+
+  // Initial render or pane switch
+  if (!container.dataset) container.dataset = {};
+  container.dataset.currentPaneId = paneId;
+
+  const rawText = typeof data.text === 'string' ? data.text : '';
+  lastRawText = rawText;
+  container._lastRawText = rawText;
+
+  const ribbonWrapHtml = `<div id="screenRibbonWrap">${renderScreenRibbonHtml(data)}</div>`;
+  const toolbarHtml = renderScreenToolbarHtml({ autoScroll, truncated: Boolean(data.truncated) });
+  const viewportHtml = renderScreenViewportHtml(data.text);
+
+  container.innerHTML = `${ribbonWrapHtml}${toolbarHtml}${viewportHtml}`;
+
+  const autoScrollEl = container.querySelector ? container.querySelector('#screenAutoScroll') : null;
+  const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+  if (effectiveAutoScroll) {
+    const vp = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (vp && typeof vp.scrollHeight === 'number') {
+      vp.scrollTop = vp.scrollHeight;
+    }
+  }
+}
+
+async function fetchScreen(fetchFn = typeof window !== 'undefined' ? window.fetch : null, paneId) {
+  if (!paneId) {
+    return { ok: false, error: 'paneId is required', data: null };
+  }
+  if (typeof fetchFn !== 'function') {
+    return { ok: false, error: 'fetch is not available', data: null };
+  }
+  try {
+    const url = `/api/screen?paneId=${encodeURIComponent(paneId)}`;
+    const res = await fetchFn(url, { cache: 'no-store' });
+    if (!res.ok) {
+      return { ok: false, status: res.status, error: `HTTP ${res.status}`, data: null };
+    }
+    const data = await res.json();
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, error: err?.message || 'Network error', data: null };
+  }
+}
+
+// Module: page/src/ops-desk-view.js
+// Purpose: Ops desk queue view rendering, card layout, wait timers, and API contract consumption (U6)
+// Maintainer: builder-gemini
+
+
+function formatWaitDuration(waitMs) {
+  const ms = Number(waitMs);
+  if (!Number.isFinite(ms) || ms < 1000) return 'Waiting <1s';
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return `Waiting ${sec}s`;
+  const min = Math.floor(sec / 60);
+  const remSec = sec % 60;
+  if (min < 60) return `Waiting ${min}m ${remSec}s`;
+  const hr = Math.floor(min / 60);
+  const remMin = min % 60;
+  return `Waiting ${hr}h ${remMin}m`;
+}
+
+function renderOpsDeskCardHtml(item) {
+  if (!item) return '';
+
+  // Failed source or adapter error record for a specific source/district
+  if (item.error && !item.cli && !item.prompt) {
+    const src = escapeHtml(item.districtId || item.id || 'Unknown source');
+    const districtTitle = item.districtTitle || item.districtId || '-';
+    return (
+      `<div class="ops-card ops-card-error" data-source="${src}">` +
+      `<div class="ops-card-header">` +
+      `<div class="ops-card-meta-left">` +
+      `<span class="badge badge-error">Source Error</span>` +
+      `<strong>${escapeHtml(districtTitle)}</strong>` +
+      `</div>` +
+      `</div>` +
+      `<div class="ops-card-error-body">${escapeHtml(item.error)}</div>` +
+      `</div>`
+    );
+  }
+
+  const name = item.name || item.paneId || '-';
+  const paneId = item.paneId || item.id || '';
+  const paneCaption = `<small class="sub-id">${escapeHtml(paneId)}</small>`;
+  const districtTitle = item.districtTitle || item.districtId || '-';
+  const districtId = item.districtId ? `<small class="sub-id">${escapeHtml(item.districtId)}</small>` : '';
+  const cliBadge = item.cli ? `<span class="badge badge-cli">${escapeHtml(item.cli)}</span>` : '';
+  const modelBadge = item.model ? `<span class="badge badge-model">${escapeHtml(item.model)}</span>` : '';
+  const waitLabel = formatWaitDuration(item.waitMs);
+  const prompt = item.prompt || '(empty prompt)';
+  const inspectUrl = `#screen?paneId=${encodeURIComponent(paneId)}`;
+
+  return (
+    `<div class="ops-card" data-pane-id="${escapeHtml(paneId)}" data-since="${escapeHtml(item.since)}">` +
+    `<div class="ops-card-header">` +
+    `<div class="ops-card-meta-left">` +
+    `<strong>${escapeHtml(name)}</strong>${paneCaption}` +
+    `<div class="badge-group">${cliBadge}${modelBadge}</div>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
+    `</div>` +
+    `<div class="ops-card-meta-right">` +
+    `<span class="badge badge-wait">${escapeHtml(waitLabel)}</span>` +
+    `</div>` +
+    `</div>` +
+    `<blockquote class="ops-prompt-quote">` +
+    `<p class="ops-prompt-text">${escapeHtml(prompt)}</p>` +
+    `</blockquote>` +
+    `<div class="ops-card-footer">` +
+    `<span class="badge badge-recommendation">Recommendation: null (P1 placeholder)</span>` +
+    `<a href="${inspectUrl}" class="btn-inspect" aria-label="Inspect pane ${escapeHtml(paneId)}">` +
+    `Inspect Pane Screen</a>` +
+    `</div>` +
+    `</div>`
+  );
+}
+
+function renderOpsDeskQueueHtml(items, { adapterError } = {}) {
+  const headerBanner =
+    `<div class="ops-header-banner" id="opsHeaderBanner" role="note">` +
+    `<span class="ops-banner-icon" aria-hidden="true">&#9888;</span> ` +
+    `City Hall Ops Desk — Display Only (P1). Respond directly in herdr terminal.` +
+    `</div>`;
+
+  const noticeHtml = adapterError
+    ? `<div class="ops-adapter-notice" id="opsAdapterNotice" role="status">` +
+      `<span class="badge badge-error">Adapter Notice</span> ${escapeHtml(adapterError)}</div>`
+    : '';
+
+  const hasItems = Array.isArray(items) && items.length > 0;
+  if (!hasItems) {
+    const emptyBanner =
+      `<div class="ops-empty-banner" id="opsEmpty">` +
+      `<span class="ops-check-icon" aria-hidden="true">&#10004;</span> ` +
+      `All agent queues clear. No items require attention.</div>`;
+    return `${headerBanner}${noticeHtml}${emptyBanner}`;
+  }
+
+  // Sort by since ascending (longest waiting prompt first)
+  const sorted = [...items].sort((a, b) => Number(a.since || 0) - Number(b.since || 0));
+  const cards = sorted.map((item) => renderOpsDeskCardHtml(item)).join('\n');
+
+  return `${headerBanner}${noticeHtml}` + `<div class="ops-queue" id="opsQueue">${cards}</div>`;
+}
+
+function renderOpsDeskView(container, { items, error, adapterError, loading } = {}) {
+  if (!container) return;
+  if (loading) {
+    container.innerHTML = '<div class="ops-loading" id="opsLoading">Loading ops desk queue…</div>';
+    return;
+  }
+
+  const effectiveAdapterError = adapterError || (Array.isArray(items) && items.length > 0 ? error : null);
+
+  // Fatal error: no items list at all and error occurred
+  if (error && !effectiveAdapterError && (!Array.isArray(items) || items.length === 0)) {
+    container.innerHTML =
+      `<div class="ops-error" id="opsError" role="alert">` +
+      `Failed to load ops desk from server: ${escapeHtml(error)}</div>`;
+    return;
+  }
+
+  container.innerHTML = renderOpsDeskQueueHtml(items, { adapterError: effectiveAdapterError });
+}
+
+async function fetchOpsDesk(fetchFn = typeof window !== 'undefined' ? window.fetch : null) {
+  if (typeof fetchFn !== 'function') {
+    return { ok: false, error: 'fetch is not available', items: [], adapterError: null };
+  }
+  try {
+    const url = '/api/ops-desk';
+    const res = await fetchFn(url, { cache: 'no-store' });
+    if (!res.ok) {
+      return { ok: false, status: res.status, error: `HTTP ${res.status}`, items: [], adapterError: null };
+    }
+    const data = await res.json();
+    const items = Array.isArray(data?.items) ? data.items : [];
+    const adapterError = data?.error || null;
+    return { ok: true, data, items, adapterError, error: adapterError };
+  } catch (err) {
+    return { ok: false, error: err?.message || 'Network error', items: [], adapterError: null };
+  }
+}
+
 // Module: page/src/07-console.js
 // Purpose: P1 console shell lifecycle, events, health polling, and navigation binding
 // Maintainer: builder-gemini
@@ -6275,22 +6731,69 @@ async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fe
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}${statusNote}`);
   }
 
+  async function refreshScreenData(paneId) {
+    const container = document.getElementById('screenContainer');
+    if (!container) return;
+    if (!paneId) {
+      renderScreenView(container, { paneId: null });
+      updateConsoleTimestamp(document, 'No pane selected');
+      return;
+    }
+    const autoScrollEl = document.getElementById('screenAutoScroll');
+    const autoScroll = autoScrollEl ? autoScrollEl.checked : true;
+    const res = await fetchScreen(window.fetch, paneId);
+    if (!res.ok) {
+      renderScreenView(container, { paneId, error: res.error });
+      updateConsoleTimestamp(document, `Error reading ${paneId}`);
+      return;
+    }
+    renderScreenView(container, { paneId, data: res.data, autoScroll });
+    const now = new Date();
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
+  }
+
+  async function refreshOpsDeskData() {
+    const container = document.getElementById('opsDeskContainer');
+    if (!container) return;
+    const res = await fetchOpsDesk(window.fetch);
+    if (!res.ok) {
+      renderOpsDeskView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error reading ops desk');
+      return;
+    }
+    renderOpsDeskView(container, { items: res.items, adapterError: res.adapterError });
+    const now = new Date();
+    const countNote = `${res.items.length} item${res.items.length === 1 ? '' : 's'}`;
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
+  }
+
+  function refreshActiveTab(params) {
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    if (activeTab === 'sessions') {
+      refreshSessionsData();
+    } else if (activeTab === 'screen') {
+      const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
+      refreshScreenData(paneId);
+    } else if (activeTab === 'ops-desk') {
+      refreshOpsDeskData();
+    } else {
+      updateConsoleTimestamp(document, 'No data yet');
+    }
+  }
+
   function handleTabSwitch() {
-    const { tab } = parseHash(window.location.hash);
+    const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
-    if (isConsolePath() && activeTab === 'sessions') {
-      refreshSessionsData();
+    if (isConsolePath()) {
+      refreshActiveTab(params);
     }
   }
 
   const poller = createPollingManager({
     onTick: () => {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else {
-        updateConsoleTimestamp(document, 'No data yet');
-      }
+      refreshActiveTab();
     },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
@@ -6332,11 +6835,7 @@ async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fe
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        if (activeTab === 'sessions') {
-          refreshSessionsData();
-        } else {
-          updateConsoleTimestamp(document, 'No data yet');
-        }
+        refreshActiveTab();
       });
     }
 

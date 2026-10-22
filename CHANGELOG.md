@@ -16,6 +16,19 @@ Each item links the PR, commit, or file it describes (CHG-04).
   including `--demo`. `0.0.0.0` is demo-only LAN exposure via `--host 0.0.0.0`
   or `MASTOPIA_HOST=0.0.0.0`. Live mode refuses that opt-in.
   PR: https://github.com/modern-solver/herdr-city/pull/11
+- Feature: Implemented Milestone U6 (User Interface Milestone 6) ops desk queue view (`#ops-desk`),
+  rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, with display-only banner,
+  wait timer badges, prompt quotes, recommendation placeholders, inspect links, adapter error resilience,
+  empty state banner, and responsive card styling.
+  Files: `page/src/ops-desk-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
+  `page/README.md`, `web/index.html`, `test/ops-desk-ui.test.js`.
+  PR: https://github.com/modern-solver/herdr-city/pull/16 (stacked on PR #14)
+- Feature: Implemented Milestone U4 (User Interface Milestone 4) pane screen viewer (`#screen?paneId=...`),
+  rendering read-only terminal screens from `GET /api/screen` with metadata ribbon, auto-scroll toggle,
+  raw ANSI sequence pass-through, truncation warning banner, unselected/loading/error states, and responsive styles.
+  Files: `page/src/screen-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
+  `page/README.md`, `web/index.html`, `test/screen-ui.test.js`.
+  PR: https://github.com/modern-solver/herdr-city/pull/14 (stacked on PR #10)
 - Feature: `GET /api/logs` event ring (500 events / 262144 characters of `text`).
   Uses `maskThenTruncate` for event text. Newest first.
   `adapter_error` is one event per outage episode; a new event after recovery.

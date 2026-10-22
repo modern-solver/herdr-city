@@ -34,25 +34,25 @@
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
+| U4 | User Interface Milestone 4 |
+| U6 | User Interface Milestone 6 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U2 (User Interface Milestone 2) — Sessions list view (`#sessions`), table rendering
-  from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
-  empty/error/loading states, and responsive styling.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (PR #10 ready for review).
-- Status: Merged `origin/main` (including PR #6, #7, #8, #9) and merged `origin/main` at `b6b02ec`
-  (PR #12 / B8) into `feat/gemini-u2-sessions` (merge head `c881707`); resolved `CHANGELOG.md`
-  conflict keeping both U2 and B8 entries with no conflict markers remaining; regenerated
-  CODEMAP.md and page build; leak rule verified (all endpoint text sanitized via shared
-  `escapeHtml`); green on lint, format, test.
+- Milestone: U6 (User Interface Milestone 6) — Ops desk queue view (`#ops-desk`),
+  rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
+  prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (PR #16 retargeted to `main`).
+- Status: Merged `origin/main` at `d583783` into `feat/gemini-u6-ops-desk` (merge head `8d67b9a`);
+  resolved `docs/agents/builder-gemini.md` conflict; leak rule verified; 96/96 tests pass;
+  lint and format:check green. Ready for review.
 
 ## Files touched
 
-Net diff vs `main` on `feat/gemini-u2-sessions`:
+Net diff vs `main` on `feat/gemini-u6-ops-desk`:
 
 1. `.prettierignore`
 2. `CHANGELOG.md`
@@ -61,11 +61,10 @@ Net diff vs `main` on `feat/gemini-u2-sessions`:
 5. `page/README.md`
 6. `page/build.js`
 7. `page/src/07-console.js`
-8. `page/src/console-router.js`
+8. `page/src/ops-desk-view.js`
 9. `page/src/page.html`
-10. `page/src/sessions-view.js`
-11. `test/sessions-ui.test.js`
-12. `web/index.html`
+10. `test/ops-desk-ui.test.js`
+11. `web/index.html`
 
 ## Open questions
 
