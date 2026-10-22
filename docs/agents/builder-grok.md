@@ -19,8 +19,9 @@
 
 ## Current task
 
-PR #11: D3 merged origin/main (`e7e13fa`, PR #6) into `feat/grok-b7-demo`.
-README bind/demo Host-Origin policy kept. PR is ready for merge.
+PR #11: D3 merged `origin/main` (`3c31b0f`, PR #18) into
+`feat/grok-b7-demo` as `b2c1e39`. Cleared stale Keep-draft line. PR is ready
+for merge.
 
 ## Files touched
 
