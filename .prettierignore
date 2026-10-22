@@ -6,6 +6,7 @@ page/src/*
 !page/src/07-console.js
 !page/src/sessions-view.js
 !page/src/screen-view.js
+!page/src/ops-desk-view.js
 docs
 fixtures
 node_modules

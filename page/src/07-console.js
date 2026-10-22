@@ -70,6 +70,22 @@
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
   }
 
+  async function refreshOpsDeskData() {
+    const container = document.getElementById('opsDeskContainer');
+    if (!container) return;
+    const res = await fetchOpsDesk(window.fetch);
+    if (!res.ok) {
+      renderOpsDeskView(container, { error: res.error });
+      updateConsoleTimestamp(document, 'Error reading ops desk');
+      return;
+    }
+    renderOpsDeskView(container, { items: res.items, adapterError: res.adapterError });
+    const now = new Date();
+    const countNote = `${res.items.length} item${res.items.length === 1 ? '' : 's'}`;
+    const statusNote = res.adapterError ? ' (adapter notice)' : '';
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()} (${countNote})${statusNote}`);
+  }
+
   function refreshActiveTab(params) {
     const effectiveParams = params || parseHash(window.location.hash).params;
     if (activeTab === 'sessions') {
@@ -77,6 +93,8 @@
     } else if (activeTab === 'screen') {
       const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
       refreshScreenData(paneId);
+    } else if (activeTab === 'ops-desk') {
+      refreshOpsDeskData();
     } else {
       updateConsoleTimestamp(document, 'No data yet');
     }

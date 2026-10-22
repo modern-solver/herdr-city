@@ -35,23 +35,24 @@
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
 | U4 | User Interface Milestone 4 |
+| U6 | User Interface Milestone 6 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U4 (User Interface Milestone 4) — Pane screen viewer (`#screen?paneId=...`),
-  reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
-  raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (PR #14 retargeted to `main`).
-- Status: Merged `origin/main` at `3c31b0f` into `feat/gemini-u4-screen` (merge head `f1faef1`);
-  resolved `CHANGELOG.md` and `docs/agents/builder-gemini.md` conflicts keeping both sides;
-  leak rule verified; 88/88 tests pass; lint and format:check green. Ready for review.
+- Milestone: U6 (User Interface Milestone 6) — Ops desk queue view (`#ops-desk`),
+  rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
+  prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (PR #16 retargeted to `main`).
+- Status: Merged `origin/main` at `d583783` into `feat/gemini-u6-ops-desk` (merge head `8d67b9a`);
+  resolved `docs/agents/builder-gemini.md` conflict; leak rule verified; 96/96 tests pass;
+  lint and format:check green. Ready for review.
 
 ## Files touched
 
-Net diff vs `main` on `feat/gemini-u4-screen`:
+Net diff vs `main` on `feat/gemini-u6-ops-desk`:
 
 1. `.prettierignore`
 2. `CHANGELOG.md`
@@ -60,9 +61,9 @@ Net diff vs `main` on `feat/gemini-u4-screen`:
 5. `page/README.md`
 6. `page/build.js`
 7. `page/src/07-console.js`
-8. `page/src/page.html`
-9. `page/src/screen-view.js`
-10. `test/screen-ui.test.js`
+8. `page/src/ops-desk-view.js`
+9. `page/src/page.html`
+10. `test/ops-desk-ui.test.js`
 11. `web/index.html`
 
 ## Open questions

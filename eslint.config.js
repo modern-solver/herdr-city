@@ -25,6 +25,7 @@ export default [
       'page/src/07-console.js',
       'page/src/sessions-view.js',
       'page/src/screen-view.js',
+      'page/src/ops-desk-view.js',
     ],
     languageOptions: {
       ecmaVersion: 2022,
@@ -45,6 +46,8 @@ export default [
         renderSessionsView: 'readonly',
         fetchScreen: 'readonly',
         renderScreenView: 'readonly',
+        fetchOpsDesk: 'readonly',
+        renderOpsDeskView: 'readonly',
       },
     },
   },
