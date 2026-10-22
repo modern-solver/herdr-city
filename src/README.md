@@ -9,7 +9,8 @@ CLI entry is `cli.js`. `paths.js` exports `ROOT`, `WEB_DIR`, `FIXTURES_DIR`.
 to console sessions and applies district/cli/model/status/`q` filters.
 HTTP server serves `/` (city) and `/console` (console shell) routes, and
 `GET /api/sessions` for the console session list. `screen.js` builds
-`GET /api/screen` via `maskThenTruncate`. `ops-desk.js` builds
+`GET /api/screen` via `maskThenTruncate`. `logs.js` is the event ring;
+`GET /api/logs` uses `maskThenTruncate`. `ops-desk.js` builds
 `GET /api/ops-desk`; prompt text uses `maskThenTruncate`.
 
 Gotchas: live herdr allows only `agent list`, `workspace list`, `pane read`.

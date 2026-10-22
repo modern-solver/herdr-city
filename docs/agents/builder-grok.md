@@ -6,7 +6,7 @@
 | Model | grok-4.5 (high) |
 | Date | 2026-10-22 |
 | Lane | P1 backend (read-only adapter, JavaScript Object Notation (JSON) Application Programming Interface (API), logs, filters, masking, tests) |
-| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b6-ops-desk` |
+| Checkout | `C:\Users\shaun\mastopia-grok` branch `feat/grok-b3-logs` |
 | Model switch | model switched 4.6 -> 4.5 high at 21:38 IST (Shaunak); model grok-4.5 high from 21:38 (Shaunak) |
 
 ## Acronyms
@@ -19,9 +19,9 @@
 
 ## Current task
 
-PR #17: D3 merged `origin/main` (`57425d5`, PR #15) into
-`feat/grok-b6-ops-desk` as `e9be97d`. Retargeted base to main; undrafted.
-Leak tests kept. Ready for reviewer re-review (SDLC-25).
+PR #18: D3 merged `origin/main` (`100dada`, PR #17) into
+`feat/grok-b3-logs` as `11f967b`. Kept logs + ops-desk; leak tests kept.
+Ready for reviewer re-review (SDLC-25).
 
 ## Files touched
 
@@ -31,14 +31,12 @@ Net vs `origin/main`:
 - `README.md`
 - `docs/CODEMAP.md`
 - `docs/agents/builder-grok.md`
-- `scripts/codemap.js`
 - `src/README.md`
 - `src/adapter.js`
-- `src/ops-desk.js`
+- `src/logs.js`
 - `src/server.js`
-- `test/codemap.test.js`
 - `test/leak.test.js`
-- `test/ops-desk.test.js`
+- `test/logs.test.js`
 
 ## Open questions
 
@@ -59,4 +57,5 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 - Merge `origin/main` into feature branches (D3). Never rebase-force.
 - `npm run lint` and `npm run format:check` must include `scripts/`.
 - `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
+- Purpose lines in module READMEs stay on one line for CODEMAP.
 - PR Models line: grok-4.5 (high).

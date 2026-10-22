@@ -5,6 +5,10 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: `GET /api/logs` event ring (500 events / 262144 characters of `text`).
+  Uses `maskThenTruncate` for event text. Newest first.
+  `adapter_error` is one event per outage episode; a new event after recovery.
+  PR: https://github.com/modern-solver/herdr-city/pull/18
 - Feature: `GET /api/ops-desk` lists blocked sessions that have a prompt.
   `recommendation` is always null. No approve or deny fields.
   `updateBlockedSince` lives outside `tick`. Sort and episode-reset tests.

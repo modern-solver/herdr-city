@@ -1,11 +1,12 @@
 /**
- * Purpose: leak tests for screen, sessions, city and ops-desk JSON. Secrets at start, middle, end, boundary.
+ * Purpose: leak tests for screen, sessions, city, logs and ops-desk JSON. Secrets at start, middle, end, boundary.
  * Owner: builder-grok
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createAdapter } from '../src/adapter.js';
 import { createServer } from '../src/server.js';
+import { LOG_TEXT_MAX } from '../src/logs.js';
 import { SCREEN_CAP } from '../src/screen.js';
 import { maskThenTruncate } from '../src/output-filter.js';
 import {
@@ -115,6 +116,49 @@ test('GET /api/screen truncated stays true when masked text exceeds cap', async 
     assert.equal(body.truncated, true);
     assert.equal(body.text.length, SCREEN_CAP);
     assertClean(body, LEAK_TOKENS);
+  });
+});
+
+test('GET /api/logs JSON has no secrets at start, middle, end or text boundary', async () => {
+  // needs_you: capPrompt keep head, then log append keep tail.
+  const prefix = `Allow this action?\n${TOKS}mid `;
+  const before = `${JWT} `;
+  const overlap = 16;
+  const padLen = LOG_TEXT_MAX - overlap - prefix.length - before.length;
+  const pane = `${prefix}${before}${'#'.repeat(Math.max(0, padLen))}${GHP}${'#'.repeat(300)} ${SK}${TOKS}`;
+  assertCutInsideToken(pane, LOG_TEXT_MAX, GHP, { keep: 'head' });
+  await withServer(leakClient({ pane, title: `${TOKS}title${TOKS}` }), async (port) => {
+    const res = await fetch(`http://127.0.0.1:${port}/api/logs`);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.ok(body.events.length >= 1);
+    assertClean(body, LEAK_TOKENS);
+  });
+});
+
+test('GET /api/logs adapter_error JSON has no secrets at the 800-char tail boundary', async () => {
+  const msg = `${TOKS}mid${TOKS} ${boundaryText(LOG_TEXT_MAX, GHP, ` ${JWT} ${SK}${TOKS}`)}`;
+  assertCutInsideToken(msg, LOG_TEXT_MAX, GHP);
+  const client = {
+    kind: 'test',
+    async agentList() {
+      throw new Error(msg);
+    },
+    async workspaceList() {
+      return [];
+    },
+    async paneRead() {
+      return '';
+    },
+  };
+  await withServer(client, async (port) => {
+    const res = await fetch(`http://127.0.0.1:${port}/api/logs`);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.ok(body.events.some((e) => e.type === 'adapter_error'));
+    assertClean(body, LEAK_TOKENS);
+    const ev = body.events.find((e) => e.type === 'adapter_error');
+    assert.equal(ev.text.length <= LOG_TEXT_MAX, true);
   });
 });
 
