@@ -18,8 +18,10 @@
 | CLI | Command-Line Interface |
 | CTX | Context Layer Rule |
 | DOC | Documentation Rule |
+| DOM | Document Object Model |
 | GUI | Graphical User Interface |
 | HTTP | Hypertext Transfer Protocol |
+| HUD | Heads-Up Display |
 | IST | India Standard Time |
 | JSON | JavaScript Object Notation |
 | MAS | Modern Age Solutions |
@@ -36,36 +38,41 @@
 
 ## Current task
 
-- Phase: P1 implementation kickoff and documentation follow-up.
-- Task: Open documentation follow-up PR on `docs/p1-approvals` recording Shaunak's PRE-01 approval,
-  then implement UI milestone U1 on branch `p1/gemini-console-ui` in worktree
-  `C:\Users\shaun\mastopia-gemini`.
-- Scope: Approvals follow-up docs (`docs/spec-sheet.md`, `docs/prd.md`, `docs/roadmap.md`, `CHANGELOG.md`,
-  `docs/agents/*`), then console shell, navigation header, route switcher, and tab router with tests for U1.
-- Status: Preparing `docs/p1-approvals` commit and PR #3.
+- Phase: P1 implementation.
+- Milestone: U1 (User Interface Milestone 1) — Console shell, navigation header, route switcher
+  (`/` and `/console`), and tab router (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u1-shell`.
+- Status: PR #6 (replacing PR #4 for SDLC-12); merged `origin/main` (PR #3, #7, #8, #9):
+  1. Restored `prefers-reduced-motion` media query in `page/src/page.html` and `web/index.html`.
+  2. Single source for router and lifecycle helpers in `page/src/console-router.js` (CODE-05/14).
+  3. Extracted `closeCityConsolePanel()` and set timestamp to 'No data yet' (CODE-04).
+  4. Expanded tests in `test/console-ui.test.js` to 35 passing tests.
+  5. Updated CHANGELOG.md U1 links to PR #6 per CHG-04.
+  6. Merged `origin/main` (PR #7 tooling, PR #9 codemap, PR #8 sessions) into `feat/gemini-u1-shell`.
+  7. Regenerated `docs/CODEMAP.md` and updated module READMEs (`src/`, `test/`, `page/`, `web/`).
+  8. Brought console UI files (`page/src/console-router.js`, `07-console.js`) under ESLint and Prettier.
 
 ## Files touched
 
-The builder-gemini agent touched and maintains the following files on `docs/p1-approvals`:
+Net diff vs `main` on `feat/gemini-u1-shell`:
 
-1. `docs/spec-sheet.md`:
-   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
-   - Renamed Open questions section to Decisions; set Q1, Q2, Q5, Q6, Q7 to approved as written.
-   - Updated Q3 status to decided: 2000 ms; hidden tab 10000 ms (Q7 approved).
-   - Added standing preference note: routine values are defaults Shaunak can veto.
-2. `docs/prd.md`:
-   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
-   - Aligned Decisions section with spec sheet decisions and added defaults preference note.
-3. `docs/roadmap.md`:
-   - Updated Status row to approved by Shaunak 2026-10-18 (PRE-01, PR #2 merged as `538ba9d`).
-   - Updated P1 section to note PRE-01 approved and P1 is open.
-4. `CHANGELOG.md`:
-   - Added entries under 2026-10-18 for Shaunak's PRE-01 approval, Q1/Q2/Q5-Q7 approval,
-     defaults-not-questions standing preference, and reviewer round-6 row.
-5. `docs/agents/reviewer-claude.md`:
-   - Committed on behalf of DevOps (who maintains reviewer memory per Shaunak decision).
-6. `docs/agents/builder-gemini.md`:
-   - Agent memory file tracking active task, touched files, open questions, and learnings.
+1. `.prettierignore`
+2. `CHANGELOG.md`
+3. `docs/CODEMAP.md`
+4. `docs/agents/builder-gemini.md`
+5. `eslint.config.js`
+6. `package.json`
+7. `page/README.md`
+8. `page/build.js`
+9. `page/src/07-console.js`
+10. `page/src/console-router.js`
+11. `page/src/page.html`
+12. `src/README.md`
+13. `src/server.js`
+14. `test/README.md`
+15. `test/console-ui.test.js`
+16. `web/README.md`
+17. `web/index.html`
 
 ## Open questions
 
@@ -73,7 +80,7 @@ Decisions and standing approvals from Shaunak (2026-10-18):
 
 | ID | Item | Owner | Status |
 |---|---|---|---|
-| Q1 | Expected files per district: `CHANGELOG.md`, `briefs/`, `briefs/lead-escalations.md` | Shaunak | Approved (as written) |
+| Q1 | Expected files: `CHANGELOG.md`, `briefs/`, escalations | Shaunak | Approved (as written) |
 | Q2 | Log bounds: 500 events and 262,144 characters | Shaunak | Approved (as written) |
 | Q3 | Console polling interval: 2,000 ms; hidden tab 10,000 ms | builder-gemini | Decided |
 | Q4 | ANSI in pane screen: pass through cleanly in preformatted code block | builder-gemini | Decided |
@@ -86,17 +93,16 @@ can veto, not asked as open questions.
 
 ## Last-session learnings
 
-1. Documentation strictness:
-   - Acronyms MUST be defined in an Acronyms table or expanded on first use per document.
-   - All lines outside tables and URLs MUST remain under 120 characters (DOC-07).
-   - Use active voice and name specific actors (e.g., "The builder-gemini agent implements...").
-   - Routine values are defaults Shaunak can veto, not open questions.
-2. Coordination in shared checkouts:
-   - Always log coordination lines in `briefs/lead-escalations.md` before starting edits.
-   - Edit only files assigned to the agent's lane; never touch files owned by other builders.
-   - Stage specific files using `git add <file>` and never use blanket adds (`git add -A`).
-   - Run `git pull --rebase` before committing and pushing to prevent merge commits.
-   - Record pushed commit hashes under `## Coordination` upon completing a task.
-3. Worktree separation:
-   - Docs follow-up PR is completed on `docs/p1-approvals` in `C:\Users\shaun\mastopia`.
-   - All P1 UI implementation code happens in `C:\Users\shaun\mastopia-gemini` on `p1/gemini-console-ui`.
+1. UI architecture in mastopia:
+   - `page/build.js` concatenates scripts into `web/index.html`. Always rebuild after editing `page/src/`.
+   - The route switcher toggles between `/` (3D City) and `/console` (Console dashboard) without page reload.
+   - Tab switching uses client-side hash routing (`#sessions`, `#screen`, `#logs`, `#rulebook`, `#ops-desk`).
+2. Code alignment and testing (CODE-04, CODE-05, CODE-14):
+   - Keep a single source of truth for routing helpers; avoid duplicating constants in controller scripts.
+   - Test shipped functions with minimal stubs rather than testing isolated mock copies.
+   - Move cross-component mutations (like closing P0 console) into explicit named functions.
+3. Accessibility and regressions:
+   - Verify that media queries like `prefers-reduced-motion` remain intact when introducing new styles.
+4. Coordination and branch management (D1, D3):
+   - Merging `origin/main` via normal merge commits (no rebase-and-force-push) keeps PR history clean.
+   - Reconcile `CHANGELOG.md` carefully to preserve all items across concurrently developed branches.
