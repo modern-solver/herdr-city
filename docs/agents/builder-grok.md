@@ -19,14 +19,14 @@
 
 ## Current task
 
-PR #18 draft stacked on `feat/grok-b2-screen`. D3 merged
-`origin/feat/grok-b2-screen` (`c163aa3`) into `feat/grok-b3-logs`.
-`GET /api/logs` uses `maskThenTruncate`. Keep draft. Retarget to main after
-#15 merges. Stand by for lead review request.
+PR #18: D3 merged `origin/main` (`57425d5`, PR #15) into
+`feat/grok-b3-logs` as `5f792e1`. Retargeted base to main; undrafted.
+`GET /api/logs` uses `maskThenTruncate`. Leak tests kept. Ready for
+reviewer re-review (SDLC-25).
 
 ## Files touched
 
-Net vs `origin/feat/grok-b2-screen`:
+Net vs `origin/main`:
 
 - `CHANGELOG.md`
 - `README.md`
@@ -58,7 +58,5 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 - Merge `origin/main` into feature branches (D3). Never rebase-force.
 - `npm run lint` and `npm run format:check` must include `scripts/`.
 - `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
-- PR Models line: grok-4.5 (high).
-- Merge `origin/main` (or parent) into feature branches (D3). Never rebase-force.
-- `npm run lint` and `npm run format:check` must include `scripts/`.
 - Purpose lines in module READMEs stay on one line for CODEMAP.
+- PR Models line: grok-4.5 (high).
