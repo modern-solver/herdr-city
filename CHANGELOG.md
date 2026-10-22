@@ -5,6 +5,17 @@ Each item links the PR, commit, or file it describes (CHG-04).
 
 ## 2026-10-18
 
+- Feature: demo mode (`--demo` / `MASTOPIA_DEMO=1`) uses fixture data and reads
+  `PORT` then `MASTOPIA_PORT` then 7740. Bind stays `127.0.0.1` in every mode.
+  `0.0.0.0` is demo-only via `--host 0.0.0.0` or `MASTOPIA_HOST=0.0.0.0` (LAN
+  exposure). Live mode refuses that opt-in. `/health` reports `mode` `demo` and
+  `host`. Host and Origin loopback checks are skipped in demo only. README
+  documents `--demo`, `MASTOPIA_DEMO=1`, `PORT` (demo only), and the LAN opt-in.
+  PR: https://github.com/modern-solver/herdr-city/pull/11
+- Decision: Shaunak (17:53 IST): bind stays `127.0.0.1` in every mode,
+  including `--demo`. `0.0.0.0` is demo-only LAN exposure via `--host 0.0.0.0`
+  or `MASTOPIA_HOST=0.0.0.0`. Live mode refuses that opt-in.
+  PR: https://github.com/modern-solver/herdr-city/pull/11
 - Feature: Implemented Milestone U6 (User Interface Milestone 6) ops desk queue view (`#ops-desk`),
   rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, with display-only banner,
   wait timer badges, prompt quotes, recommendation placeholders, inspect links, adapter error resilience,

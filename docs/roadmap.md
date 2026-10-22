@@ -10,6 +10,7 @@
 | Author (P1 → P2 → P3 product) | builder-gemini (`gemini-3.8-flash-high`) |
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
 | Approval | Approved by Shaunak (2026-10-18) |
+| Change | 2026-10-18, Shaunak: local-only bind default |
 
 This file records backend sequencing and product roadmap in full. builder-grok owns
 backend sequencing; builder-gemini owns UI sequencing, navigation, and P2/P3 product roadmap.
@@ -62,7 +63,7 @@ says to combine. Order is required where "Needs" is set.
 | 4 | B4 | Filter query params on `GET /api/sessions` | B1 | Server-side AND filters |
 | 5 | B5 | `GET /api/rulebook` parse + district file presence | PRE-01 | Independent of B1–B4; may run parallel after PRE-01 |
 | 6 | B6 | `GET /api/ops-desk` | B1 | Thin; may merge into the B1 PR if the diff stays one logical change |
-| 7 | B7 | `--demo` / `MASTOPIA_DEMO=1`, bind `0.0.0.0`, `PORT` | PRE-01 | Independent; required before hosted preview |
+| 7 | B7 | `--demo` / `MASTOPIA_DEMO=1`, `PORT`, bind `127.0.0.1` unless `--host 0.0.0.0` | PRE-01 | Independent; required before hosted preview |
 | 8 | B8 | 409 on `/api/send-keys`, `/api/send-text`, `/api/prompt` | PRE-01 | Keep `/api/answer` 409 |
 
 Backend check (this lane):

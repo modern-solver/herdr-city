@@ -33,7 +33,7 @@ function tokenOk(req, token) {
   return got === token;
 }
 
-export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir = WEB_DIR }) {
+export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir = WEB_DIR, demo = false }) {
   const token = crypto.randomBytes(16).toString('hex');
   const sseClients = new Set();
   let askV = 1;
@@ -62,7 +62,7 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
   const server = http.createServer(async (req, res) => {
     const hostHdr = String(req.headers.host || '');
     const hostname = hostHdr.split(':')[0];
-    if (hostname && hostname !== '127.0.0.1' && hostname !== 'localhost') {
+    if (!demo && hostname && hostname !== '127.0.0.1' && hostname !== 'localhost') {
       res.writeHead(403, { 'Content-Type': 'text/plain' });
       res.end('mastopia binds 127.0.0.1 only');
       return;
@@ -70,7 +70,11 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     const url = new URL(req.url || '/', `http://${hostHdr || '127.0.0.1'}`);
 
     if (req.method === 'GET' && url.pathname === '/health') {
-      json(res, 200, { ok: true, mode: adapter.getSnapshot().mode });
+      json(res, 200, {
+        ok: true,
+        mode: demo ? 'demo' : adapter.getSnapshot().mode,
+        host,
+      });
       return;
     }
     if (req.method === 'GET' && (url.pathname === '/api/city' || url.pathname === '/api/snapshot')) {
@@ -141,7 +145,7 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       return;
     }
     if (req.method === 'GET' && url.pathname === '/api/session') {
-      if (!tokenOk(req, token) || !originOk(req)) {
+      if (!tokenOk(req, token) || (!demo && !originOk(req))) {
         json(res, 403, { ok: false });
         return;
       }
@@ -179,7 +183,7 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       return;
     }
     if (req.method === 'POST' && url.pathname === '/api/names') {
-      if (!tokenOk(req, token) || !originOk(req)) {
+      if (!tokenOk(req, token) || (!demo && !originOk(req))) {
         json(res, 403, { ok: false });
         return;
       }

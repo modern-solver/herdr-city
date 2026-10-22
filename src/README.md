@@ -14,9 +14,11 @@ HTTP server serves `/` (city) and `/console` (console shell) routes, and
 `GET /api/ops-desk`; prompt text uses `maskThenTruncate`.
 
 Gotchas: live herdr allows only `agent list`, `workspace list`, `pane read`.
-The process binds `127.0.0.1`. Adapter poll is 2000 ms. Pane text is masked
-before it leaves the API. Session `activity` is masked (SEC-03). Prompt and
-error caps in `prompt-detect.js` use `maskThenTruncate` (no local char slice).
+Binds `127.0.0.1` in every mode; `0.0.0.0` only with `--demo` plus
+`--host 0.0.0.0` / `MASTOPIA_HOST` (LAN exposure); demo relaxes the loopback
+Host and Origin checks. Adapter poll is 2000 ms. Pane text is masked before
+it leaves the API. Session `activity` is masked (SEC-03). Prompt and error
+caps in `prompt-detect.js` use `maskThenTruncate` (no local char slice).
 Write routes (`/api/answer`, `/api/send-keys`, `/api/send-text`, `/api/prompt`)
 always return 409 readonly; no write path.
 

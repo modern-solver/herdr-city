@@ -12,7 +12,7 @@ Assets:
 
 Gotchas:
 - Do not hand-edit `index.html`; edits are overwritten by `page/build.js`.
-- The server refuses Host names other than loopback in P0. Demo Host/Origin policy is specified for P1 and is not in
-  this tree yet.
+- Binds 127.0.0.1 in every mode; 0.0.0.0 only with --demo plus --host 0.0.0.0 /
+  MASTOPIA_HOST (LAN exposure); demo relaxes the loopback Host and Origin checks.
 
 Owner: builder-gemini for the page; builder-grok owns how it is served.

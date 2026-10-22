@@ -11,6 +11,7 @@
 | Reviewer | reviewer-claude (`claude-opus-5-5`) |
 | Lane | Backend lead (builder-grok); UI view specs (builder-gemini) |
 | Approval | Approved by Shaunak (2026-10-18) |
+| Change | 2026-10-18, Shaunak: local-only bind default |
 
 This document is the API contract the console UI consumes. builder-grok implements
 the backend against it. builder-gemini implements views against it.
@@ -546,15 +547,19 @@ for dropdowns come from an unfiltered `GET /api/sessions` (no query).
 |---|---|---|---|---|
 | live | default | herdr | `127.0.0.1` | `MASTOPIA_PORT` else 7740 |
 | fixture | `--fixture` or `MASTOPIA_MODE=fixture` | `fixtures/` | `127.0.0.1` | same |
-| demo | `--demo` or `MASTOPIA_DEMO=1` | `fixtures/` (ENV-03) | `0.0.0.0` | `PORT` else `MASTOPIA_PORT` else 7740 |
+| demo | `--demo` or `MASTOPIA_DEMO=1` | `fixtures/` (ENV-03) | `127.0.0.1` | `PORT` else `MASTOPIA_PORT` else 7740 |
 
-Without `--demo` / `MASTOPIA_DEMO=1` the process MUST bind `127.0.0.1`. It MUST
-NOT read `PORT`. `--host` other than loopback exits 2, as in P0.
+Default bind is `127.0.0.1` in every mode, including `--demo`. `0.0.0.0` is
+allowed only with `--demo` plus `--host 0.0.0.0` or `MASTOPIA_HOST=0.0.0.0`
+(LAN exposure). Live mode refuses that opt-in. Without `--demo` /
+`MASTOPIA_DEMO=1` the process MUST NOT read `PORT`. `--host` other than
+loopback (or demo plus `0.0.0.0`) exits 2.
 
 Hosted Cursor preview uses demo mode only. Agents do not launch Cursor cloud
 agents (project brief section 6).
 
-`/health` in demo: `{ "ok": true, "mode": "demo", "host": "0.0.0.0" }`.
+`/health` in demo: `{ "ok": true, "mode": "demo", "host": "<bind>" }` where
+`<bind>` is `127.0.0.1` by default and `0.0.0.0` only with the LAN opt-in.
 
 Host and Origin (P0 code: `src/server.js` Host check at line 63, `originOk` at
 line 18):
@@ -597,7 +602,8 @@ New tests MUST cover:
 9. `GET /api/ops-desk` lists the blocked grok prompt; no approve field besides
    `recommendation: null`.
 10. `POST /api/answer` and `POST /api/send-keys` return 409.
-11. Demo flag binds `0.0.0.0`; default binds `127.0.0.1`.
+11. Demo without host opt-in binds `127.0.0.1`; demo plus `--host 0.0.0.0`
+    binds `0.0.0.0`; live plus that opt-in is refused.
 12. `assertReadOnly` still rejects `send-keys` / `server stop`.
 13. Without demo: `GET /health` with `Host: example.com` returns 403.
 14. With demo: `GET /health` with `Host: example.com` returns 200.
