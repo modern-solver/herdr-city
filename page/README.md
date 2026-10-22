@@ -8,6 +8,7 @@ Modules:
 - `page/src/01-core.js` through `page/src/06-ui.js`: 3D city canvas and UI.
 - `page/src/07-console.js`: P1 console shell and views.
 - `page/src/console-router.js`: client-side hash routing and view lifecycles.
+- `page/src/sessions-view.js`: agent sessions list view and table construction.
 - `page/src/page.html`: main template containing both city and console layout.
 
 Gotchas:

@@ -56,4 +56,7 @@ None. Spec Q1, Q2, Q5, Q6, Q7 approved as written.
 - PR body files live in the worktree as `*.tmp`. Never git add them.
 - Write commit msg file in its own step before commit.
 - No `>` redirection into tracked files.
+- Merge `origin/main` into feature branches (D3). Never rebase-force.
+- `npm run lint` and `npm run format:check` must include `scripts/`.
+- `npm run codemap` regenerates `docs/CODEMAP.md` from `git ls-files`.
 - PR Models line: grok-4.5 (high).
