@@ -520,6 +520,51 @@
     color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
   }
   .badge-error{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  /* U4 Screen View styles */
+  .screen-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto; display: flex;
+    flex-direction: column; gap: 16px;
+  }
+  .screen-ribbon{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #21262d; padding-bottom: 14px;
+  }
+  .screen-meta-left{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .screen-meta-right{ display: flex; align-items: center; gap: 12px; font-size: 12px; color: #8b949e; }
+  .screen-title{ font-size: 16px; font-weight: 600; color: #f0f6fc; margin: 0; }
+  .screen-lines{ font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8b949e; }
+  .screen-time{ font-size: 12px; color: #8b949e; }
+  .screen-toolbar{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; font-size: 12px; color: #8b949e;
+  }
+  .screen-autoscroll-label{
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    user-select: none; color: #c9d1d9;
+  }
+  .screen-truncation-banner{
+    padding: 8px 12px; background: rgba(210, 153, 34, 0.15); border: 1px solid rgba(210, 153, 34, 0.4);
+    border-radius: 6px; color: #e3b341; font-size: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .screen-viewport{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    max-height: 560px; overflow: auto; padding: 14px; position: relative;
+  }
+  .screen-pre{
+    margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.5; color: #c9d1d9; white-space: pre-wrap; word-break: break-all;
+  }
+  .screen-code{ font-family: inherit; color: inherit; }
+  .screen-loading, .screen-empty, .screen-prompt{
+    padding: 36px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .screen-prompt a{ color: #58a6ff; text-decoration: none; font-weight: 500; }
+  .screen-prompt a:hover{ text-decoration: underline; }
+  .screen-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -666,9 +711,12 @@
       </div>
     </section>
     <section class="console-tab-pane" id="view-screen" role="tabpanel" aria-labelledby="tab-screen" hidden>
-      <div class="console-card">
-        <h2>Pane Screen Viewer</h2>
-        <p class="muted">Foundation ready for U4.</p>
+      <div class="screen-card">
+        <div id="screenContainer">
+          <div class="screen-prompt" id="screenSelectPrompt">
+            No pane selected. Choose an agent session from the <a href="#sessions">Sessions tab</a> to view its terminal screen.
+          </div>
+        </div>
       </div>
     </section>
     <section class="console-tab-pane" id="view-logs" role="tabpanel" aria-labelledby="tab-logs" hidden>

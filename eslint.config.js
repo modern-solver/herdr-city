@@ -20,7 +20,12 @@ export default [
     },
   },
   {
-    files: ['page/src/console-router.js', 'page/src/07-console.js', 'page/src/sessions-view.js'],
+    files: [
+      'page/src/console-router.js',
+      'page/src/07-console.js',
+      'page/src/sessions-view.js',
+      'page/src/screen-view.js',
+    ],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -38,6 +43,8 @@ export default [
         closeCityConsolePanel: 'readonly',
         fetchSessions: 'readonly',
         renderSessionsView: 'readonly',
+        fetchScreen: 'readonly',
+        renderScreenView: 'readonly',
       },
     },
   },

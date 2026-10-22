@@ -541,6 +541,51 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
     color: #f85149; font-size: 12px; font-family: 'JetBrains Mono', monospace;
   }
   .badge-error{ background: #341a1a; color: #f85149; border: 1px solid #da3633; }
+  /* U4 Screen View styles */
+  .screen-card{
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; max-width: 1200px; margin: 0 auto; display: flex;
+    flex-direction: column; gap: 16px;
+  }
+  .screen-ribbon{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #21262d; padding-bottom: 14px;
+  }
+  .screen-meta-left{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .screen-meta-right{ display: flex; align-items: center; gap: 12px; font-size: 12px; color: #8b949e; }
+  .screen-title{ font-size: 16px; font-weight: 600; color: #f0f6fc; margin: 0; }
+  .screen-lines{ font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8b949e; }
+  .screen-time{ font-size: 12px; color: #8b949e; }
+  .screen-toolbar{
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; font-size: 12px; color: #8b949e;
+  }
+  .screen-autoscroll-label{
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    user-select: none; color: #c9d1d9;
+  }
+  .screen-truncation-banner{
+    padding: 8px 12px; background: rgba(210, 153, 34, 0.15); border: 1px solid rgba(210, 153, 34, 0.4);
+    border-radius: 6px; color: #e3b341; font-size: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .screen-viewport{
+    background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+    max-height: 560px; overflow: auto; padding: 14px; position: relative;
+  }
+  .screen-pre{
+    margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.5; color: #c9d1d9; white-space: pre-wrap; word-break: break-all;
+  }
+  .screen-code{ font-family: inherit; color: inherit; }
+  .screen-loading, .screen-empty, .screen-prompt{
+    padding: 36px 16px; text-align: center; color: #8b949e; font-size: 14px;
+  }
+  .screen-prompt a{ color: #58a6ff; text-decoration: none; font-weight: 500; }
+  .screen-prompt a:hover{ text-decoration: underline; }
+  .screen-error{
+    padding: 16px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.4);
+    border-radius: 6px; color: #f85149; font-size: 13px; margin: 12px 0;
+  }
 </style>
 
 <!-- mastopia mark (not the Skybot face): districts + a herd of agents -->
@@ -687,9 +732,12 @@ body{margin:0;background:#9fc3dd}[hidden]{display:none!important}
       </div>
     </section>
     <section class="console-tab-pane" id="view-screen" role="tabpanel" aria-labelledby="tab-screen" hidden>
-      <div class="console-card">
-        <h2>Pane Screen Viewer</h2>
-        <p class="muted">Foundation ready for U4.</p>
+      <div class="screen-card">
+        <div id="screenContainer">
+          <div class="screen-prompt" id="screenSelectPrompt">
+            No pane selected. Choose an agent session from the <a href="#sessions">Sessions tab</a> to view its terminal screen.
+          </div>
+        </div>
       </div>
     </section>
     <section class="console-tab-pane" id="view-logs" role="tabpanel" aria-labelledby="tab-logs" hidden>
@@ -6224,6 +6272,217 @@ async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fe
   }
 }
 
+// Module: page/src/screen-view.js
+// Purpose: Pane screen viewer rendering, metadata ribbon, ANSI pass-through, and auto-scroll (U4)
+// Maintainer: builder-gemini
+
+
+function renderScreenRibbonHtml(data) {
+  if (!data) return '';
+  const paneId = data.paneId || data.session?.paneId || '-';
+  const name = data.session?.name || paneId;
+  const districtTitle = data.session?.districtTitle || data.session?.districtId || '-';
+  const districtId = data.session?.districtId
+    ? `<small class="sub-id">${escapeHtml(data.session.districtId)}</small>`
+    : '';
+  const cliBadge = data.session?.cli ? `<span class="badge badge-cli">${escapeHtml(data.session.cli)}</span>` : '';
+  const modelBadge = data.session?.model
+    ? `<span class="badge badge-model">${escapeHtml(data.session.model)}</span>`
+    : '';
+  const statusBadge = getStatusBadgeHtml(data.session?.status, data.session?.statusLabel, data.session?.prompt);
+  const lineCount = Number.isFinite(data.lineCount) ? `${data.lineCount} lines` : '';
+  const updated = data.updatedAt ? `Updated ${formatRelativeTime(data.updatedAt)}` : '';
+
+  return (
+    `<div class="screen-ribbon" id="screenRibbon">` +
+    `<div class="screen-meta-left">` +
+    `<span class="badge badge-cli">${escapeHtml(paneId)}</span>` +
+    `<h3 class="screen-title">${escapeHtml(name)}</h3>` +
+    `<div class="cell-wrap"><span>${escapeHtml(districtTitle)}</span>${districtId}</div>` +
+    `<div class="badge-group">${cliBadge}${modelBadge}${statusBadge}</div>` +
+    `</div>` +
+    `<div class="screen-meta-right">` +
+    (lineCount ? `<span class="screen-lines">${escapeHtml(lineCount)}</span>` : '') +
+    (updated ? `<span class="screen-time">${escapeHtml(updated)}</span>` : '') +
+    `</div>` +
+    `</div>`
+  );
+}
+
+function renderScreenToolbarHtml({ autoScroll = true, truncated = false } = {}) {
+  const truncationBanner = truncated
+    ? `<div class="screen-truncation-banner" id="screenTruncationBanner" role="status">` +
+      `<span class="badge badge-error">Notice</span> Output truncated at 80,000 characters.</div>`
+    : '';
+
+  return (
+    `<div class="screen-toolbar" id="screenToolbar">` +
+    `<div class="screen-tools-left">` +
+    `<label class="screen-autoscroll-label">` +
+    `<input type="checkbox" id="screenAutoScroll" ${autoScroll ? 'checked' : ''}> ` +
+    `Auto-scroll to bottom</label>` +
+    `</div>` +
+    `<div class="screen-tools-right">` +
+    `<a href="#sessions" class="btn-city-link" aria-label="Back to Sessions">&larr; Back to Sessions</a>` +
+    `</div>` +
+    `</div>` +
+    truncationBanner
+  );
+}
+
+function renderScreenViewportHtml(text) {
+  if (text == null || text === '') {
+    return (
+      `<div class="screen-viewport" id="screenViewport">` +
+      `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>` +
+      `</div>`
+    );
+  }
+  // P1 passes ANSI escape sequences through unchanged; rendered as raw text in preformatted block
+  return (
+    `<div class="screen-viewport" id="screenViewport">` +
+    `<pre class="screen-pre"><code class="screen-code" id="screenCode">${escapeHtml(text)}</code></pre>` +
+    `</div>`
+  );
+}
+
+let lastRawText = null;
+
+function renderScreenView(container, { data, error, loading, paneId, autoScroll = true } = {}) {
+  if (!container) return;
+  if (!paneId) {
+    lastRawText = null;
+    if (container.dataset) delete container.dataset.currentPaneId;
+    if (container._lastRawText !== undefined) delete container._lastRawText;
+    container.innerHTML =
+      `<div class="screen-prompt" id="screenSelectPrompt">` +
+      `No pane selected. Choose an agent session from the ` +
+      `<a href="#sessions">Sessions tab</a> to view its terminal screen.</div>`;
+    return;
+  }
+  if (loading) {
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      lastRawText = null;
+      if (container.dataset) delete container.dataset.currentPaneId;
+      if (container._lastRawText !== undefined) delete container._lastRawText;
+      container.innerHTML =
+        `<div class="screen-loading" id="screenLoading">` + `Reading pane output for ${escapeHtml(paneId)}…</div>`;
+    }
+    return;
+  }
+  if (error) {
+    const hasExisting = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (!hasExisting) {
+      lastRawText = null;
+      if (container.dataset) delete container.dataset.currentPaneId;
+      if (container._lastRawText !== undefined) delete container._lastRawText;
+      container.innerHTML =
+        `<div class="screen-error" id="screenError" role="alert">` +
+        `Unable to read pane ${escapeHtml(paneId)}. Pane may have closed or herdr returned an error.</div>`;
+    }
+    return;
+  }
+  if (!data) {
+    lastRawText = null;
+    if (container.dataset) delete container.dataset.currentPaneId;
+    if (container._lastRawText !== undefined) delete container._lastRawText;
+    container.innerHTML = `<div class="screen-empty" id="screenEmpty">No recent output recorded for this pane.</div>`;
+    return;
+  }
+
+  const isSamePane = container.dataset?.currentPaneId === paneId;
+  const existingViewport = container.querySelector ? container.querySelector('#screenViewport') : null;
+  const existingCode = container.querySelector ? container.querySelector('#screenCode') : null;
+
+  // In-place update: update metadata and text without rebuilding viewport to preserve scroll and selection
+  if (isSamePane && existingViewport && existingCode) {
+    const ribbonWrap = container.querySelector('#screenRibbonWrap');
+    if (ribbonWrap) {
+      ribbonWrap.innerHTML = renderScreenRibbonHtml(data);
+    }
+
+    const autoScrollEl = container.querySelector('#screenAutoScroll');
+    const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+
+    // Truncation banner in-place toggle
+    const toolbarEl = container.querySelector('#screenToolbar');
+    let truncEl = container.querySelector('#screenTruncationBanner');
+    if (data.truncated && !truncEl && toolbarEl) {
+      toolbarEl.insertAdjacentHTML(
+        'afterend',
+        '<div class="screen-truncation-banner" id="screenTruncationBanner" role="status">' +
+          '<span class="badge badge-error">Notice</span> Output truncated at 80,000 characters.</div>',
+      );
+    } else if (!data.truncated && truncEl) {
+      truncEl.remove();
+    }
+
+    const prevScrollTop = existingViewport.scrollTop;
+    const rawText = typeof data.text === 'string' ? data.text : '';
+    const prevRawText = container._lastRawText !== undefined ? container._lastRawText : lastRawText;
+
+    // Compare raw-to-raw to avoid browser quote desynchronization (e.g. &quot; vs ")
+    if (rawText !== prevRawText) {
+      existingCode.innerHTML = escapeHtml(rawText);
+      lastRawText = rawText;
+      container._lastRawText = rawText;
+    }
+
+    if (effectiveAutoScroll) {
+      if (typeof existingViewport.scrollHeight === 'number') {
+        existingViewport.scrollTop = existingViewport.scrollHeight;
+      }
+    } else {
+      existingViewport.scrollTop = prevScrollTop;
+    }
+    return;
+  }
+
+  // Initial render or pane switch
+  if (!container.dataset) container.dataset = {};
+  container.dataset.currentPaneId = paneId;
+
+  const rawText = typeof data.text === 'string' ? data.text : '';
+  lastRawText = rawText;
+  container._lastRawText = rawText;
+
+  const ribbonWrapHtml = `<div id="screenRibbonWrap">${renderScreenRibbonHtml(data)}</div>`;
+  const toolbarHtml = renderScreenToolbarHtml({ autoScroll, truncated: Boolean(data.truncated) });
+  const viewportHtml = renderScreenViewportHtml(data.text);
+
+  container.innerHTML = `${ribbonWrapHtml}${toolbarHtml}${viewportHtml}`;
+
+  const autoScrollEl = container.querySelector ? container.querySelector('#screenAutoScroll') : null;
+  const effectiveAutoScroll = autoScrollEl ? autoScrollEl.checked : autoScroll;
+  if (effectiveAutoScroll) {
+    const vp = container.querySelector ? container.querySelector('#screenViewport') : null;
+    if (vp && typeof vp.scrollHeight === 'number') {
+      vp.scrollTop = vp.scrollHeight;
+    }
+  }
+}
+
+async function fetchScreen(fetchFn = typeof window !== 'undefined' ? window.fetch : null, paneId) {
+  if (!paneId) {
+    return { ok: false, error: 'paneId is required', data: null };
+  }
+  if (typeof fetchFn !== 'function') {
+    return { ok: false, error: 'fetch is not available', data: null };
+  }
+  try {
+    const url = `/api/screen?paneId=${encodeURIComponent(paneId)}`;
+    const res = await fetchFn(url, { cache: 'no-store' });
+    if (!res.ok) {
+      return { ok: false, status: res.status, error: `HTTP ${res.status}`, data: null };
+    }
+    const data = await res.json();
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, error: err?.message || 'Network error', data: null };
+  }
+}
+
 // Module: page/src/07-console.js
 // Purpose: P1 console shell lifecycle, events, health polling, and navigation binding
 // Maintainer: builder-gemini
@@ -6275,22 +6534,51 @@ async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fe
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}${statusNote}`);
   }
 
+  async function refreshScreenData(paneId) {
+    const container = document.getElementById('screenContainer');
+    if (!container) return;
+    if (!paneId) {
+      renderScreenView(container, { paneId: null });
+      updateConsoleTimestamp(document, 'No pane selected');
+      return;
+    }
+    const autoScrollEl = document.getElementById('screenAutoScroll');
+    const autoScroll = autoScrollEl ? autoScrollEl.checked : true;
+    const res = await fetchScreen(window.fetch, paneId);
+    if (!res.ok) {
+      renderScreenView(container, { paneId, error: res.error });
+      updateConsoleTimestamp(document, `Error reading ${paneId}`);
+      return;
+    }
+    renderScreenView(container, { paneId, data: res.data, autoScroll });
+    const now = new Date();
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
+  }
+
+  function refreshActiveTab(params) {
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    if (activeTab === 'sessions') {
+      refreshSessionsData();
+    } else if (activeTab === 'screen') {
+      const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
+      refreshScreenData(paneId);
+    } else {
+      updateConsoleTimestamp(document, 'No data yet');
+    }
+  }
+
   function handleTabSwitch() {
-    const { tab } = parseHash(window.location.hash);
+    const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
-    if (isConsolePath() && activeTab === 'sessions') {
-      refreshSessionsData();
+    if (isConsolePath()) {
+      refreshActiveTab(params);
     }
   }
 
   const poller = createPollingManager({
     onTick: () => {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else {
-        updateConsoleTimestamp(document, 'No data yet');
-      }
+      refreshActiveTab();
     },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
@@ -6332,11 +6620,7 @@ async function fetchSessions(fetchFn = typeof window !== 'undefined' ? window.fe
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        if (activeTab === 'sessions') {
-          refreshSessionsData();
-        } else {
-          updateConsoleTimestamp(document, 'No data yet');
-        }
+        refreshActiveTab();
       });
     }
 

@@ -34,25 +34,24 @@
 | SSE | Server-Sent Events |
 | U1 | User Interface Milestone 1 |
 | U2 | User Interface Milestone 2 |
+| U4 | User Interface Milestone 4 |
 | UI | User Interface |
 | UTF-8 | 8-bit Unicode Transformation Format |
 
 ## Current task
 
 - Phase: P1 implementation.
-- Milestone: U2 (User Interface Milestone 2) — Sessions list view (`#sessions`), table rendering
-  from `GET /api/sessions`, status badges, directory, activity preview, relative time, inspect links,
-  empty/error/loading states, and responsive styling.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u2-sessions` (PR #10 ready for review).
-- Status: Merged `origin/main` (including PR #6, #7, #8, #9) and merged `origin/main` at `b6b02ec`
-  (PR #12 / B8) into `feat/gemini-u2-sessions` (merge head `c881707`); resolved `CHANGELOG.md`
-  conflict keeping both U2 and B8 entries with no conflict markers remaining; regenerated
-  CODEMAP.md and page build; leak rule verified (all endpoint text sanitized via shared
-  `escapeHtml`); green on lint, format, test.
+- Milestone: U4 (User Interface Milestone 4) — Pane screen viewer (`#screen?paneId=...`),
+  reading terminal screens from `GET /api/screen`, metadata ribbon, auto-scroll toggle,
+  raw ANSI pass-through, truncation warning banner, unselected/loading/error states.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u4-screen` (PR #14 retargeted to `main`).
+- Status: Merged `origin/main` at `3c31b0f` into `feat/gemini-u4-screen` (merge head `f1faef1`);
+  resolved `CHANGELOG.md` and `docs/agents/builder-gemini.md` conflicts keeping both sides;
+  leak rule verified; 88/88 tests pass; lint and format:check green. Ready for review.
 
 ## Files touched
 
-Net diff vs `main` on `feat/gemini-u2-sessions`:
+Net diff vs `main` on `feat/gemini-u4-screen`:
 
 1. `.prettierignore`
 2. `CHANGELOG.md`
@@ -61,11 +60,10 @@ Net diff vs `main` on `feat/gemini-u2-sessions`:
 5. `page/README.md`
 6. `page/build.js`
 7. `page/src/07-console.js`
-8. `page/src/console-router.js`
-9. `page/src/page.html`
-10. `page/src/sessions-view.js`
-11. `test/sessions-ui.test.js`
-12. `web/index.html`
+8. `page/src/page.html`
+9. `page/src/screen-view.js`
+10. `test/screen-ui.test.js`
+11. `web/index.html`
 
 ## Open questions
 

@@ -49,22 +49,51 @@
     updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}${statusNote}`);
   }
 
+  async function refreshScreenData(paneId) {
+    const container = document.getElementById('screenContainer');
+    if (!container) return;
+    if (!paneId) {
+      renderScreenView(container, { paneId: null });
+      updateConsoleTimestamp(document, 'No pane selected');
+      return;
+    }
+    const autoScrollEl = document.getElementById('screenAutoScroll');
+    const autoScroll = autoScrollEl ? autoScrollEl.checked : true;
+    const res = await fetchScreen(window.fetch, paneId);
+    if (!res.ok) {
+      renderScreenView(container, { paneId, error: res.error });
+      updateConsoleTimestamp(document, `Error reading ${paneId}`);
+      return;
+    }
+    renderScreenView(container, { paneId, data: res.data, autoScroll });
+    const now = new Date();
+    updateConsoleTimestamp(document, `Updated ${now.toLocaleTimeString()}`);
+  }
+
+  function refreshActiveTab(params) {
+    const effectiveParams = params || parseHash(window.location.hash).params;
+    if (activeTab === 'sessions') {
+      refreshSessionsData();
+    } else if (activeTab === 'screen') {
+      const paneId = effectiveParams?.get ? effectiveParams.get('paneId') : effectiveParams?.paneId;
+      refreshScreenData(paneId);
+    } else {
+      updateConsoleTimestamp(document, 'No data yet');
+    }
+  }
+
   function handleTabSwitch() {
-    const { tab } = parseHash(window.location.hash);
+    const { tab, params } = parseHash(window.location.hash);
     activeTab = tab;
     renderTabPanel(activeTab, document);
-    if (isConsolePath() && activeTab === 'sessions') {
-      refreshSessionsData();
+    if (isConsolePath()) {
+      refreshActiveTab(params);
     }
   }
 
   const poller = createPollingManager({
     onTick: () => {
-      if (activeTab === 'sessions') {
-        refreshSessionsData();
-      } else {
-        updateConsoleTimestamp(document, 'No data yet');
-      }
+      refreshActiveTab();
     },
     isHiddenFn: () => document.hidden,
     activeMs: POLL_INTERVAL_ACTIVE_MS,
@@ -106,11 +135,7 @@
     const refreshBtn = document.getElementById('btnConsoleRefresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
-        if (activeTab === 'sessions') {
-          refreshSessionsData();
-        } else {
-          updateConsoleTimestamp(document, 'No data yet');
-        }
+        refreshActiveTab();
       });
     }
 
