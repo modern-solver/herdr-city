@@ -1,5 +1,5 @@
 /**
- * Purpose: leak tests for screen, sessions, city and logs JSON. Secrets at start, middle, end, boundary.
+ * Purpose: leak tests for screen, sessions, city, logs and ops-desk JSON. Secrets at start, middle, end, boundary.
  * Owner: builder-grok
  */
 import { test } from 'node:test';
@@ -159,5 +159,25 @@ test('GET /api/logs adapter_error JSON has no secrets at the 800-char tail bound
     assertClean(body, LEAK_TOKENS);
     const ev = body.events.find((e) => e.type === 'adapter_error');
     assert.equal(ev.text.length <= LOG_TEXT_MAX, true);
+  });
+});
+
+test('GET /api/ops-desk JSON has no secrets at start, middle, end or prompt boundary', async () => {
+  // contains path -> slicePrompt -> capPrompt keep head 800.
+  // Token on the prompt line + filler token before boundary GHP.
+  const prefix = `Needs your approval ${AKIA}\n`;
+  const before = `${JWT} `;
+  const overlap = 16;
+  const padLen = 800 - overlap - prefix.length - before.length;
+  // Extra # after GHP so post-mask extract still exceeds 800 for capPrompt.
+  const pane = `${prefix}${before}${'#'.repeat(Math.max(0, padLen))}${GHP}${'#'.repeat(300)} ${SK}${TOKS}`;
+  assertCutInsideToken(pane, 800, GHP, { keep: 'head' });
+  await withServer(leakClient({ pane, title: `${TOKS}title${TOKS}` }), async (port) => {
+    const res = await fetch(`http://127.0.0.1:${port}/api/ops-desk`);
+    assert.equal(res.status, 200);
+    const json = await res.json();
+    assert.ok(json.items.length >= 1);
+    assert.equal(json.items[0].prompt.length, 800);
+    assertClean(json, LEAK_TOKENS);
   });
 });

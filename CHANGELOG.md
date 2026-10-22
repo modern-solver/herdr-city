@@ -9,6 +9,14 @@ Each item links the PR, commit, or file it describes (CHG-04).
   Uses `maskThenTruncate` for event text. Newest first.
   `adapter_error` is one event per outage episode; a new event after recovery.
   PR: https://github.com/modern-solver/herdr-city/pull/18
+- Feature: `GET /api/ops-desk` lists blocked sessions that have a prompt.
+  `recommendation` is always null. No approve or deny fields.
+  `updateBlockedSince` lives outside `tick`. Sort and episode-reset tests.
+  Prompt text uses `maskThenTruncate`.
+  PR: https://github.com/modern-solver/herdr-city/pull/17
+- Fix: `scripts/codemap.js` dedupes git file entries and Dependents lists so
+  CODEMAP rows stay unique.
+  PR: https://github.com/modern-solver/herdr-city/pull/17
 - Security: prompt caps keep the HEAD via `maskThenTruncate` so the question
   survives; error caps keep the TAIL. Leak helpers use tail-aware
   `boundaryText` and suffix checks in `assertClean` (SEC-03).

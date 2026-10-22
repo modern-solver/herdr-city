@@ -4,6 +4,7 @@ import { loadPromptPatterns } from './prompt-detect.js';
 import { DEFAULT_PATTERNS_PATH } from './paths.js';
 import { mapSessions } from './sessions.js';
 import { collectTickEvents, createLogBuffer } from './logs.js';
+import { buildOpsDesk, updateBlockedSince } from './ops-desk.js';
 import { buildScreen, capPaneText } from './screen.js';
 
 const POLL_MS = 2000;
@@ -13,8 +14,10 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
   setMapPatterns(clis);
   const paneCache = new Map(); // pane_id -> { fp, text }
   const lastActive = {};
+  const blockedSince = {};
   let lastSnapshot = snapshotPayload({ docs: [], asks: [], robots: [], mode: client.kind, error: null });
   let lastSessions = [];
+  let lastAgents = [];
   let lastTickAt = 0;
   const logBuffer = createLogBuffer();
   const prevByPane = new Map();
@@ -120,6 +123,8 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
         name: s.name,
       });
     }
+    lastAgents = agents;
+    updateBlockedSince(blockedSince, agents, t);
     emit();
     return lastSnapshot;
   }
@@ -147,6 +152,14 @@ export function createAdapter({ client, patternsPath = DEFAULT_PATTERNS_PATH, no
         bounded: logBuffer.bounded(),
         events: logBuffer.query({ after, limit }),
       };
+    },
+    getOpsDesk() {
+      return buildOpsDesk({
+        sessions: lastSessions,
+        agents: lastAgents,
+        blockedSince,
+        generatedAt: lastTickAt || lastSnapshot.generatedAt,
+      });
     },
     getScreen(paneId) {
       const session = lastSessions.find((s) => s.paneId === paneId);

@@ -80,6 +80,7 @@ Same origin, 127.0.0.1:
 | `GET /api/sessions` | console session list (district, cli, model, status, `q` filters) |
 | `GET /api/screen`     | last pane read after `maskSecrets` (`paneId` required)           |
 | `GET /api/logs`       | event ring after `maskThenTruncate` (`after`, `limit` 1–200)     |
+| `GET /api/ops-desk`   | blocked sessions with a prompt (`recommendation` always null)    |
 | `GET /events`         | Skyborne-compatible SSE for the city page                        |
 | `GET /health`         | liveness                                                         |
 | `POST /api/answer`    | always `409` readonly                                            |

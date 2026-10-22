@@ -90,6 +90,10 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       json(res, 200, adapter.getLogs({ after: parsed.after, limit: parsed.limit }));
       return;
     }
+    if (req.method === 'GET' && url.pathname === '/api/ops-desk') {
+      json(res, 200, adapter.getOpsDesk());
+      return;
+    }
     if (req.method === 'GET' && url.pathname === '/api/screen') {
       const paneId = String(url.searchParams.get('paneId') || '').trim();
       if (!paneId) {
