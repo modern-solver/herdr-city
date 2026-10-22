@@ -45,9 +45,10 @@
 - Milestone: U6 (User Interface Milestone 6) — Ops desk queue view (`#ops-desk`),
   rendering blocked prompts from `GET /api/ops-desk` sorted by wait time, wait timer badges,
   prompt quotes, recommendation placeholders, inspect links, and adapter error resilience.
-- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (stacked on `feat/gemini-u4-screen`).
-- Status: Merged `origin/feat/gemini-u4-screen` (including upstream main merges); leak rule verified;
-  lint, format:check and test green.
+- Worktree: `C:\Users\shaun\mastopia-gemini` on branch `feat/gemini-u6-ops-desk` (PR #16 retargeted to `main`).
+- Status: Merged `origin/main` at `d583783` into `feat/gemini-u6-ops-desk` (merge head `8d67b9a`);
+  resolved `docs/agents/builder-gemini.md` conflict; leak rule verified; 96/96 tests pass;
+  lint and format:check green. Ready for review.
 
 ## Files touched
 
@@ -60,15 +61,10 @@ Net diff vs `main` on `feat/gemini-u6-ops-desk`:
 5. `page/README.md`
 6. `page/build.js`
 7. `page/src/07-console.js`
-8. `page/src/console-router.js`
-9. `page/src/ops-desk-view.js`
-10. `page/src/page.html`
-11. `page/src/screen-view.js`
-12. `page/src/sessions-view.js`
-13. `test/ops-desk-ui.test.js`
-14. `test/screen-ui.test.js`
-15. `test/sessions-ui.test.js`
-16. `web/index.html`
+8. `page/src/ops-desk-view.js`
+9. `page/src/page.html`
+10. `test/ops-desk-ui.test.js`
+11. `web/index.html`
 
 ## Open questions
 
