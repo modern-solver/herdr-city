@@ -1,7 +1,19 @@
 import fs from 'node:fs';
+import { maskThenTruncate } from './output-filter.js';
 import { DEFAULT_PATTERNS_PATH } from './paths.js';
 
 const ERROR_RE = /\b(error:|fatal:|panic:|traceback|exception\b|ERROR\b|FAILED\b)\b/i;
+const PROMPT_MAX = 800;
+const ERROR_MAX = 400;
+
+function capPrompt(text) {
+  // Keep the HEAD so the prompt question survives the 800-char cap.
+  return maskThenTruncate(text, PROMPT_MAX, { keep: 'head' }).text;
+}
+
+function capError(text) {
+  return maskThenTruncate(text, ERROR_MAX, { keep: 'tail' }).text;
+}
 
 export function loadPromptPatterns(filePath = DEFAULT_PATTERNS_PATH) {
   const raw = fs.readFileSync(filePath, 'utf8');
@@ -59,8 +71,8 @@ function extractWithPattern(text, pattern) {
   let last = null;
   while ((match = re.exec(text))) last = match;
   if (!last) return null;
-  if (last.groups?.prompt) return last.groups.prompt.trim();
-  if (last[1]) return last[1].trim();
+  if (last.groups?.prompt) return capPrompt(last.groups.prompt.trim());
+  if (last[1]) return capPrompt(last[1].trim());
   return slicePrompt(text, last.index);
 }
 
@@ -68,7 +80,7 @@ function slicePrompt(text, idx) {
   const from = text.lastIndexOf('\n', idx);
   const start = from < 0 ? 0 : from + 1;
   const chunk = text.slice(start).split('\n').slice(0, 12).join('\n').trim();
-  return chunk.slice(0, 800);
+  return capPrompt(chunk);
 }
 
 export function detectPrompt(paneText, agent, clis) {
@@ -92,7 +104,7 @@ export function detectPrompt(paneText, agent, clis) {
       .map((l) => l.trim())
       .filter(Boolean);
     const tail = lines.slice(-8).join('\n');
-    if (tail) return { cli: kind, text: tail.slice(0, 800) };
+    if (tail) return { cli: kind, text: capPrompt(tail) };
   }
   return null;
 }
@@ -103,11 +115,12 @@ export function detectError(paneText) {
   const lines = text.split(/\r?\n/);
   for (let i = lines.length - 1; i >= 0; i--) {
     if (ERROR_RE.test(lines[i])) {
-      return lines
-        .slice(Math.max(0, i - 1), i + 2)
-        .join('\n')
-        .trim()
-        .slice(0, 400);
+      return capError(
+        lines
+          .slice(Math.max(0, i - 1), i + 2)
+          .join('\n')
+          .trim(),
+      );
     }
   }
   return null;

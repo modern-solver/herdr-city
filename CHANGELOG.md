@@ -18,6 +18,40 @@ Each item links the PR, commit, or file it describes (CHG-04).
   Files: `page/src/screen-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
   `page/README.md`, `web/index.html`, `test/screen-ui.test.js`.
   PR: https://github.com/modern-solver/herdr-city/pull/14 (stacked on PR #10)
+- Feature: `GET /api/logs` event ring (500 events / 262144 characters of `text`).
+  Uses `maskThenTruncate` for event text. Newest first.
+  `adapter_error` is one event per outage episode; a new event after recovery.
+  PR: https://github.com/modern-solver/herdr-city/pull/18
+- Feature: `GET /api/ops-desk` lists blocked sessions that have a prompt.
+  `recommendation` is always null. No approve or deny fields.
+  `updateBlockedSince` lives outside `tick`. Sort and episode-reset tests.
+  Prompt text uses `maskThenTruncate`.
+  PR: https://github.com/modern-solver/herdr-city/pull/17
+- Fix: `scripts/codemap.js` dedupes git file entries and Dependents lists so
+  CODEMAP rows stay unique.
+  PR: https://github.com/modern-solver/herdr-city/pull/17
+- Security: prompt caps keep the HEAD via `maskThenTruncate` so the question
+  survives; error caps keep the TAIL. Leak helpers use tail-aware
+  `boundaryText` and suffix checks in `assertClean` (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Fix: city/session `maskedClip` keeps the TAIL after mask (was head cut),
+  matching `maskThenTruncate` default (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Security: prompt and error caps in `src/prompt-detect.js` (800 / 400) go
+  through `maskThenTruncate` (SEC-03). Shared leak helpers in
+  `test/helpers/leak.js` (`boundaryText`, `assertClean`).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Security: `src/output-filter.js` `maskThenTruncate` masks full text then
+  truncates. Screen, sessions and city pane/activity fields use it (SEC-03).
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Fix: `GET /api/screen` runs `maskSecrets` on the full pane, then keeps the
+  newest 80000 characters (SEC-03). A token that straddled the old head cut
+  no longer leaks a `ghp_` prefix.
+  PR: https://github.com/modern-solver/herdr-city/pull/15
+- Feature: `GET /api/screen` returns the last pane read after `maskSecrets`,
+  with `lineCount`, 80000-character `truncated` cap, and the session object.
+  Missing `paneId` is 400; unknown pane is 404.
+  PR: https://github.com/modern-solver/herdr-city/pull/15
 - Feature: Implemented Milestone U2 (User Interface Milestone 2) sessions list view (`#sessions`),
   rendering agent sessions from `GET /api/sessions` with status badges, directory, activity preview,
   relative timestamps, inspect links to `#screen?paneId=...`, adapter error notice resilience,
@@ -25,6 +59,9 @@ Each item links the PR, commit, or file it describes (CHG-04).
   Files: `page/src/sessions-view.js`, `page/src/07-console.js`, `page/src/page.html`, `page/build.js`,
   `page/README.md`, `web/index.html`, `test/sessions-ui.test.js`.
   PR: https://github.com/modern-solver/herdr-city/pull/10
+- Feature: `POST /api/send-keys`, `POST /api/send-text`, and `POST /api/prompt`
+  return 409 with `reason` `readonly`. `POST /api/answer` stays 409.
+  PR: https://github.com/modern-solver/herdr-city/pull/12
 - Feature: `GET /api/sessions` console session list with district, cli, model,
   status and `q` filters (`src/sessions.js`). P0 `/api/city` is unchanged.
   Session `activity` is masked (SEC-03). PR: https://github.com/modern-solver/herdr-city/pull/8
