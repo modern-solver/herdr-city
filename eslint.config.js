@@ -20,13 +20,14 @@ export default [
     },
   },
   {
-    files: ['page/src/console-router.js', 'page/src/07-console.js'],
+    files: ['page/src/console-router.js', 'page/src/07-console.js', 'page/src/sessions-view.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
         ...globals.browser,
         DEFAULT_TAB: 'readonly',
+        VALID_MODES: 'readonly',
         parseHash: 'readonly',
         renderTabPanel: 'readonly',
         createPollingManager: 'readonly',
@@ -34,6 +35,9 @@ export default [
         POLL_INTERVAL_ACTIVE_MS: 'readonly',
         POLL_INTERVAL_HIDDEN_MS: 'readonly',
         setViewVisibility: 'readonly',
+        closeCityConsolePanel: 'readonly',
+        fetchSessions: 'readonly',
+        renderSessionsView: 'readonly',
       },
     },
   },

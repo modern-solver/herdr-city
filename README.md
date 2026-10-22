@@ -78,11 +78,14 @@ Same origin, 127.0.0.1:
 | `GET /api/city`     | districts, robots, asks (Needs you)                              |
 | `GET /api/agents`   | flat robot list                                                  |
 | `GET /api/sessions` | console session list (district, cli, model, status, `q` filters) |
-| `GET /api/screen`   | last pane read after `maskSecrets` (`paneId` required)           |
-| `GET /api/logs`     | event ring after `maskThenTruncate` (`after`, `limit` 1–200)     |
-| `GET /events`       | Skyborne-compatible SSE for the city page                        |
-| `GET /health`       | liveness                                                         |
-| `POST /api/answer`  | always `409` in P0 (read-only)                                   |
+| `GET /api/screen`     | last pane read after `maskSecrets` (`paneId` required)           |
+| `GET /api/logs`       | event ring after `maskThenTruncate` (`after`, `limit` 1–200)     |
+| `GET /events`         | Skyborne-compatible SSE for the city page                        |
+| `GET /health`         | liveness                                                         |
+| `POST /api/answer`    | always `409` readonly                                            |
+| `POST /api/send-keys` | always `409` readonly                                            |
+| `POST /api/send-text` | always `409` readonly                                            |
+| `POST /api/prompt`    | always `409` readonly                                            |
 
 ## Prompt detection
 
