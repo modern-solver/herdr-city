@@ -4,6 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { WEB_DIR } from './paths.js';
 import { parseSessionFilters, filterSessions } from './sessions.js';
+import { parseLogQuery } from './logs.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -78,6 +79,33 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
     }
     if (req.method === 'GET' && url.pathname === '/api/agents') {
       json(res, 200, { robots: adapter.getSnapshot().robots || [] });
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/logs') {
+      const parsed = parseLogQuery(url.searchParams);
+      if (!parsed.ok) {
+        json(res, 400, { ok: false, error: 'bad_request', message: parsed.message });
+        return;
+      }
+      json(res, 200, adapter.getLogs({ after: parsed.after, limit: parsed.limit }));
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/ops-desk') {
+      json(res, 200, adapter.getOpsDesk());
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/screen') {
+      const paneId = String(url.searchParams.get('paneId') || '').trim();
+      if (!paneId) {
+        json(res, 400, { ok: false, error: 'bad_request', message: 'paneId is required' });
+        return;
+      }
+      const body = adapter.getScreen(paneId);
+      if (!body) {
+        json(res, 404, { ok: false, error: 'not_found', message: 'unknown pane' });
+        return;
+      }
+      json(res, 200, body);
       return;
     }
     if (req.method === 'GET' && url.pathname === '/api/sessions') {
@@ -163,11 +191,17 @@ export function createServer({ adapter, host = '127.0.0.1', port = 7740, webDir 
       json(res, 200, { ok: true });
       return;
     }
-    if (req.method === 'POST' && url.pathname === '/api/answer') {
+    if (
+      req.method === 'POST' &&
+      (url.pathname === '/api/answer' ||
+        url.pathname === '/api/send-keys' ||
+        url.pathname === '/api/send-text' ||
+        url.pathname === '/api/prompt')
+    ) {
       json(res, 409, {
         ok: false,
         reason: 'readonly',
-        message: 'P0 is read-only; answer the prompt in the herdr pane.',
+        message: 'mastopia is read-only; answer the prompt in the herdr pane.',
       });
       return;
     }
